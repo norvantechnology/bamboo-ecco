@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { HeroBanner } from "@/components/home/hero-banner";
 import { HomePageClient } from "@/components/home/home-page-client";
 import { getHomepage } from "@/lib/api";
+import { getDefaultHomepageData } from "@/lib/homepage-fallback";
 import { buildPageMetadata, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const data = await getHomepage();
+  const data = await getHomepage().catch(() => getDefaultHomepageData());
   const { brand } = data;
 
   const jsonLd = [organizationJsonLd({ name: brand.name, tagline: brand.tagline }), websiteJsonLd()];

@@ -10,7 +10,7 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function JournalPage() {
-  const posts = await getJournalPosts("blog");
+  const posts = await getJournalPosts("blog").catch(() => []);
 
   return (
     <div className="container-page py-10 sm:py-14">

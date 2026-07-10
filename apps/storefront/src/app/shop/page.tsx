@@ -10,7 +10,7 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function ShopPage() {
-  const products = await getShopProducts();
+  const products = await getShopProducts().catch(() => []);
 
   return (
     <div className="container-page py-8 sm:py-14">
