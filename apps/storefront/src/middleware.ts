@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getApiUrl } from "@/lib/api-config";
+import { fetchWithTimeout } from "@/lib/fetch-with-timeout";
 
 type RedirectRule = { fromPath: string; toPath: string; statusCode: number };
 
@@ -8,11 +10,14 @@ let cachedAt = 0;
 
 async function loadRedirects(): Promise<RedirectRule[]> {
   if (cached.length && Date.now() - cachedAt < 5 * 60 * 1000) return cached;
-  const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const api = getApiUrl();
+  if (!api) return cached;
+
   try {
-    const res = await fetch(`${api}/storefront/redirects`, {
+    const res = await fetchWithTimeout(`${api}/storefront/redirects`, {
       headers: { "x-tenant-domain": "localhost" },
       next: { revalidate: 300 },
+      timeoutMs: 5_000,
     });
     if (res.ok) {
       cached = (await res.json()) as RedirectRule[];

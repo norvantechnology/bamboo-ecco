@@ -27,7 +27,7 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = rootMetadata();
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const data = await getLayoutData().catch(() => null);
+  const data = await getLayoutData();
   const brand = data?.brand;
   const categoryTree = data?.categoryTree ?? [];
 

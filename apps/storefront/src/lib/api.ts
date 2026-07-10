@@ -1,10 +1,16 @@
 import { withHomepageSections } from "./homepage-sections";
+import { getApiUrl, getRuntimeApiUrl } from "./api-config";
+import { fetchWithTimeout } from "./fetch-with-timeout";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 const IS_DEV = process.env.NODE_ENV === "development";
 
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
+  const apiUrl = getApiUrl();
+  if (!apiUrl) {
+    throw new Error("API URL not configured");
+  }
+
+  const res = await fetchWithTimeout(`${apiUrl}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -352,7 +358,7 @@ export interface PaymentConfig {
 }
 
 export async function getPaymentConfig() {
-  const res = await fetch(`${API_URL}/checkout/payment-config`, {
+  const res = await fetch(`${getRuntimeApiUrl()}/checkout/payment-config`, {
     headers: { "x-tenant-domain": "localhost" },
     cache: "no-store",
   });
@@ -362,7 +368,7 @@ export async function getPaymentConfig() {
 
 export async function checkout(data: CheckoutPayload) {
   const token = typeof window !== "undefined" ? localStorage.getItem("terra_token") : null;
-  const res = await fetch(`${API_URL}/checkout`, {
+  const res = await fetch(`${getRuntimeApiUrl()}/checkout`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -379,7 +385,7 @@ export async function checkout(data: CheckoutPayload) {
 }
 
 export async function mockPayOrder(orderId: string) {
-  const res = await fetch(`${API_URL}/checkout/mock-pay/${orderId}`, {
+  const res = await fetch(`${getRuntimeApiUrl()}/checkout/mock-pay/${orderId}`, {
     method: "POST",
     headers: { "x-tenant-domain": "localhost" },
   });
@@ -396,7 +402,7 @@ export async function verifyPayment(data: {
   razorpayPaymentId: string;
   razorpaySignature: string;
 }) {
-  const res = await fetch(`${API_URL}/checkout/verify`, {
+  const res = await fetch(`${getRuntimeApiUrl()}/checkout/verify`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -431,7 +437,7 @@ export interface OrderDetail {
 }
 
 export async function getOrder(id: string) {
-  const res = await fetch(`${API_URL}/checkout/order/${id}`, {
+  const res = await fetch(`${getRuntimeApiUrl()}/checkout/order/${id}`, {
     headers: { "x-tenant-domain": "localhost" },
     cache: "no-store",
   });
@@ -445,7 +451,7 @@ export interface TrackOrderResult extends OrderDetail {
 
 export async function trackOrder(orderId: string, email: string) {
   const params = new URLSearchParams({ orderId, email });
-  const res = await fetch(`${API_URL}/checkout/track?${params}`, {
+  const res = await fetch(`${getRuntimeApiUrl()}/checkout/track?${params}`, {
     headers: { "x-tenant-domain": "localhost" },
     cache: "no-store",
   });
