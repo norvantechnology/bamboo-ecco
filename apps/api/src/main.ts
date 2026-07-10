@@ -22,7 +22,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = config.get('API_PORT', 4000);
+  const port = resolvePort(config);
   await app.listen(port);
   console.log(`🚀 API running on http://localhost:${port}`);
   console.log(`📊 GraphQL playground: http://localhost:${port}/graphql`);
@@ -40,6 +40,12 @@ async function bootstrap() {
   } else {
     console.log('⚠️  Cloudinary not configured — image uploads disabled (set CLOUDINARY_* in .env)');
   }
+}
+
+function resolvePort(config: ConfigService): number {
+  const raw = config.get<string>('API_PORT') || config.get<string>('PORT') || '4000';
+  const port = Number.parseInt(String(raw).trim(), 10);
+  return Number.isFinite(port) ? port : 4000;
 }
 
 bootstrap();
