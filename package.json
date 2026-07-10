@@ -9,6 +9,8 @@
     "setup:env": "node scripts/sync-env.mjs",
     "db:up": "docker start ecoo-mongodb ecoo-redis 2>/dev/null || docker compose up -d",
     "migrate": "pnpm setup:env && pnpm db:up",
+    "build:api": "pnpm turbo run build --filter=@ecoo/api",
+    "start": "node apps/api/dist/main.js",
     "dev:api": "turbo dev --filter=@ecoo/api",
     "dev:storefront": "turbo dev --filter=@ecoo/storefront",
     "dev:admin": "turbo dev --filter=@ecoo/admin"

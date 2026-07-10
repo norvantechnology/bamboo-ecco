@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "packages": {
+    "node": "22"
+  },
+  "steps": {
+    "build": {
+      "commands": ["pnpm turbo run build --filter=@ecoo/api"]
+    }
+  },
+  "deploy": {
+    "startCommand": "node apps/api/dist/main.js"
+  }
+}
