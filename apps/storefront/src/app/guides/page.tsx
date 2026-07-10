@@ -13,10 +13,10 @@ export default async function GuidesPage() {
   const posts = await getJournalPosts("guide").catch(() => []);
 
   return (
-    <div className="container-page py-10 sm:py-14">
-      <h1 className="font-display text-3xl text-primary sm:text-4xl">Guides</h1>
-      <p className="mt-2 text-muted">Buying guides and sustainable living ideas</p>
-      <div className="mt-10 grid gap-6 sm:grid-cols-2">
+    <div className="container-page py-5 sm:py-14">
+      <h1 className="font-display text-2xl text-primary sm:text-4xl">Guides</h1>
+      <p className="mt-1 text-sm text-muted sm:mt-2">Buying guides and sustainable living ideas</p>
+      <div className="mt-5 grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-6">
         {posts.map((post) => (
           <Link
             key={post._id}

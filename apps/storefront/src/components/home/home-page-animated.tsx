@@ -31,19 +31,19 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
     <HomeMotionRoot>
       {/* Brand pillars */}
       {brand.brandPillars.length > 0 && (
-        <section className="texture-bamboo relative overflow-hidden py-16 sm:py-24">
+        <section className="texture-bamboo relative overflow-hidden py-8 sm:py-24">
           <div className="container-page">
-            <div data-pillars-grid className="grid gap-10 sm:grid-cols-3">
+            <div data-pillars-grid className="grid gap-6 sm:grid-cols-3 sm:gap-10">
               {brand.brandPillars.map((pillar, i) => (
-                <div key={pillar.title} data-pillar-card className="pillar-card text-center sm:text-left">
-                  <div className="pillar-icon-circle inline-flex h-14 w-14 items-center justify-center rounded-full">
+                <div key={pillar.title} data-pillar-card className="pillar-card min-w-0 text-center sm:text-left">
+                  <div className="pillar-icon-circle inline-flex h-12 w-12 items-center justify-center rounded-full sm:h-14 sm:w-14">
                     <BrandIcon
                       name={pillar.icon}
                       className={cn(i % 2 === 0 ? "text-wood" : "text-gold")}
                     />
                   </div>
-                  <h3 className="mt-5 font-display text-xl">{pillar.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{pillar.description}</p>
+                  <h3 className="mt-3 break-words font-display text-lg sm:mt-5 sm:text-xl">{pillar.title}</h3>
+                  <p className="mt-1.5 break-words text-sm leading-relaxed text-muted sm:mt-2">{pillar.description}</p>
                 </div>
               ))}
             </div>
@@ -53,7 +53,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Featured Collections */}
       {sections.collections.enabled && collections.length > 0 && (
-        <section className="texture-surface relative py-16 sm:py-24">
+        <section className="texture-surface relative py-8 sm:py-24">
           <div className="container-page">
             <SectionHeader
               label={sections.collections.label}
@@ -62,7 +62,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             />
             <div
               data-collections-grid
-              className="perspective-distant mt-10 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4"
+              className="perspective-distant mt-5 grid grid-cols-2 gap-2.5 sm:mt-10 sm:gap-6 lg:grid-cols-4"
             >
               {collections.map((cat, i) => (
                 <CollectionCard3D key={cat._id} category={cat} index={i} />
@@ -74,7 +74,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Lifestyle */}
       {sections.lifestyle.enabled && lifestyleProducts.length > 0 && (
-        <section className="container-page py-16 sm:py-24">
+        <section className="container-page py-8 sm:py-24">
           <SectionHeader
             label={sections.lifestyle.label}
             title={sections.lifestyle.title}
@@ -103,11 +103,11 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                       <div className="absolute inset-0 bg-gradient-to-br from-[#d4c9b8] to-[#b8a88e]" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410]/85 via-[#1a1410]/15 to-transparent transition-all duration-300 ease-out group-hover:from-[#1a1410]/92" />
-                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                      <p className="font-display text-lg font-semibold leading-snug text-white sm:text-xl">
+                    <div className="absolute inset-x-0 bottom-0 p-3 sm:p-6">
+                      <p className="line-clamp-2 break-words font-display text-base font-semibold leading-snug text-white sm:text-xl">
                         {product.title}
                       </p>
-                      <span className="lifestyle-cta mt-2 inline-block text-xs font-medium uppercase tracking-wider text-gold">
+                      <span className="lifestyle-cta mt-1.5 inline-block text-[10px] font-medium uppercase tracking-wider text-gold sm:mt-2 sm:text-xs">
                         View product →
                       </span>
                     </div>
@@ -121,14 +121,14 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* New Arrivals */}
       {sections.newArrivals.enabled && newArrivals.length > 0 && (
-        <section className="container-page py-16 sm:py-24">
+        <section className="container-page py-8 sm:py-24">
           <SectionHeader
             label={sections.newArrivals.label}
             title={sections.newArrivals.title}
             description={sections.newArrivals.description}
             href={sections.newArrivals.href}
           />
-          <div data-product-grid className="product-grid mt-10">
+          <div data-product-grid className="product-grid mt-5 sm:mt-10">
             {newArrivals.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -138,7 +138,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Best Sellers */}
       {sections.bestSellers.enabled && bestSellers.length > 0 && (
-        <section className="texture-cream relative py-16 sm:py-24">
+        <section className="texture-cream relative py-8 sm:py-24">
           <div className="container-page">
             <SectionHeader
               label={sections.bestSellers.label}
@@ -146,7 +146,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
               description={sections.bestSellers.description}
               href={sections.bestSellers.href}
             />
-            <div data-product-grid className="product-grid mt-10">
+            <div data-product-grid className="product-grid mt-5 sm:mt-10">
               {bestSellers.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
@@ -157,7 +157,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Why Choose Us */}
       {sections.whyChooseUs.enabled && brand.whyChooseUs.length > 0 && (
-        <section className="texture-bamboo border-y border-border py-16 sm:py-24">
+        <section className="texture-bamboo border-y border-border py-8 sm:py-24">
           <div className="container-page">
             <SectionHeader
               label={sections.whyChooseUs.label}
@@ -191,7 +191,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Customer Homes */}
       {sections.customerHomes.enabled && customerHomes.length > 0 && (
-        <section className="container-page py-16 sm:py-24">
+        <section className="container-page py-8 sm:py-24">
           <SectionHeader
             label={sections.customerHomes.label}
             title={sections.customerHomes.title}
@@ -224,7 +224,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Reviews */}
       {sections.reviews.enabled && reviews.length > 0 && (
-        <section className="texture-surface py-16 sm:py-24">
+        <section className="texture-surface py-8 sm:py-24">
           <div className="container-page">
             <SectionHeader label={sections.reviews.label} title={sections.reviews.title} />
             <div
@@ -262,7 +262,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Journal */}
       {sections.journal.enabled && blogPosts.length > 0 && (
-        <section className="container-page py-16 sm:py-24">
+        <section className="container-page py-8 sm:py-24">
           <SectionHeader
             label={sections.journal.label}
             title={sections.journal.title}
@@ -290,7 +290,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Gallery / Instagram */}
       {sections.gallery.enabled && gallery.length > 0 && (
-        <section className="border-t border-border py-16 sm:py-24">
+        <section className="border-t border-border py-8 sm:py-24">
           <div className="container-page">
             <SectionHeader
               label={sections.gallery.label}

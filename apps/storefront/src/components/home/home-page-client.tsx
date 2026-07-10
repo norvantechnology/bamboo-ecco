@@ -11,7 +11,10 @@ const WelcomePopup = dynamic(
 
 const HomePageAnimated = dynamic(
   () => import("@/components/home/home-page-animated").then((m) => m.HomePageAnimated),
-  { loading: () => <div className="min-h-[40vh]" aria-hidden /> },
+  {
+    ssr: true,
+    loading: () => <div className="min-h-[40vh]" aria-hidden />,
+  },
 );
 
 type HomePageClientProps = {

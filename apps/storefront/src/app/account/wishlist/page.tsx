@@ -50,18 +50,18 @@ export default function WishlistPage() {
                     <Image src={item.image} alt={item.title} fill sizes="96px" className="object-cover" />
                   )}
                 </Link>
-                <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                <div className="flex min-w-0 flex-1 flex-col justify-between gap-2.5 sm:flex-row sm:items-center sm:gap-3">
                   <div className="min-w-0">
-                    <Link href={`/product/${item.slug}`} className="line-clamp-2 font-medium hover:text-secondary">
+                    <Link href={`/product/${item.slug}`} className="line-clamp-2 text-sm font-medium hover:text-secondary sm:text-base">
                       {item.title}
                     </Link>
-                    <p className="mt-1 text-sm text-muted">{formatPrice(item.price)}</p>
+                    <p className="mt-0.5 font-numeric text-sm font-semibold sm:mt-1 sm:font-normal sm:text-muted">{formatPrice(item.price)}</p>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Link href={`/product/${item.slug}`}>
-                      <Button size="sm" variant="secondary">View</Button>
+                  <div className="flex gap-2">
+                    <Link href={`/product/${item.slug}`} className="flex-1 sm:flex-none">
+                      <Button size="sm" variant="secondary" className="w-full">View</Button>
                     </Link>
-                    <Button size="sm" variant="outline" onClick={() => removeItem(item.productId, item.sku)}>
+                    <Button size="sm" variant="outline" onClick={() => removeItem(item.productId, item.sku)} className="flex-1 sm:flex-none">
                       Remove
                     </Button>
                   </div>

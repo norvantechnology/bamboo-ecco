@@ -13,7 +13,23 @@ export function HomeMotionRoot({ children, className }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (prefersReducedMotion() || !rootRef.current) return;
+    if (!rootRef.current) return;
+
+    // Always show section titles immediately — never leave them at opacity 0
+    const revealTitles = () => {
+      rootRef.current?.querySelectorAll<HTMLElement>("[data-scroll-reveal]").forEach((el) => {
+        el.classList.add("scroll-reveal--visible");
+      });
+    };
+    revealTitles();
+    // Catch late paint / hydration
+    const t = window.setTimeout(revealTitles, 100);
+
+    // Mobile / reduced motion: skip card entrance animations
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (prefersReducedMotion() || isMobile) {
+      return () => window.clearTimeout(t);
+    }
 
     let ctx: { revert: () => void } | undefined;
     let cancelled = false;
@@ -29,16 +45,15 @@ export function HomeMotionRoot({ children, className }: Props) {
           gsap.from(card, {
             scrollTrigger: {
               trigger: card,
-              start: "top 88%",
-              toggleActions: "play none none reverse",
+              start: "top 92%",
+              once: true,
             },
-            y: 70,
-            rotateX: 18,
+            y: 40,
             opacity: 0,
-            duration: 1,
-            delay: i * 0.08,
-            ease: "power3.out",
-            transformOrigin: "center bottom",
+            duration: 0.75,
+            delay: i * 0.06,
+            ease: "power2.out",
+            clearProps: "opacity,transform",
           });
         });
 
@@ -50,72 +65,63 @@ export function HomeMotionRoot({ children, className }: Props) {
           gsap.from(cards, {
             scrollTrigger: {
               trigger: grid,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
+              start: "top 90%",
+              once: true,
             },
-            y: 55,
-            rotateY: -6,
+            y: 36,
             opacity: 0,
-            stagger: 0.07,
-            duration: 0.85,
+            stagger: 0.05,
+            duration: 0.7,
             ease: "power2.out",
-            transformPerspective: 1000,
+            clearProps: "opacity,transform",
           });
         });
 
         gsap.from("[data-pillar-card]", {
           scrollTrigger: {
             trigger: "[data-pillars-grid]",
-            start: "top 82%",
+            start: "top 90%",
+            once: true,
           },
-          y: 40,
+          y: 28,
           opacity: 0,
-          stagger: 0.12,
-          duration: 0.9,
+          stagger: 0.1,
+          duration: 0.7,
           ease: "power2.out",
+          clearProps: "opacity,transform",
         });
 
         gsap.from("[data-review-card]", {
           scrollTrigger: {
             trigger: "[data-reviews-grid]",
-            start: "top 85%",
+            start: "top 90%",
+            once: true,
           },
-          scale: 0.92,
-          y: 30,
+          y: 24,
           opacity: 0,
-          stagger: 0.1,
-          duration: 0.8,
-          ease: "back.out(1.1)",
+          stagger: 0.08,
+          duration: 0.65,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
         });
 
         gsap.utils.toArray<HTMLElement>("[data-lifestyle-card]").forEach((card, i) => {
-          const img = card.querySelector("[data-lifestyle-img]");
           gsap.from(card, {
-            scrollTrigger: { trigger: card, start: "top 90%" },
-            y: 50,
+            scrollTrigger: { trigger: card, start: "top 92%", once: true },
+            y: 32,
             opacity: 0,
-            duration: 0.9,
-            delay: i * 0.1,
+            duration: 0.7,
+            delay: i * 0.06,
             ease: "power2.out",
+            clearProps: "opacity,transform",
           });
-          if (img) {
-            gsap.to(img, {
-              scrollTrigger: {
-                trigger: card,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1.2,
-              },
-              y: -30,
-              ease: "none",
-            });
-          }
         });
       }, rootRef);
     });
 
     return () => {
       cancelled = true;
+      window.clearTimeout(t);
       ctx?.revert();
     };
   }, []);

@@ -63,27 +63,35 @@ export default function AccountPage() {
         <ul className="space-y-3">
           {orders.map((order, i) => (
             <MotionListItem key={order.id} index={i}>
-              <div className="data-card group flex flex-col gap-3 transition-colors hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between">
-                <Link href={`/account/orders/${order.id}`} className="min-w-0 flex-1">
-                  <div className="space-y-2">
+              <div className="data-card group flex flex-col gap-3 transition-colors hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                {/* Order info — full-width tappable area */}
+                <Link href={`/account/orders/${order.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+                  <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-numeric font-medium">{formatOrderNumber(order.id)}</span>
+                      <span className="font-numeric text-sm font-semibold sm:text-base">{formatOrderNumber(order.id)}</span>
                       <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${getOrderStatusClass(order.status)}`}
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-medium capitalize sm:text-xs ${getOrderStatusClass(order.status)}`}
                       >
                         {formatOrderStatus(order.status)}
                       </span>
                     </div>
-                    <p className="text-sm text-muted">
+                    <p className="text-xs text-muted sm:text-sm">
                       {order.createdAt ? formatOrderDate(order.createdAt) : "—"}
                       {" · "}
                       {order.itemCount} item{order.itemCount !== 1 ? "s" : ""}
                     </p>
+                    <p className="font-numeric text-base font-semibold sm:hidden">
+                      {formatPrice(order.total, order.currency)}
+                    </p>
                   </div>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 sm:hidden" />
                 </Link>
 
-                <div className="flex items-center justify-between gap-3 sm:justify-end">
-                  <span className="font-numeric text-lg font-semibold sm:order-first">{formatPrice(order.total, order.currency)}</span>
+                {/* Actions row — separated on mobile, aligned right on desktop */}
+                <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-3 sm:justify-end sm:border-0 sm:pt-0">
+                  <span className="hidden font-numeric text-lg font-semibold sm:order-first sm:block">
+                    {formatPrice(order.total, order.currency)}
+                  </span>
                   <DownloadInvoiceButton
                     orderId={order.id}
                     size="sm"
@@ -93,10 +101,16 @@ export default function AccountPage() {
                   />
                   <Link
                     href={`/account/orders/${order.id}`}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-secondary hover:text-foreground"
+                    className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-secondary hover:text-foreground sm:flex"
                     aria-label={`View order ${formatOrderNumber(order.id)}`}
                   >
                     <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  <Link
+                    href={`/account/orders/${order.id}`}
+                    className="text-sm font-medium text-secondary hover:underline sm:hidden"
+                  >
+                    View order
                   </Link>
                 </div>
               </div>

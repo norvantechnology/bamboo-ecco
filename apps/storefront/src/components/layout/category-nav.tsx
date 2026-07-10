@@ -160,7 +160,7 @@ export function CategoryMobileSection({
   if (roots.length === 0) return null;
 
   return (
-    <div className="border-t border-border px-4 py-5 max-[480px]:px-2">
+    <div className="border-t border-border px-4 py-3.5 max-[480px]:px-2">
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Shop by category</p>
         <Link href="/shop" onClick={onClose} className="text-xs font-semibold text-secondary hover:underline">
@@ -168,7 +168,7 @@ export function CategoryMobileSection({
         </Link>
       </div>
 
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-2.5 space-y-1.5">
         {roots.map((root) => {
           const hasChildren = (root.children?.length ?? 0) > 0;
           const isOpen = expanded === root._id;
@@ -179,15 +179,16 @@ export function CategoryMobileSection({
                 <Link
                   href={`/category/${root.slug}`}
                   onClick={onClose}
-                  className="min-w-0 flex-1 px-3 py-3.5 font-display text-base font-semibold leading-tight"
+                  className="flex min-w-0 flex-1 items-center gap-2 px-3 py-3 font-display text-[15px] font-semibold leading-tight max-[480px]:px-2.5"
                 >
-                  {root.name}
+                  <span className="min-w-0 flex-1 truncate">{root.name}</span>
+                  {!hasChildren && <ChevronRight className="h-4 w-4 shrink-0 text-muted/50" />}
                 </Link>
                 {hasChildren && (
                   <button
                     type="button"
                     onClick={() => setExpanded(isOpen ? null : root._id)}
-                    className="flex w-12 shrink-0 items-center justify-center border-l border-border text-muted"
+                    className="flex w-11 shrink-0 items-center justify-center border-l border-border text-muted transition-colors hover:text-foreground"
                     aria-expanded={isOpen}
                     aria-label={`${isOpen ? "Collapse" : "Expand"} ${root.name}`}
                   >
@@ -199,12 +200,12 @@ export function CategoryMobileSection({
               </div>
 
               {hasChildren && isOpen && (
-                <ul className="border-t border-border bg-surface/50 px-2 py-2">
+                <ul className="border-t border-border bg-surface/50 px-2 py-1.5">
                   <li>
                     <Link
                       href={`/category/${root.slug}`}
                       onClick={onClose}
-                      className="block rounded-lg px-2 py-2.5 text-sm font-medium text-secondary"
+                      className="block rounded-lg px-2 py-2 text-sm font-medium text-secondary"
                     >
                       All {root.name}
                     </Link>
@@ -214,25 +215,13 @@ export function CategoryMobileSection({
                       <Link
                         href={`/category/${child.slug}`}
                         onClick={onClose}
-                        className="block rounded-lg px-2 py-2.5 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
+                        className="block rounded-lg px-2 py-2 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
                       >
                         {child.name}
                       </Link>
                     </li>
                   ))}
                 </ul>
-              )}
-
-              {!hasChildren && (
-                <div className="border-t border-border px-3 py-2">
-                  <Link
-                    href={`/collections/${root.slug}`}
-                    onClick={onClose}
-                    className="text-xs font-medium text-muted hover:text-secondary"
-                  >
-                    Collection story →
-                  </Link>
-                </div>
               )}
             </li>
           );

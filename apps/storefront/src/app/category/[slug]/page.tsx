@@ -59,38 +59,38 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const jsonLd = breadcrumbJsonLd(crumbs);
 
   return (
-    <div className="container-page py-6 sm:py-10">
-      <nav className="mb-6 flex flex-wrap items-center gap-1 text-sm text-muted" aria-label="Breadcrumb">
+    <div className="container-page py-4 sm:py-10">
+      <nav className="mb-3 flex flex-wrap items-center gap-1 text-xs text-muted sm:mb-6 sm:text-sm" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-foreground">
           Home
         </Link>
         {category.parent && (
           <>
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <Link href={`/category/${category.parent.slug}`} className="hover:text-foreground">
               {category.parent.name}
             </Link>
           </>
         )}
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         <span className="text-foreground">{category.name}</span>
       </nav>
 
-      <div className="mb-8">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl lg:text-4xl">
+      <div className="mb-4 sm:mb-8">
+        <h1 className="font-display text-xl font-semibold sm:text-3xl lg:text-4xl">
           {category.name}
         </h1>
-        <p className="mt-2 text-sm text-muted sm:text-base">
+        <p className="mt-1 text-xs text-muted sm:mt-2 sm:text-base">
           {total} product{total !== 1 ? "s" : ""}
           {children.length > 0 ? " across all sub-categories" : " in this category"}
         </p>
       </div>
 
       {children.length > 0 && (
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="mb-4 flex flex-wrap gap-1.5 sm:mb-8 sm:gap-2">
           <Link
             href={`/category/${slug}`}
-            className="rounded-full border border-primary bg-primary px-4 py-2 text-sm font-medium text-surface"
+            className="rounded-full border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-surface sm:px-4 sm:py-2 sm:text-sm"
           >
             All {category.name}
           </Link>
@@ -98,7 +98,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <Link
               key={child._id}
               href={`/category/${child.slug}`}
-              className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-muted transition-colors hover:border-secondary hover:text-foreground"
+              className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-secondary hover:text-foreground sm:px-4 sm:py-2 sm:text-sm"
             >
               {child.name}
             </Link>
@@ -106,7 +106,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </div>
       )}
 
-      <Suspense fallback={<div className="mb-6 h-12 animate-pulse rounded-lg bg-border" />}>
+      <Suspense fallback={<div className="mb-4 h-10 animate-pulse rounded-lg bg-border sm:mb-6 sm:h-12" />}>
         <CategoryToolbar totalPages={totalPages} />
       </Suspense>
 
@@ -117,7 +117,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       </div>
 
       {products.length === 0 && (
-        <p className="py-16 text-center text-muted">No products in this category yet.</p>
+        <p className="py-10 text-center text-sm text-muted sm:py-16">No products in this category yet.</p>
       )}
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

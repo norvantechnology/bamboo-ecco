@@ -21,13 +21,13 @@ export function FooterColumn({ title, children, defaultOpen = false }: FooterCol
         <div>{children}</div>
       </div>
 
-      {/* Mobile — accordion */}
+      {/* Mobile — accordion (collapsed by default except Shop) */}
       <details className="group lg:hidden" open={defaultOpen}>
-        <summary className="flex cursor-pointer list-none items-center justify-between py-4 marker:content-none [&::-webkit-details-marker]:hidden">
+        <summary className="flex cursor-pointer list-none items-center justify-between py-3 marker:content-none [&::-webkit-details-marker]:hidden sm:py-4">
           {heading}
           <ChevronDown className="h-4 w-4 text-footer-muted transition-transform duration-200 group-open:rotate-180" />
         </summary>
-        <div className="pb-5">{children}</div>
+        <div className="pb-3.5 sm:pb-5">{children}</div>
       </details>
     </div>
   );

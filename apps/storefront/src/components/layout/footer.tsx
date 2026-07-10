@@ -69,7 +69,7 @@ const defaultFooterLinks: FooterLinks = {
 
 function FooterLink({ href, label, external }: { href: string; label: string; external?: boolean }) {
   const className =
-    "inline-flex items-center gap-1 text-sm font-medium text-footer-muted transition-colors hover:text-footer-fg sm:text-base";
+    "inline-flex items-center gap-1 text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg sm:text-base";
 
   if (external) {
     return (
@@ -87,9 +87,15 @@ function FooterLink({ href, label, external }: { href: string; label: string; ex
   );
 }
 
-function FooterLinkList({ links }: { links: { href: string; label: string; external?: boolean }[] }) {
+function FooterLinkList({
+  links,
+  columns = false,
+}: {
+  links: { href: string; label: string; external?: boolean }[];
+  columns?: boolean;
+}) {
   return (
-    <ul className="space-y-2.5">
+    <ul className={columns ? "grid grid-cols-2 gap-x-3 gap-y-2 sm:block sm:space-y-2.5" : "space-y-2 sm:space-y-2.5"}>
       {links.map((link) => (
         <li key={link.href}>
           <FooterLink {...link} />
@@ -117,22 +123,50 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
   const roots = categoryTree.slice(0, 6);
   const links = resolveFooterLinks(footerLinks);
 
-  const exploreLinks = [
-    ...toLinkItems(links.explore),
-    ...exploreAppLinks,
-  ];
+  const exploreLinks = [...toLinkItems(links.explore), ...exploreAppLinks];
   const helpLinks = [...toLinkItems(links.help), ...helpAppLinks];
   const legalLinks = toLinkItems(links.legal);
 
   return (
     <footer className="texture-footer mt-auto border-t border-footer-border bg-footer text-footer-fg">
-      <div className="container-page py-10 sm:py-12 lg:py-16">
-        <div className="grid gap-8 lg:grid-cols-12 lg:gap-10 xl:gap-12">
-          <div className="lg:col-span-4">
-            <Link href="/" className="inline-block font-display text-2xl tracking-tight text-footer-fg sm:text-3xl">
+      <div className="container-page py-6 sm:py-12 lg:py-16">
+        {/* Brand row — compact on mobile */}
+        <div className="flex items-start justify-between gap-4 lg:hidden">
+          <div className="min-w-0 flex-1">
+            <Link href="/" className="inline-block font-display text-xl tracking-tight text-footer-fg">
               {storeName}
             </Link>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-footer-muted sm:text-base">
+            <p className="mt-1.5 line-clamp-2 max-w-xs text-[13px] leading-snug text-footer-muted">
+              {tagline || "Handcrafted bamboo furniture & eco-friendly home decor."}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-icon-btn flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-gold/45 hover:text-gold"
+              aria-label="Instagram"
+            >
+              <InstagramIcon className="h-4 w-4" />
+            </a>
+            <a
+              href="mailto:hello@terraliving.com"
+              className="social-icon-btn flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-wood/45 hover:text-wood"
+              aria-label="Email us"
+            >
+              <Mail className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-0 lg:mt-0 lg:grid-cols-12 lg:gap-10 xl:gap-12">
+          {/* Desktop brand column */}
+          <div className="hidden lg:col-span-4 lg:block">
+            <Link href="/" className="inline-block font-display text-3xl tracking-tight text-footer-fg">
+              {storeName}
+            </Link>
+            <p className="mt-3 max-w-sm text-base leading-relaxed text-footer-muted">
               {tagline || "Handcrafted bamboo furniture & eco-friendly home decor for modern Indian homes."}
             </p>
 
@@ -168,18 +202,18 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
 
           <div className="grid gap-0 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
             <FooterColumn title="Shop" defaultOpen>
-              <FooterLinkList links={shopQuickLinks} />
+              <FooterLinkList links={shopQuickLinks} columns />
               {roots.length > 0 && (
-                <div className="mt-5 border-t border-footer-border/60 pt-4">
-                  <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-footer-fg/70">
+                <div className="mt-3 border-t border-footer-border/60 pt-3 sm:mt-5 sm:pt-4">
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-footer-fg/70 sm:mb-2.5 sm:text-xs">
                     Categories
                   </p>
-                  <ul className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
+                  <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 sm:gap-y-2">
                     {roots.map((cat) => (
                       <li key={cat._id}>
                         <Link
                           href={`/category/${cat.slug}`}
-                          className="text-sm font-medium text-footer-muted transition-colors hover:text-footer-fg"
+                          className="text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg sm:text-sm"
                         >
                           {cat.name}
                         </Link>
@@ -188,30 +222,30 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
                   </ul>
                   <Link
                     href="/shop"
-                    className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-gold transition-colors hover:text-wood hover:underline"
+                    className="mt-3 inline-flex items-center gap-1 text-[13px] font-medium text-gold transition-colors hover:text-wood hover:underline sm:mt-4 sm:text-sm"
                   >
-                    Browse all categories
+                    Browse all
                     <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
               )}
             </FooterColumn>
 
-            <FooterColumn title="Explore" defaultOpen>
-              <FooterLinkList links={exploreLinks} />
+            <FooterColumn title="Explore">
+              <FooterLinkList links={exploreLinks} columns />
             </FooterColumn>
 
-            <FooterColumn title="Help & account" defaultOpen>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
+            <FooterColumn title="Help & account">
+              <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-1">
                 <div>
-                  <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-footer-fg/70">
-                    Customer care
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-footer-fg/70 sm:mb-2.5 sm:text-xs">
+                    Care
                   </p>
                   <FooterLinkList links={helpLinks} />
                 </div>
                 <div>
-                  <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-footer-fg/70">
-                    Your account
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-footer-fg/70 sm:mb-2.5 sm:text-xs">
+                    Account
                   </p>
                   <FooterLinkList links={accountLinks} />
                 </div>
@@ -222,11 +256,11 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
       </div>
 
       <div className="border-t border-footer-border bg-[#141a0f]">
-        <div className="container-page flex flex-col items-center justify-between gap-4 py-5 text-center text-xs text-footer-muted sm:flex-row sm:text-left sm:text-sm">
+        <div className="container-page flex flex-col items-center justify-between gap-2.5 py-3.5 text-center text-[11px] text-footer-muted sm:flex-row sm:gap-4 sm:py-5 sm:text-left sm:text-sm">
           <p>
             © {year} {storeName}. All rights reserved.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-x-5 sm:gap-y-2">
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className="transition-colors hover:text-footer-fg">
                 {link.label}

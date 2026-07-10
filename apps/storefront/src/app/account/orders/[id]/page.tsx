@@ -50,16 +50,16 @@ export default function AccountOrderPage() {
       title={formatOrderNumber(order.id)}
       subtitle={order.createdAt ? `Placed on ${formatOrderDate(order.createdAt)}` : undefined}
     >
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <span className={`rounded-full px-3 py-1 text-sm font-medium capitalize ${getOrderStatusClass(order.status)}`}>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2.5">
+        <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize sm:text-sm ${getOrderStatusClass(order.status)}`}>
           {formatOrderStatus(order.status)}
         </span>
-        <DownloadInvoiceButton orderId={order.id} />
+        <DownloadInvoiceButton orderId={order.id} size="sm" label="Download invoice" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
         <section className="data-card">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">Summary</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted sm:text-sm">Summary</h3>
           <dl className="mt-3 space-y-2 text-sm">
             <div className="data-row">
               <dt>Items</dt>
@@ -74,7 +74,7 @@ export default function AccountOrderPage() {
 
         {address && (
           <section className="data-card">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">Shipping</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted sm:text-sm">Shipping</h3>
             <address className="mt-3 not-italic text-sm leading-relaxed">
               {address.line1}
               <br />
@@ -86,8 +86,8 @@ export default function AccountOrderPage() {
         )}
       </div>
 
-      <section className="data-card mt-4">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">Items</h3>
+      <section className="data-card mt-3 sm:mt-4">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted sm:text-sm">Items</h3>
         <ul className="mt-3 divide-y divide-border">
           {order.items?.map((item) => (
             <li key={item.sku} className="flex items-start justify-between gap-4 py-3 text-sm first:pt-0 last:pb-0">

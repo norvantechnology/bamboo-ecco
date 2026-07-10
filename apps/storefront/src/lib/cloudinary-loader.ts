@@ -35,6 +35,27 @@ function optimizeUnsplash(url: string, width: number): string {
   }
 }
 
+/**
+ * Generic width handling for external CDNs (e.g. Shopify `?width=`).
+ * Ensures the loader varies output by width so Next.js doesn't warn.
+ */
+function applyGenericWidth(url: string, width: number): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.searchParams.has("width")) {
+      parsed.searchParams.set("width", String(width));
+      return parsed.toString();
+    }
+    if (parsed.searchParams.has("w")) {
+      parsed.searchParams.set("w", String(width));
+      return parsed.toString();
+    }
+    return url;
+  } catch {
+    return url;
+  }
+}
+
 export default function cloudinaryLoader({
   src,
   width,
@@ -59,7 +80,7 @@ export default function cloudinaryLoader({
   }
 
   if (src.startsWith("http")) {
-    return src;
+    return applyGenericWidth(src, width);
   }
 
   return src;

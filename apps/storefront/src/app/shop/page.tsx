@@ -13,10 +13,10 @@ export default async function ShopPage() {
   const products = await getShopProducts().catch(() => []);
 
   return (
-    <div className="container-page py-8 sm:py-14">
+    <div className="container-page py-5 sm:py-14">
       <h1 className="font-display text-2xl text-primary sm:text-4xl">Shop Bamboo Furniture &amp; Home Decor</h1>
-      <p className="mt-2 text-sm text-muted sm:text-base">{products.length} handcrafted eco-friendly pieces for Indian homes</p>
-      <div className="mt-8 sm:mt-10 product-grid">
+      <p className="mt-1 text-sm text-muted sm:mt-2 sm:text-base">{products.length} handcrafted eco-friendly pieces for Indian homes</p>
+      <div className="mt-5 product-grid sm:mt-10">
         {products.map((p) => (
           <ProductCard key={p._id} product={p} />
         ))}

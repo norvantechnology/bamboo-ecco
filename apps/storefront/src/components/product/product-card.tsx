@@ -155,7 +155,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               e.preventDefault();
               handleWishlistToggle();
             }}
-            className="absolute right-2 top-2 z-[2] flex h-10 w-10 items-center justify-center rounded-full bg-surface/95 text-muted shadow-warm backdrop-blur-sm transition-all duration-300 ease-out hover:scale-110 hover:text-secondary active:scale-95 sm:right-3 sm:top-3 sm:h-11 sm:w-11"
+            className="absolute right-1.5 top-1.5 z-[2] flex h-8 w-8 items-center justify-center rounded-full bg-surface/95 text-muted shadow-warm backdrop-blur-sm transition-all duration-300 ease-out hover:scale-110 hover:text-secondary active:scale-95 sm:right-3 sm:top-3 sm:h-11 sm:w-11"
             aria-label="Add to wishlist"
           >
             <Heart
@@ -168,32 +168,30 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </button>
         </Link>
 
-        <div className="flex flex-1 flex-col gap-1 p-3 sm:gap-1.5 sm:p-4">
-          <div className="flex min-h-5 items-center sm:min-h-[1.375rem]">
-            {product.ratingSummary.count > 0 ? (
-              <div className="flex items-center gap-1 text-xs font-medium text-muted sm:text-sm">
-                <Star className="h-3.5 w-3.5 fill-gold text-gold" />
-                <span className="text-foreground">{product.ratingSummary.avg.toFixed(1)}</span>
-                <span className="text-muted">({product.ratingSummary.count})</span>
-              </div>
-            ) : null}
-          </div>
+        <div className="flex flex-1 flex-col gap-0.5 p-2 sm:gap-1.5 sm:p-4">
+          {product.ratingSummary.count > 0 ? (
+            <div className="flex items-center gap-0.5 text-[11px] font-medium text-muted sm:gap-1 sm:text-sm">
+              <Star className="h-3 w-3 fill-gold text-gold sm:h-3.5 sm:w-3.5" />
+              <span className="text-foreground">{product.ratingSummary.avg.toFixed(1)}</span>
+              <span className="text-muted">({product.ratingSummary.count})</span>
+            </div>
+          ) : null}
 
-          <Link href={`/product/${product.slug}`} className="block min-h-[2.75rem] sm:min-h-0">
-            <h3 className="line-clamp-2 font-display text-[0.95rem] font-semibold leading-snug transition-colors sm:text-base lg:group-hover:text-wood">
+          <Link href={`/product/${product.slug}`} className="block">
+            <h3 className="line-clamp-2 font-display text-[0.8125rem] font-semibold leading-snug transition-colors sm:text-base lg:group-hover:text-wood">
               {product.title}
             </h3>
           </Link>
 
           {subtitle && (
-            <p className="line-clamp-2 break-words text-xs font-medium leading-snug text-muted sm:text-sm">
+            <p className="line-clamp-1 break-words text-[11px] font-medium leading-snug text-muted sm:line-clamp-2 sm:text-sm">
               {subtitle}
             </p>
           )}
 
-          <div className="mt-auto flex flex-col gap-2.5 pt-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:pt-3">
+          <div className="mt-auto flex items-center justify-between gap-1.5 pt-1.5 sm:gap-3 sm:pt-3">
             {variant && (
-              <span className="font-numeric text-base font-semibold sm:text-lg">
+              <span className="font-numeric text-sm font-semibold leading-none sm:text-lg">
                 {formatPrice(variant.price, variant.currency)}
               </span>
             )}
@@ -202,22 +200,22 @@ export function ProductCard({ product, className }: ProductCardProps) {
               disabled={outOfStock}
               onClick={handleQuickAdd}
               className={cn(
-                "inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] sm:h-10 sm:w-auto sm:rounded-full sm:px-4",
+                "inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-lg px-2.5 text-[11px] font-semibold transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] sm:h-10 sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm",
                 added
                   ? "bg-secondary text-white"
-                  : "border border-border bg-background text-foreground sm:border-border sm:bg-transparent lg:opacity-0 lg:group-hover:opacity-100 lg:hover:border-secondary lg:hover:bg-secondary lg:hover:text-white",
+                  : "border border-border bg-background text-foreground sm:bg-transparent lg:opacity-0 lg:group-hover:opacity-100 lg:hover:border-secondary lg:hover:bg-secondary lg:hover:text-white",
                 outOfStock && "cursor-not-allowed opacity-40",
               )}
             >
               {added ? (
                 <>
-                  <Check className="h-4 w-4" />
-                  Added
+                  <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Added</span>
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="h-4 w-4" />
-                  <span className="sm:hidden">Add to bag</span>
+                  <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span className="sm:hidden">Add</span>
                   <span className="hidden sm:inline">Quick add</span>
                 </>
               )}

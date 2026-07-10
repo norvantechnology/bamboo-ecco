@@ -26,6 +26,7 @@ export function AnnouncementBar({ config }: AnnouncementBarProps) {
     setVisible(false);
   }
 
+  const isMarquee = config.animation === "marquee";
   const extraAnim =
     config.animation === "pulse"
       ? "announcement-pulse"
@@ -34,44 +35,61 @@ export function AnnouncementBar({ config }: AnnouncementBarProps) {
         : "";
 
   const htmlClass =
-    "text-sm font-medium [&_a]:underline [&_a]:text-inherit [&_strong]:font-bold";
+    "text-[11px] font-medium leading-none sm:text-sm sm:leading-snug [&_a]:underline [&_a]:text-inherit [&_strong]:font-bold";
 
-  const marqueeItems = (
-    <>
-      <div className={`announcement-marquee-item ${htmlClass}`} dangerouslySetInnerHTML={{ __html: config.html }} />
-      <div
-        className={`announcement-marquee-item ${htmlClass}`}
-        aria-hidden
-        dangerouslySetInnerHTML={{ __html: config.html }}
-      />
-    </>
+  const marqueeMarkup = (
+    <div className="announcement-marquee-track min-w-0 flex-1 overflow-hidden">
+      <div className="announcement-marquee-inner">
+        <div className={`announcement-marquee-item ${htmlClass}`} dangerouslySetInnerHTML={{ __html: config.html }} />
+        <div
+          className={`announcement-marquee-item ${htmlClass}`}
+          aria-hidden
+          dangerouslySetInnerHTML={{ __html: config.html }}
+        />
+      </div>
+    </div>
   );
 
   return (
     <div
-      className={`announcement-bar announcement-marquee relative overflow-hidden ${extraAnim}`}
+      className={`announcement-bar relative overflow-hidden ${extraAnim}`}
       style={{ backgroundColor: config.backgroundColor, color: config.textColor }}
     >
+      {/* Mobile: always a small single-line scrolling marquee */}
       <div
-        className={`container-page flex min-h-9 items-center gap-3 py-1.5 sm:min-h-11 sm:py-2.5 ${
-          config.dismissible ? "pr-9 sm:pr-10" : ""
+        className={`announcement-marquee container-page flex min-h-7 items-center py-1 sm:hidden ${
+          config.dismissible ? "pr-8" : ""
         }`}
       >
-        <div className="announcement-marquee-track min-w-0 flex-1 overflow-hidden">
-          <div className="announcement-marquee-inner">{marqueeItems}</div>
-        </div>
+        {marqueeMarkup}
+      </div>
 
-        {config.dismissible && (
-          <button
-            type="button"
-            onClick={dismiss}
-            className="absolute right-3 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full hover:bg-white/15"
-            aria-label="Dismiss announcement"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      {/* Desktop: honors the configured animation */}
+      <div
+        className={`announcement-marquee container-page hidden min-h-11 items-center gap-3 py-2.5 sm:flex ${
+          config.dismissible ? "pr-10" : ""
+        }`}
+      >
+        {isMarquee ? (
+          marqueeMarkup
+        ) : (
+          <div
+            className={`min-w-0 flex-1 text-center ${htmlClass} line-clamp-1`}
+            dangerouslySetInnerHTML={{ __html: config.html }}
+          />
         )}
       </div>
+
+      {config.dismissible && (
+        <button
+          type="button"
+          onClick={dismiss}
+          className="absolute right-2 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full hover:bg-white/15 sm:right-3 sm:h-7 sm:w-7"
+          aria-label="Dismiss announcement"
+        >
+          <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </button>
+      )}
     </div>
   );
 }

@@ -13,10 +13,10 @@ export default async function NewArrivalsPage() {
   const products = await getNewArrivals().catch(() => []);
 
   return (
-    <div className="container-page py-10 sm:py-14">
-      <h1 className="font-display text-3xl text-primary sm:text-4xl">New Arrivals</h1>
-      <p className="mt-2 text-muted">Fresh pieces for modern homes</p>
-      <div className="mt-8 sm:mt-10 product-grid">
+    <div className="container-page py-5 sm:py-14">
+      <h1 className="font-display text-2xl text-primary sm:text-4xl">New Arrivals</h1>
+      <p className="mt-1 text-sm text-muted sm:mt-2 sm:text-base">Fresh pieces for modern homes</p>
+      <div className="mt-5 product-grid sm:mt-10">
         {products.map((p) => (
           <ProductCard key={p._id} product={p} />
         ))}

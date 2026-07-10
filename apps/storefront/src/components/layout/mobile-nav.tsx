@@ -90,7 +90,7 @@ export function MobileNav({
       >
         <nav role="dialog" aria-modal="true" aria-label="Main menu" className="flex h-full flex-col">
         {/* Header */}
-        <div className="relative overflow-hidden bg-footer px-5 pb-6 pt-5 text-footer-fg">
+        <div className="relative overflow-hidden bg-footer px-4 pb-4 pt-4 text-footer-fg sm:px-5 sm:pb-6 sm:pt-5">
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.07]"
             style={{
@@ -112,15 +112,15 @@ export function MobileNav({
             <X className="h-5 w-5" />
           </button>
           <Link href="/" onClick={onClose} className="relative block pr-12">
-            <p className="font-display text-2xl font-semibold tracking-tight">{storeName}</p>
-            <p className="mt-1.5 line-clamp-2 text-sm font-medium leading-snug text-footer-muted">
+            <p className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{storeName}</p>
+            <p className="mt-1 line-clamp-2 text-[13px] font-medium leading-snug text-footer-muted sm:mt-1.5 sm:text-sm">
               {tagline || "Nature · Craftsmanship · Timeless Design"}
             </p>
           </Link>
           <Link
             href="/shop"
             onClick={onClose}
-            className="relative mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform active:scale-[0.98]"
+            className="relative mt-3.5 flex w-full items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white shadow-lg transition-transform active:scale-[0.98] sm:mt-5 sm:py-3.5"
           >
             <Package className="h-4 w-4" />
             Shop Collection
@@ -132,16 +132,16 @@ export function MobileNav({
           <Link
             href="/search"
             onClick={onClose}
-            className="mx-4 mt-4 flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3.5 text-muted transition-colors hover:border-secondary/40 hover:bg-surface max-[480px]:mx-3 max-[480px]:px-3 max-[480px]:py-3"
+            className="mx-4 mt-3 flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3 text-muted transition-colors hover:border-secondary/40 hover:bg-surface max-[480px]:mx-3 max-[480px]:px-3 max-[480px]:py-2.5"
           >
             <Search className="h-5 w-5 shrink-0 text-secondary" />
             <span className="text-base">Search products…</span>
           </Link>
 
           {/* Primary links */}
-          <div className="px-3 py-4 max-[480px]:px-2">
-            <p className="px-2 pb-2 text-xs font-bold uppercase tracking-[0.2em] text-muted max-[480px]:px-1.5">Menu</p>
-            <ul className="space-y-1">
+          <div className="px-3 py-3 max-[480px]:px-2">
+            <p className="px-2 pb-1.5 text-xs font-bold uppercase tracking-[0.2em] text-muted max-[480px]:px-1.5">Menu</p>
+            <ul className="space-y-0.5">
               {primaryNav.map((link, i) => {
                 const Icon = link.icon;
                 const active = isActive(link.href);
@@ -158,7 +158,7 @@ export function MobileNav({
                       href={link.href}
                       onClick={onClose}
                       className={cn(
-                        "group flex items-center gap-3 rounded-xl px-3 py-3.5 transition-colors max-[480px]:gap-2.5 max-[480px]:px-2 max-[480px]:py-3",
+                        "group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors max-[480px]:gap-2.5 max-[480px]:px-2 max-[480px]:py-2",
                         active
                           ? "bg-secondary/10 text-foreground"
                           : "hover:bg-background active:bg-background",
@@ -166,7 +166,7 @@ export function MobileNav({
                     >
                       <span
                         className={cn(
-                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                          "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors",
                           active
                             ? "border-secondary/30 bg-secondary/15 text-secondary"
                             : "border-border bg-surface text-muted group-hover:border-secondary/20 group-hover:text-secondary",
@@ -175,7 +175,7 @@ export function MobileNav({
                         <Icon className="h-[18px] w-[18px]" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block font-display text-lg font-semibold leading-tight">{link.label}</span>
+                        <span className="block font-display text-base font-semibold leading-tight sm:text-lg">{link.label}</span>
                         <span className="block text-xs font-medium text-muted">{link.description}</span>
                       </span>
                       <ChevronRight
@@ -194,13 +194,13 @@ export function MobileNav({
           <CategoryMobileSection categories={categoryTree} onClose={onClose} />
 
           {/* Quick actions */}
-          <div className="mt-auto border-t border-border bg-background/60 px-4 py-5 max-[480px]:px-3">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-muted">Quick links</p>
+          <div className="mt-auto border-t border-border bg-background/60 px-4 py-3.5 max-[480px]:px-3">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-muted">Quick links</p>
             <div className="grid grid-cols-2 gap-2">
               <Link
                 href="/account"
                 onClick={onClose}
-                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3.5 text-sm font-medium transition-colors hover:border-secondary/40"
+                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3 text-sm font-medium transition-colors hover:border-secondary/40"
               >
                 <User className="h-4 w-4 text-secondary" />
                 Account
@@ -208,7 +208,7 @@ export function MobileNav({
               <Link
                 href="/cart"
                 onClick={onClose}
-                className="relative flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3.5 text-sm font-medium transition-colors hover:border-secondary/40"
+                className="relative flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3 text-sm font-medium transition-colors hover:border-secondary/40"
               >
                 <ShoppingBag className="h-4 w-4 text-secondary" />
                 Cart
@@ -221,7 +221,7 @@ export function MobileNav({
               <Link
                 href="/account/wishlist"
                 onClick={onClose}
-                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3.5 text-sm font-medium transition-colors hover:border-secondary/40"
+                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3 text-sm font-medium transition-colors hover:border-secondary/40"
               >
                 <Heart className="h-4 w-4 text-secondary" />
                 Wishlist
@@ -229,7 +229,7 @@ export function MobileNav({
               <Link
                 href="/track-order"
                 onClick={onClose}
-                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3.5 text-sm font-medium transition-colors hover:border-secondary/40"
+                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3 text-sm font-medium transition-colors hover:border-secondary/40"
               >
                 <Package className="h-4 w-4 text-secondary" />
                 Track order
@@ -237,7 +237,7 @@ export function MobileNav({
               <Link
                 href="/pages/contact"
                 onClick={onClose}
-                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3.5 text-sm font-medium transition-colors hover:border-secondary/40"
+                className="col-span-2 flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-3 text-sm font-medium transition-colors hover:border-secondary/40"
               >
                 <Mail className="h-4 w-4 text-secondary" />
                 Contact

@@ -164,17 +164,17 @@ export function CollectionStory({ data }: Props) {
 
       {/* Products */}
       {products.length > 0 && (
-        <section className="container-page py-16 sm:py-24">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        <section className="container-page py-8 sm:py-24">
+          <div className="flex flex-wrap items-end justify-between gap-3 sm:gap-4">
             <div>
-              <h2 className="font-display text-3xl sm:text-4xl">From the Collection</h2>
-              <p className="mt-2 text-muted">Handpicked pieces from {category.name}</p>
+              <h2 className="font-display text-2xl sm:text-4xl">From the Collection</h2>
+              <p className="mt-1 text-sm text-muted sm:mt-2">Handpicked pieces from {category.name}</p>
             </div>
             <Link href={`/category/${category.slug}`}>
               <Button variant="outline">View all</Button>
             </Link>
           </div>
-          <div className="mt-10 product-grid">
+          <div className="mt-5 product-grid sm:mt-10">
             {products.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}

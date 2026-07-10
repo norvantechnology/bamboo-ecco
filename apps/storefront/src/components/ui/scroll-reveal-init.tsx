@@ -3,32 +3,85 @@
 import { useEffect } from "react";
 import { prefersReducedMotion } from "@/lib/motion";
 
-/** Observes [data-scroll-reveal] elements site-wide — once-only fade-up. */
+const SELECTOR = "[data-scroll-reveal]";
+const VISIBLE = "scroll-reveal--visible";
+
+function reveal(el: Element) {
+  el.classList.add(VISIBLE);
+}
+
+/**
+ * Observes [data-scroll-reveal] site-wide.
+ * Handles dynamically mounted homepage sections (lazy-loaded after first paint).
+ */
 export function ScrollRevealInit() {
   useEffect(() => {
-    if (prefersReducedMotion()) {
-      document.querySelectorAll("[data-scroll-reveal]").forEach((el) => {
-        el.classList.add("scroll-reveal--visible");
-      });
+    const reduced = prefersReducedMotion();
+
+    const revealAll = () => {
+      document.querySelectorAll(SELECTOR).forEach(reveal);
+    };
+
+    if (reduced) {
+      revealAll();
       return;
     }
-
-    const nodes = document.querySelectorAll<HTMLElement>("[data-scroll-reveal]:not(.scroll-reveal--visible)");
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          entry.target.classList.add("scroll-reveal--visible");
+          reveal(entry.target);
           observer.unobserve(entry.target);
         });
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
+      // Generous margin so titles near the fold still trigger on mobile
+      { rootMargin: "0px 0px 12% 0px", threshold: 0.01 },
     );
 
-    nodes.forEach((node) => observer.observe(node));
+    const watch = (root: ParentNode = document) => {
+      root.querySelectorAll<HTMLElement>(`${SELECTOR}:not(.${VISIBLE})`).forEach((node) => {
+        // Already in (or near) viewport — show immediately
+        const rect = node.getBoundingClientRect();
+        const vh = window.innerHeight || 0;
+        if (rect.top < vh * 1.15 && rect.bottom > -40) {
+          reveal(node);
+          return;
+        }
+        observer.observe(node);
+      });
+    };
 
-    return () => observer.disconnect();
+    watch();
+
+    // Homepage sections mount via dynamic import after this effect — catch them
+    const mutation = new MutationObserver((records) => {
+      for (const record of records) {
+        record.addedNodes.forEach((node) => {
+          if (!(node instanceof HTMLElement)) return;
+          if (node.matches?.(SELECTOR) || node.querySelector?.(SELECTOR)) {
+            watch(node);
+          }
+        });
+      }
+    });
+
+    mutation.observe(document.body, { childList: true, subtree: true });
+
+    // Safety net: never leave titles invisible if observer missed them
+    const safety = window.setTimeout(revealAll, 2500);
+
+    // Re-check after fonts/layout settle (common mobile race)
+    const onLoad = () => watch();
+    window.addEventListener("load", onLoad);
+    requestAnimationFrame(() => watch());
+
+    return () => {
+      observer.disconnect();
+      mutation.disconnect();
+      window.clearTimeout(safety);
+      window.removeEventListener("load", onLoad);
+    };
   }, []);
 
   return null;

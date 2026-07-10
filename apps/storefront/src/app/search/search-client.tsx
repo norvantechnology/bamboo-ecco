@@ -113,8 +113,8 @@ function SearchResults() {
 
 export default function SearchPage() {
   return (
-    <div className="container-page py-8 sm:py-12">
-      <h1 className="font-display text-3xl sm:text-4xl">Search</h1>
+    <div className="container-page py-5 sm:py-12">
+      <h1 className="font-display text-2xl sm:text-4xl">Search</h1>
       <Suspense fallback={<PageLoader label="Loading search…" />}>
         <SearchResults />
       </Suspense>
