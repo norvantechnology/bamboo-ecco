@@ -1,0 +1,24 @@
+{
+  "name": "ecoo",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "setup": "node scripts/sync-env.mjs",
+    "setup:env": "node scripts/sync-env.mjs",
+    "db:up": "docker start ecoo-mongodb ecoo-redis 2>/dev/null || docker compose up -d",
+    "migrate": "pnpm setup:env && pnpm db:up",
+    "dev:api": "turbo dev --filter=@ecoo/api",
+    "dev:storefront": "turbo dev --filter=@ecoo/storefront",
+    "dev:admin": "turbo dev --filter=@ecoo/admin"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

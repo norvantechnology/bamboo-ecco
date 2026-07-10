@@ -1,0 +1,449 @@
+import { useEffect, useState } from "react";
+import { Pencil, Plus, Trash2, Star, Sparkles } from "lucide-react";
+import {
+  getAdminProducts,
+  getAdminCategories,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  formatInr,
+  type AdminProduct,
+  type AdminCategory,
+  type ProductPayload,
+} from "../lib/api";
+import { PageLoader } from "../components/Loading";
+import { ImageUpload } from "../components/ImageUpload";
+import { MotionFade } from "../components/ui/motion";
+
+const emptyForm = (): ProductPayload & { id?: string } => ({
+  categoryId: "",
+  slug: "",
+  title: "",
+  description: "",
+  status: "active",
+  isFeatured: false,
+  isNewArrival: false,
+  images: [],
+  variants: [{ sku: "", price: 0, currency: "INR", stockQty: 0 }],
+});
+
+export function ProductsPage() {
+  const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm());
+  const [saving, setSaving] = useState(false);
+
+  function load() {
+    setLoading(true);
+    Promise.all([getAdminProducts(), getAdminCategories()])
+      .then(([p, c]) => {
+        setProducts(p);
+        setCategories(c);
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  function openCreate() {
+    setForm({ ...emptyForm(), categoryId: categories[0]?._id ?? "" });
+    setFormOpen(true);
+  }
+
+  function openEdit(product: AdminProduct) {
+    const variant = product.variants[0];
+    setForm({
+      id: product._id,
+      categoryId: product.categoryId ?? categories[0]?._id ?? "",
+      slug: product.slug,
+      title: product.title,
+      description: product.description,
+      status: product.status,
+      isFeatured: product.isFeatured ?? false,
+      isNewArrival: product.isNewArrival ?? false,
+      images: product.images ?? [],
+      variants: variant
+        ? [{ sku: variant.sku, price: variant.price, currency: variant.currency, stockQty: variant.stockQty }]
+        : [{ sku: "", price: 0, currency: "INR", stockQty: 0 }],
+    });
+    setFormOpen(true);
+  }
+
+  async function toggleFlag(product: AdminProduct, flag: "isFeatured" | "isNewArrival") {
+    try {
+      await updateProduct(product._id, {
+        categoryId: product.categoryId ?? categories[0]?._id ?? "",
+        slug: product.slug,
+        title: product.title,
+        status: product.status,
+        isFeatured: flag === "isFeatured" ? !product.isFeatured : product.isFeatured,
+        isNewArrival: flag === "isNewArrival" ? !product.isNewArrival : product.isNewArrival,
+        images: product.images,
+        variants: product.variants,
+      });
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed");
+    }
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      if (form.id) {
+        await updateProduct(form.id, form);
+      } else {
+        await createProduct(form);
+      }
+      setFormOpen(false);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this product?")) return;
+    try {
+      await deleteProduct(id);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed");
+    }
+  }
+
+  if (loading) return <PageLoader label="Loading products…" />;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold sm:text-2xl">Products</h1>
+          <p className="text-sm text-muted">{products.length} products</p>
+        </div>
+        <button
+          type="button"
+          onClick={openCreate}
+          className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface"
+        >
+          <Plus className="h-4 w-4" />
+          Add product
+        </button>
+      </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
+      )}
+
+      {formOpen && (
+        <MotionFade>
+          <form onSubmit={handleSave} className="rounded-xl border border-border bg-surface p-6">
+          <h2 className="font-semibold">{form.id ? "Edit product" : "New product"}</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm">
+              <span className="text-muted">Title</span>
+              <input
+                required
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-muted">Slug</span>
+              <input
+                required
+                value={form.slug}
+                onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-muted">Category</span>
+              <select
+                required
+                value={form.categoryId}
+                onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+              >
+                <option value="" disabled>
+                  Select category
+                </option>
+                {categories
+                  .filter((c) => !c.parentId)
+                  .map((root) => {
+                    const children = categories.filter((c) => c.parentId === root._id);
+                    if (children.length === 0) {
+                      return (
+                        <option key={root._id} value={root._id}>
+                          {root.name}
+                        </option>
+                      );
+                    }
+                    return (
+                      <optgroup key={root._id} label={root.name}>
+                        <option value={root._id}>{root.name} (all)</option>
+                        {children.map((child) => (
+                          <option key={child._id} value={child._id}>
+                            {child.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+              </select>
+            </label>
+            <label className="block text-sm">
+              <span className="text-muted">Status</span>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+              >
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+            </label>
+            <label className="block text-sm">
+              <span className="text-muted">SKU</span>
+              <input
+                required
+                value={form.variants[0]?.sku ?? ""}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    variants: [{ ...form.variants[0], sku: e.target.value }],
+                  })
+                }
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-muted">Price (INR)</span>
+              <input
+                required
+                type="number"
+                min={0}
+                value={form.variants[0]?.price ?? 0}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    variants: [{ ...form.variants[0], price: Number(e.target.value) }],
+                  })
+                }
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-muted">Stock</span>
+              <input
+                required
+                type="number"
+                min={0}
+                value={form.variants[0]?.stockQty ?? 0}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    variants: [{ ...form.variants[0], stockQty: Number(e.target.value) }],
+                  })
+                }
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+              />
+            </label>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={form.isFeatured ?? false}
+                onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
+              />
+              <Star className="h-4 w-4 text-amber-500" />
+              Best Seller (homepage)
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={form.isNewArrival ?? false}
+                onChange={(e) => setForm({ ...form, isNewArrival: e.target.checked })}
+              />
+              <Sparkles className="h-4 w-4 text-secondary" />
+              New Arrival (homepage)
+            </label>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <p className="text-sm text-muted">Product image</p>
+            <ImageUpload
+              folder="products"
+              alt={form.title || "Product"}
+              onUploaded={(r) => {
+                const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                setForm({
+                  ...form,
+                  images: [
+                    { url: r.url, alt: form.title || "Product", sortOrder: 0, type: "product" },
+                    ...lifestyle,
+                  ],
+                });
+              }}
+            />
+            <input
+              placeholder="Image URL"
+              value={form.images?.find((i) => i.type !== "lifestyle")?.url ?? ""}
+              onChange={(e) => {
+                const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                setForm({
+                  ...form,
+                  images: [
+                    { url: e.target.value, alt: form.title || "Product", sortOrder: 0, type: "product" },
+                    ...lifestyle,
+                  ],
+                });
+              }}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <p className="text-sm text-muted">Lifestyle image (optional — shows in “In Real Homes” on homepage)</p>
+            <ImageUpload
+              folder="products/lifestyle"
+              alt={`${form.title || "Product"} in a home`}
+              label="Upload lifestyle photo"
+              onUploaded={(r) => {
+                const product = form.images?.find((i) => i.type !== "lifestyle");
+                const images = product ? [product] : [];
+                images.push({
+                  url: r.url,
+                  alt: `${form.title || "Product"} in a home`,
+                  sortOrder: 1,
+                  type: "lifestyle",
+                });
+                setForm({ ...form, images });
+              }}
+            />
+            <input
+              placeholder="Lifestyle image URL"
+              value={form.images?.find((i) => i.type === "lifestyle")?.url ?? ""}
+              onChange={(e) => {
+                const product = form.images?.find((i) => i.type !== "lifestyle");
+                const images = product ? [product] : [];
+                if (e.target.value) {
+                  images.push({
+                    url: e.target.value,
+                    alt: `${form.title || "Product"} in a home`,
+                    sortOrder: 1,
+                    type: "lifestyle",
+                  });
+                }
+                setForm({ ...form, images });
+              }}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="mt-4 flex gap-3">
+            <button
+              type="submit"
+              disabled={saving}
+              className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface disabled:opacity-50"
+            >
+              {saving ? "Saving…" : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormOpen(false)}
+              className="rounded-lg border border-border px-4 py-2 text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+        </MotionFade>
+      )}
+
+      <div className="overflow-x-auto rounded-xl border border-border bg-surface">
+        <table className="w-full min-w-[720px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-muted">
+              <th className="px-4 py-3 font-medium">Title</th>
+              <th className="px-4 py-3 font-medium">Flags</th>
+              <th className="px-4 py-3 font-medium">SKU</th>
+              <th className="px-4 py-3 font-medium">Price</th>
+              <th className="px-4 py-3 font-medium">Stock</th>
+              <th className="px-4 py-3 font-medium">Status</th>
+              <th className="px-4 py-3 font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => {
+              const variant = product.variants[0];
+              return (
+                <tr key={product._id} className="border-b border-border last:border-0">
+                  <td className="px-4 py-3 font-medium">{product.title}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        title="Toggle Best Seller"
+                        onClick={() => toggleFlag(product, "isFeatured")}
+                        className={`rounded p-1 ${product.isFeatured ? "bg-amber-50 text-amber-700" : "text-muted hover:bg-background"}`}
+                      >
+                        <Star className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Toggle New Arrival"
+                        onClick={() => toggleFlag(product, "isNewArrival")}
+                        className={`rounded p-1 ${product.isNewArrival ? "bg-green-50 text-green-700" : "text-muted hover:bg-background"}`}
+                      >
+                        <Sparkles className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted">{variant?.sku ?? "—"}</td>
+                  <td className="px-4 py-3">{variant ? formatInr(variant.price) : "—"}</td>
+                  <td className="px-4 py-3">{variant?.stockQty ?? 0}</td>
+                  <td className="px-4 py-3 capitalize">{product.status}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(product)}
+                        className="rounded p-1 hover:bg-background"
+                        aria-label="Edit"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(product._id)}
+                        className="rounded p-1 text-red-600 hover:bg-red-50"
+                        aria-label="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,110 @@
+import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
+import { ProductsService } from './products.service';
+import { CategoriesService } from '../categories/categories.service';
+import { CurrentTenantId } from '../common/decorators/tenant.decorator';
+
+@Controller('products')
+export class ProductsController {
+  constructor(
+    private productsService: ProductsService,
+    private categoriesService: CategoriesService,
+  ) {}
+
+  @Get('search')
+  search(
+    @CurrentTenantId() tenantId: string,
+    @Query('q') q?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.productsService.search(
+      tenantId,
+      q ?? '',
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 12,
+    );
+  }
+
+  @Get('shop')
+  shop(@CurrentTenantId() tenantId: string) {
+    return this.productsService.findAllActive(tenantId);
+  }
+
+  @Get('new-arrivals')
+  newArrivals(@CurrentTenantId() tenantId: string, @Query('limit') limit?: string) {
+    return this.productsService.findNewArrivals(tenantId, limit ? parseInt(limit, 10) : 8);
+  }
+
+  @Get('featured')
+  featured(@CurrentTenantId() tenantId: string, @Query('limit') limit?: string) {
+    return this.productsService.findFeatured(tenantId, limit ? parseInt(limit, 10) : 8);
+  }
+
+  @Get('category-slug/:slug')
+  async byCategorySlug(
+    @CurrentTenantId() tenantId: string,
+    @Param('slug') slug: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('sort') sort?: string,
+  ) {
+    const category = await this.categoriesService.findBySlug(tenantId, slug);
+    if (!category) throw new NotFoundException('Category not found');
+    const validSort = ['newest', 'price-asc', 'price-desc', 'rating'] as const;
+    const sortKey = validSort.includes(sort as (typeof validSort)[number])
+      ? (sort as (typeof validSort)[number])
+      : 'newest';
+    const scopeIds = await this.categoriesService.getScopeCategoryIds(
+      tenantId,
+      category._id.toString(),
+    );
+    return this.productsService.findByCategoryIds(
+      tenantId,
+      scopeIds,
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 12,
+      sortKey,
+    );
+  }
+
+  @Get('category/:categoryId')
+  byCategory(
+    @CurrentTenantId() tenantId: string,
+    @Param('categoryId') categoryId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.productsService.findByCategory(
+      tenantId,
+      categoryId,
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 12,
+    );
+  }
+
+  @Get(':slug/reviews')
+  async reviews(@CurrentTenantId() tenantId: string, @Param('slug') slug: string) {
+    const product = await this.productsService.findBySlug(tenantId, slug);
+    if (!product) throw new NotFoundException();
+    return this.productsService.findReviews(tenantId, product._id.toString());
+  }
+
+  @Get(':slug/related')
+  async related(
+    @CurrentTenantId() tenantId: string,
+    @Param('slug') slug: string,
+  ) {
+    const product = await this.productsService.findBySlug(tenantId, slug);
+    if (!product) throw new NotFoundException();
+    return this.productsService.findRelated(
+      tenantId,
+      product.categoryId.toString(),
+      slug,
+    );
+  }
+
+  @Get(':slug')
+  findOne(@CurrentTenantId() tenantId: string, @Param('slug') slug: string) {
+    return this.productsService.findBySlug(tenantId, slug);
+  }
+}
