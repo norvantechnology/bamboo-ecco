@@ -69,6 +69,7 @@ export interface AdminCategory {
   slug: string;
   imageUrl?: string;
   parentId?: string | null;
+  meta?: { title?: string; description?: string };
   children?: AdminCategory[];
 }
 
@@ -219,6 +220,7 @@ export interface CategoryPayload {
   name: string;
   imageUrl?: string;
   parentId?: string | null;
+  meta?: { title?: string; description?: string };
 }
 
 export function createCategory(data: CategoryPayload) {

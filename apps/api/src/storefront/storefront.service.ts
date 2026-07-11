@@ -388,6 +388,10 @@ export class StorefrontService {
         name: category.name,
         imageUrl: category.imageUrl,
         parentId: category.parentId ? category.parentId.toString() : null,
+        meta: {
+          title: category.meta?.title ?? '',
+          description: category.meta?.description ?? '',
+        },
         story: category.story,
         children: children.map((c) => ({
           _id: c._id.toString(),

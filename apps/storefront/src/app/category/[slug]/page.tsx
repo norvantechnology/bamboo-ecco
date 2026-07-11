@@ -21,9 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = await getCategory(slug).catch(() => null);
   if (!category) return { title: "Category" };
   return buildPageMetadata({
-    title: category.name,
-    description: `Shop ${category.name} — handcrafted bamboo home decor`,
+    title: category.meta?.title || category.name,
+    description:
+      category.meta?.description || `Shop ${category.name} — handcrafted bamboo home decor`,
     path: `/category/${slug}`,
+    image: category.imageUrl,
+    imageAlt: category.name,
   });
 }
 

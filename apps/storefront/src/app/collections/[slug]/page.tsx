@@ -17,8 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await getCollection(slug).catch(() => null);
   if (!data) return { title: "Collection" };
   return buildPageMetadata({
-    title: data.category.story?.headline || data.category.name,
+    title: data.category.meta?.title || data.category.story?.headline || data.category.name,
     description:
+      data.category.meta?.description ||
       data.category.story?.subheading ||
       `Explore the ${data.category.name} collection — handcrafted bamboo for modern living.`,
     path: `/collections/${slug}`,

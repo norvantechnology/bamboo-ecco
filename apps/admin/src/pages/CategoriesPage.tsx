@@ -9,6 +9,7 @@ import {
   type CategoryPayload,
 } from "../lib/api";
 import { PageLoader } from "../components/Loading";
+import { ImageUpload } from "../components/ImageUpload";
 import { MotionFade } from "../components/ui/motion";
 
 function slugify(name: string) {
@@ -29,6 +30,7 @@ export function CategoriesPage() {
     name: "",
     imageUrl: "",
     parentId: null,
+    meta: { title: "", description: "" },
   });
   const [saving, setSaving] = useState(false);
 
@@ -56,7 +58,13 @@ export function CategoriesPage() {
   const parentOptions = roots.filter((c) => c._id !== form.id);
 
   function openCreate(parentId?: string | null) {
-    setForm({ slug: "", name: "", imageUrl: "", parentId: parentId ?? null });
+    setForm({
+      slug: "",
+      name: "",
+      imageUrl: "",
+      parentId: parentId ?? null,
+      meta: { title: "", description: "" },
+    });
     setFormOpen(true);
   }
 
@@ -67,6 +75,10 @@ export function CategoriesPage() {
       name: cat.name,
       imageUrl: cat.imageUrl ?? "",
       parentId: cat.parentId ?? null,
+      meta: {
+        title: cat.meta?.title ?? "",
+        description: cat.meta?.description ?? "",
+      },
     });
     setFormOpen(true);
   }
@@ -81,6 +93,10 @@ export function CategoriesPage() {
         name: form.name,
         imageUrl: form.imageUrl || undefined,
         parentId: form.parentId || null,
+        meta: {
+          title: form.meta?.title?.trim() || "",
+          description: form.meta?.description?.trim() || "",
+        },
       };
       if (form.id) {
         await updateCategory(form.id, payload);
@@ -181,14 +197,91 @@ export function CategoriesPage() {
                   ))}
                 </select>
               </label>
-              <label className="col-span-full block text-sm">
-                <span className="text-muted">Image URL</span>
-                <input
-                  value={form.imageUrl}
-                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+
+              <div className="col-span-full space-y-3 rounded-lg border border-border bg-background p-4">
+                <div>
+                  <p className="text-sm font-medium">SEO / Google listing</p>
+                  <p className="text-xs text-muted">
+                    Used on /collections/{form.slug || "…"} and /category/{form.slug || "…"} (title &amp; meta description).
+                  </p>
+                </div>
+                <label className="block text-sm">
+                  <span className="text-muted">Meta title</span>
+                  <input
+                    value={form.meta?.title ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        meta: { ...form.meta, title: e.target.value, description: form.meta?.description ?? "" },
+                      })
+                    }
+                    placeholder={form.name ? `${form.name} | Bamboo Eco-Hub` : "Category page title for Google"}
+                    className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted">Meta description</span>
+                  <textarea
+                    rows={3}
+                    value={form.meta?.description ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        meta: { ...form.meta, title: form.meta?.title ?? "", description: e.target.value },
+                      })
+                    }
+                    placeholder="Short summary for search results (~150–160 characters)"
+                    className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                  />
+                  <span className="mt-1 block text-xs text-muted">
+                    {(form.meta?.description ?? "").length}/160 characters
+                  </span>
+                </label>
+              </div>
+              <div className="col-span-full space-y-2">
+                <p className="text-sm font-medium">Category image</p>
+                <p className="text-xs text-muted">
+                  Upload from your computer — saved to Cloudinary and used as the category image.
+                </p>
+                <ImageUpload
+                  folder="categories"
+                  alt={form.name || "Category"}
+                  slug={form.slug || undefined}
+                  label="Upload image"
+                  onUploaded={(r) => setForm({ ...form, imageUrl: r.url })}
                 />
-              </label>
+                {form.imageUrl ? (
+                  <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+                    <img
+                      src={form.imageUrl}
+                      alt={form.name || "Category"}
+                      className="h-20 w-20 shrink-0 rounded-md object-cover"
+                    />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <input
+                        value={form.imageUrl}
+                        onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                        className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                        aria-label="Image URL"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, imageUrl: "" })}
+                        className="text-xs font-medium text-red-600 hover:underline"
+                      >
+                        Remove image
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <input
+                    placeholder="Or paste an image URL"
+                    value={form.imageUrl}
+                    onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                  />
+                )}
+              </div>
             </div>
             <div className="mt-4 flex gap-3">
               <button

@@ -58,6 +58,7 @@ export interface Category {
   name: string;
   imageUrl?: string;
   parentId?: string | null;
+  meta?: { title?: string; description?: string };
   children?: Category[];
   parent?: { _id: string; slug: string; name: string } | null;
 }

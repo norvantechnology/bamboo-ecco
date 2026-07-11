@@ -111,6 +111,16 @@ export class CreateProductDto {
 
 export class UpdateProductDto extends CreateProductDto {}
 
+export class CategoryMetaDto {
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+}
+
 export class CreateCategoryDto {
   @IsString()
   slug: string;
@@ -125,6 +135,11 @@ export class CreateCategoryDto {
   @IsOptional()
   @IsString()
   parentId?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CategoryMetaDto)
+  meta?: CategoryMetaDto;
 }
 
 export class UpdateCategoryDto extends CreateCategoryDto {}

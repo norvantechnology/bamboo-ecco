@@ -25,6 +25,7 @@ type LeanCategory = {
   name: string;
   imageUrl?: string;
   parentId?: Types.ObjectId | null;
+  meta?: { title?: string; description?: string };
 };
 
 @Injectable()
@@ -45,6 +46,10 @@ export class CategoriesService {
       name: cat.name,
       imageUrl: cat.imageUrl,
       parentId: cat.parentId ? cat.parentId.toString() : null,
+      meta: {
+        title: cat.meta?.title ?? '',
+        description: cat.meta?.description ?? '',
+      },
     };
   }
 
@@ -172,6 +177,10 @@ export class CategoriesService {
       slug: dto.slug,
       name: dto.name,
       imageUrl: dto.imageUrl,
+      meta: {
+        title: dto.meta?.title?.trim() || '',
+        description: dto.meta?.description?.trim() || '',
+      },
       tenantId: tid,
       parentId: dto.parentId ? new Types.ObjectId(dto.parentId) : null,
     });
@@ -186,6 +195,12 @@ export class CategoriesService {
     if (dto.slug !== undefined) patch.slug = dto.slug;
     if (dto.name !== undefined) patch.name = dto.name;
     if (dto.imageUrl !== undefined) patch.imageUrl = dto.imageUrl;
+    if (dto.meta !== undefined) {
+      patch.meta = {
+        title: dto.meta?.title?.trim() || '',
+        description: dto.meta?.description?.trim() || '',
+      };
+    }
 
     if ('parentId' in dto) {
       if (dto.parentId) {
