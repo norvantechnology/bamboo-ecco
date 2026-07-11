@@ -129,14 +129,11 @@ export class HomepageSections {
 @Schema({ _id: false })
 export class TenantSeo {
   /** Site-wide meta description (search engines & social). */
-  @Prop({
-    default:
-      'Shop handcrafted bamboo furniture and eco-friendly home decor online in India. Sustainable, space-saving designs for modern Indian homes.',
-  })
+  @Prop({ default: '' })
   description: string;
 
   /** Used in default title: `{storeName} | {defaultTitle}` */
-  @Prop({ default: 'Bamboo Furniture & Home Decor' })
+  @Prop({ default: '' })
   defaultTitle: string;
 
   /** Open Graph / HTML locale, e.g. en_IN */
@@ -144,11 +141,11 @@ export class TenantSeo {
   locale: string;
 
   /** Browser / PWA theme color */
-  @Prop({ default: '#4B3621' })
+  @Prop({ default: '' })
   themeColor: string;
 
   /** Browser / PWA background color */
-  @Prop({ default: '#FAF8F3' })
+  @Prop({ default: '' })
   backgroundColor: string;
 
   /** Google Search Console HTML-tag verification content */

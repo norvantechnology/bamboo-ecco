@@ -151,7 +151,7 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
               <InstagramIcon className="h-4 w-4" />
             </a>
             <a
-              href="mailto:hello@terraliving.com"
+              href="mailto:hello@bambooecohub.com"
               className="social-icon-btn flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-wood/45 hover:text-wood"
               aria-label="Email us"
             >
@@ -172,11 +172,11 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
 
             <div className="mt-6 space-y-2 text-sm text-footer-muted">
               <a
-                href="mailto:hello@terraliving.com"
+                href="mailto:hello@bambooecohub.com"
                 className="inline-flex items-center gap-2 transition-colors hover:text-footer-fg"
               >
                 <Mail className="h-4 w-4 shrink-0" />
-                hello@terraliving.com
+                hello@bambooecohub.com
               </a>
             </div>
 
@@ -191,7 +191,7 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
                 <InstagramIcon className="h-5 w-5" />
               </a>
               <a
-                href="mailto:hello@terraliving.com"
+                href="mailto:hello@bambooecohub.com"
                 className="social-icon-btn flex h-10 w-10 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-wood/45 hover:text-wood"
                 aria-label="Email us"
               >

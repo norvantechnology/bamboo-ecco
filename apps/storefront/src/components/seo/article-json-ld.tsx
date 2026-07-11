@@ -7,6 +7,7 @@ type Props = {
   description?: string;
   publishedAt?: string;
   pathPrefix?: "journal" | "guides";
+  publisherName?: string;
 };
 
 export function ArticleJsonLd(props: Props) {

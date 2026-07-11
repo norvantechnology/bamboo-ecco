@@ -1,7 +1,6 @@
 /**
- * Site identity for SEO.
- * Dynamic values come from tenant.seo via /storefront/layout (admin → SEO page).
- * NEXT_PUBLIC_SITE_URL stays in env (deployment URL). Other SEO keys are DB-only.
+ * Site identity for SEO — values come from tenant (Admin → SEO / MongoDB).
+ * Only NEXT_PUBLIC_SITE_URL stays in env (deployment canonical origin).
  */
 
 import { getLayoutData } from "./layout-data";
@@ -16,19 +15,7 @@ export type SiteSeo = {
   gscVerification: string;
 };
 
-/** Used only when the API is unreachable (build / offline). */
-export const SITE_SEO_FALLBACK: SiteSeo = {
-  name: "Terra Living",
-  description:
-    "Shop handcrafted bamboo furniture and eco-friendly home decor online in India. Sustainable, space-saving designs for modern Indian homes.",
-  defaultTitle: "Bamboo Furniture & Home Decor",
-  locale: "en_IN",
-  themeColor: "#4B3621",
-  backgroundColor: "#FAF8F3",
-  gscVerification: "",
-};
-
-/** Canonical site origin — deployment config only (not editable in admin). */
+/** Canonical site origin — deployment config only. */
 export function getSiteUrl() {
   const url = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim();
   return url.replace(/\/$/, "");
@@ -42,41 +29,19 @@ export function getSiteHost() {
   }
 }
 
-/** Resolve store SEO from DB (via layout API). Falls back when API is down. */
+/** Load store SEO from the API (tenant document). Empty strings if unset / offline. */
 export async function resolveSiteSeo(): Promise<SiteSeo> {
   const layout = await getLayoutData();
-  if (!layout) return SITE_SEO_FALLBACK;
-
-  const seo = layout.seo;
+  const seo = layout?.seo;
   return {
-    name: layout.brand?.name?.trim() || SITE_SEO_FALLBACK.name,
-    description: seo?.description?.trim() || layout.brand?.tagline?.trim() || SITE_SEO_FALLBACK.description,
-    defaultTitle: seo?.defaultTitle?.trim() || SITE_SEO_FALLBACK.defaultTitle,
-    locale: seo?.locale?.trim() || SITE_SEO_FALLBACK.locale,
-    themeColor: seo?.themeColor?.trim() || SITE_SEO_FALLBACK.themeColor,
-    backgroundColor: seo?.backgroundColor?.trim() || SITE_SEO_FALLBACK.backgroundColor,
+    name: layout?.brand?.name?.trim() || "",
+    description: seo?.description?.trim() || layout?.brand?.tagline?.trim() || "",
+    defaultTitle: seo?.defaultTitle?.trim() || "",
+    locale: seo?.locale?.trim() || "en_IN",
+    themeColor: seo?.themeColor?.trim() || "",
+    backgroundColor: seo?.backgroundColor?.trim() || "",
     gscVerification: seo?.gscVerification?.trim() || "",
   };
-}
-
-/** Sync fallbacks for client components / rare sync call sites. Prefer resolveSiteSeo(). */
-export function getSiteName() {
-  return SITE_SEO_FALLBACK.name;
-}
-export function getSiteDescription() {
-  return SITE_SEO_FALLBACK.description;
-}
-export function getSiteDefaultTitle() {
-  return SITE_SEO_FALLBACK.defaultTitle;
-}
-export function getSiteLocale() {
-  return SITE_SEO_FALLBACK.locale;
-}
-export function getThemeColor() {
-  return SITE_SEO_FALLBACK.themeColor;
-}
-export function getBackgroundColor() {
-  return SITE_SEO_FALLBACK.backgroundColor;
 }
 
 export const PRIVATE_PATH_PREFIXES = [

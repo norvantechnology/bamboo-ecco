@@ -24,7 +24,7 @@ export class TenantMiddleware implements NestMiddleware {
         })
         .exec()) || null;
 
-    // Single-tenant fallback (e.g. Railway seeded as "localhost" but storefront sends Vercel host)
+    // Single-tenant fallback (e.g. production host unknown but DEFAULT_TENANT_DOMAIN is set)
     if (!tenant) {
       const fallback = process.env.DEFAULT_TENANT_DOMAIN?.trim().toLowerCase();
       if (fallback) {

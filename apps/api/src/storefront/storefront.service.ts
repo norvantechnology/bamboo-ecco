@@ -183,7 +183,7 @@ export class StorefrontService {
 
     return {
       brand: {
-        name: tenant?.name ?? 'Terra Living',
+        name: tenant?.name ?? '',
         tagline: tenant?.tagline ?? '',
       },
       seo: resolveTenantSeo(tenant?.seo, tenant?.theme),

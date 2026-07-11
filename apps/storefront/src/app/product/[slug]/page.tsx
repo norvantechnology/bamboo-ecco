@@ -43,6 +43,8 @@ export default async function ProductPage({ params }: Props) {
   const productImages = product.images.filter((i) => i.type !== "lifestyle");
   const image = productImages[0];
   const productUrl = absoluteUrl(`/product/${slug}`);
+  const { resolveSiteSeo } = await import("@/lib/site");
+  const seo = await resolveSiteSeo();
 
   return (
     <div className="container-page py-4 sm:py-10">
@@ -56,6 +58,7 @@ export default async function ProductPage({ params }: Props) {
         inStock={(product.variants[0]?.stockQty ?? 0) > 0}
         rating={product.ratingSummary}
         url={productUrl}
+        brandName={seo.name || undefined}
       />
       <BreadcrumbJsonLd
         items={[

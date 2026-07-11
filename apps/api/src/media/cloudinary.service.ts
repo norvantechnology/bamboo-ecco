@@ -48,7 +48,7 @@ export class CloudinaryService implements OnModuleInit {
   }
 
   getBaseFolder(): string {
-    return this.config.get('CLOUDINARY_FOLDER', 'terra-living').trim() || 'terra-living';
+    return this.config.get('CLOUDINARY_FOLDER', 'bamboo-eco-hub').trim() || 'bamboo-eco-hub';
   }
 
   /** SEO + performance transforms applied on delivery */
@@ -109,7 +109,7 @@ export class CloudinaryService implements OnModuleInit {
         overwrite: false,
         unique_filename: true,
         use_filename: Boolean(!options.publicId),
-        tags: ['terra-living', ...(options.tags ?? [])],
+        tags: ['bamboo-eco-hub', ...(options.tags ?? [])],
       };
 
       if (options.publicId) {

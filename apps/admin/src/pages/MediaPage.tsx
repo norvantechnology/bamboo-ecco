@@ -54,7 +54,7 @@ export function MediaPage() {
         {cloudinaryReady && (
           <ImageUpload
             folder="gallery"
-            alt={form.caption || "Terra Living gallery"}
+            alt={form.caption || "Bamboo Eco-Hub gallery"}
             caption={form.caption}
             slug={form.caption ? form.caption.toLowerCase().replace(/\s+/g, "-") : undefined}
             onUploaded={(r) => setForm((f) => ({ ...f, imageUrl: r.url }))}

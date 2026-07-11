@@ -3,11 +3,13 @@ import { ProductCard } from "@/components/product/product-card";
 import { getNewArrivals } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "New Arrivals",
-  description: "Fresh bamboo pieces for modern homes — handcrafted decor and furniture.",
-  path: "/new-arrivals",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    title: "New Arrivals",
+    description: "Fresh bamboo pieces for modern homes — handcrafted decor and furniture.",
+    path: "/new-arrivals",
+  });
+}
 
 export default async function NewArrivalsPage() {
   const products = await getNewArrivals().catch(() => []);

@@ -45,8 +45,8 @@ export function getRuntimeApiUrl(): string {
 
 /**
  * Value sent as `x-tenant-domain` so the API picks the right store in MongoDB.
- * Prefer NEXT_PUBLIC_TENANT_DOMAIN (often "localhost" after seeding) so Vercel
- * hostnames still map to the same tenant document.
+ * Prefer NEXT_PUBLIC_TENANT_DOMAIN so Vercel/custom domains can map to the
+ * domain stored on the tenant document (often "localhost" as the tenant key).
  */
 export function getTenantDomain(): string {
   const fromEnv = process.env.NEXT_PUBLIC_TENANT_DOMAIN?.trim();

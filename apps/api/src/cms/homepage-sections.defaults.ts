@@ -54,7 +54,7 @@ export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionsMap = {
   whyChooseUs: {
     enabled: true,
     label: 'Our promise',
-    title: 'Why Choose Terra Living Bamboo Furniture',
+    title: 'Why Choose Us',
   },
   customerHomes: {
     enabled: true,

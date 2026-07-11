@@ -6,7 +6,7 @@ export const contentType = "image/png";
 
 export default async function Icon() {
   const seo = await resolveSiteSeo();
-  const initial = seo.name.charAt(0).toUpperCase() || "T";
+  const initial = (seo.name.charAt(0) || "B").toUpperCase();
   return new ImageResponse(
     (
       <div
@@ -16,8 +16,8 @@ export default async function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: seo.themeColor,
-          color: seo.backgroundColor,
+          background: seo.themeColor || "#4B3621",
+          color: seo.backgroundColor || "#FAF8F3",
           fontSize: 18,
           fontWeight: 700,
           borderRadius: 6,

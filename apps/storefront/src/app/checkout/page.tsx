@@ -82,7 +82,7 @@ export default function CheckoutPage() {
       key: init.razorpayKeyId,
       amount: init.amount,
       currency: init.currency,
-      name: "Terra Living",
+      name: "Store",
       description: "Order payment",
       order_id: init.razorpayOrderId,
       prefill: {

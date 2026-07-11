@@ -5,6 +5,7 @@ import { getJournalPost } from "@/lib/api";
 import { ArticleJsonLd } from "@/components/seo/article-json-ld";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { resolveSiteSeo } from "@/lib/site";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -22,7 +23,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function GuideArticlePage({ params }: Props) {
   const { slug } = await params;
-  const post = await getJournalPost(slug).catch(() => null);
+  const [post, seo] = await Promise.all([
+    getJournalPost(slug).catch(() => null),
+    resolveSiteSeo(),
+  ]);
   if (!post) notFound();
 
   return (
@@ -33,6 +37,7 @@ export default async function GuideArticlePage({ params }: Props) {
         description={post.meta?.description}
         publishedAt={post.publishedAt}
         pathPrefix="guides"
+        publisherName={seo.name || undefined}
       />
       <BreadcrumbJsonLd
         items={[

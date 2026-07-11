@@ -1,16 +1,8 @@
 import type { Metadata } from "next";
 import { productImageJsonLd } from "./cloudinary";
-import {
-  getSiteDefaultTitle,
-  getSiteDescription,
-  getSiteLocale,
-  getSiteName,
-  getSiteUrl,
-  getThemeColor,
-  getBackgroundColor,
-} from "./site";
+import { getSiteUrl, resolveSiteSeo } from "./site";
 
-export { getSiteUrl, getSiteName, getSiteDescription };
+export { getSiteUrl, resolveSiteSeo };
 
 /** Metadata for pages that must not be indexed */
 export const noIndexMetadata: Metadata = {
@@ -27,7 +19,8 @@ export function absoluteUrl(path: string) {
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-export function buildPageMetadata({
+/** Per-page metadata; site name / fallback description come from DB. */
+export async function buildPageMetadata({
   title,
   description,
   path,
@@ -41,47 +34,36 @@ export function buildPageMetadata({
   image?: string;
   imageAlt?: string;
   noIndex?: boolean;
-}): Metadata {
-  const siteName = getSiteName();
-  const desc = description?.slice(0, 160) || getSiteDescription();
+}): Promise<Metadata> {
+  const seo = await resolveSiteSeo();
+  const siteName = seo.name;
+  const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
   const ogImage = image ? [{ url: image, alt: imageAlt || title }] : undefined;
 
   return {
     title,
-    description: desc,
+    description: desc || undefined,
     alternates: canonical ? { canonical } : undefined,
     openGraph: {
       type: "website",
-      siteName,
+      siteName: siteName || undefined,
       title,
-      description: desc,
+      description: desc || undefined,
       url: canonical,
       images: ogImage,
     },
     twitter: {
       card: image ? "summary_large_image" : "summary",
       title,
-      description: desc,
+      description: desc || undefined,
       images: image ? [image] : undefined,
     },
     ...(noIndex ? { robots: { index: false, follow: false } } : {}),
   };
 }
 
-export function rootMetadata(): Metadata {
-  return rootMetadataFromSeo({
-    name: getSiteName(),
-    description: getSiteDescription(),
-    defaultTitle: getSiteDefaultTitle(),
-    locale: getSiteLocale(),
-    themeColor: getThemeColor(),
-    backgroundColor: getBackgroundColor(),
-    gscVerification: "",
-  });
-}
-
-/** Build root metadata from DB-backed SEO (preferred). */
+/** Build root metadata from DB-backed SEO. */
 export function rootMetadataFromSeo(seo: {
   name: string;
   description: string;
@@ -92,30 +74,34 @@ export function rootMetadataFromSeo(seo: {
   gscVerification: string;
 }): Metadata {
   const siteUrl = getSiteUrl();
+  const defaultTitle =
+    seo.name && seo.defaultTitle
+      ? `${seo.name} | ${seo.defaultTitle}`
+      : seo.name || seo.defaultTitle || undefined;
+
   return {
     metadataBase: new URL(siteUrl),
-    title: {
-      default: `${seo.name} | ${seo.defaultTitle}`,
-      template: `%s | ${seo.name}`,
-    },
-    description: seo.description,
-    applicationName: seo.name,
-    authors: [{ name: seo.name }],
-    creator: seo.name,
-    publisher: seo.name,
+    title: seo.name
+      ? { default: defaultTitle || seo.name, template: `%s | ${seo.name}` }
+      : defaultTitle || undefined,
+    description: seo.description || undefined,
+    applicationName: seo.name || undefined,
+    authors: seo.name ? [{ name: seo.name }] : undefined,
+    creator: seo.name || undefined,
+    publisher: seo.name || undefined,
     formatDetection: { email: false, address: false, telephone: false },
     openGraph: {
       type: "website",
-      locale: seo.locale,
-      siteName: seo.name,
-      title: seo.name,
-      description: seo.description,
+      locale: seo.locale || undefined,
+      siteName: seo.name || undefined,
+      title: seo.name || undefined,
+      description: seo.description || undefined,
       url: siteUrl,
     },
     twitter: {
       card: "summary_large_image",
-      title: seo.name,
-      description: seo.description,
+      title: seo.name || undefined,
+      description: seo.description || undefined,
     },
     robots: {
       index: true,
@@ -130,9 +116,7 @@ export function rootMetadataFromSeo(seo: {
     },
     manifest: "/manifest.webmanifest",
     ...(seo.gscVerification ? { verification: { google: seo.gscVerification } } : {}),
-    other: {
-      "theme-color": seo.themeColor,
-    },
+    ...(seo.themeColor ? { other: { "theme-color": seo.themeColor } } : {}),
   };
 }
 
@@ -149,25 +133,25 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
   };
 }
 
-export function organizationJsonLd(brand?: { name?: string; tagline?: string; url?: string }) {
+export function organizationJsonLd(brand: { name?: string; tagline?: string }) {
   const siteUrl = getSiteUrl();
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: brand?.name || getSiteName(),
-    description: brand?.tagline || getSiteDescription(),
+    name: brand.name || undefined,
+    description: brand.tagline || undefined,
     url: siteUrl,
     logo: `${siteUrl}/icon`,
   };
 }
 
-export function websiteJsonLd() {
+export function websiteJsonLd(brand: { name?: string; description?: string }) {
   const siteUrl = getSiteUrl();
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: getSiteName(),
-    description: getSiteDescription(),
+    name: brand.name || undefined,
+    description: brand.description || undefined,
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",
@@ -186,9 +170,12 @@ export function articleJsonLd(post: {
   description?: string;
   publishedAt?: string;
   pathPrefix?: "journal" | "guides";
+  publisherName?: string;
 }) {
   const prefix = post.pathPrefix ?? "journal";
-  const siteName = getSiteName();
+  const org = post.publisherName
+    ? { "@type": "Organization" as const, name: post.publisherName }
+    : undefined;
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -196,8 +183,8 @@ export function articleJsonLd(post: {
     description: post.description,
     datePublished: post.publishedAt,
     url: absoluteUrl(`/${prefix}/${post.slug}`),
-    author: { "@type": "Organization", name: siteName },
-    publisher: { "@type": "Organization", name: siteName },
+    author: org,
+    publisher: org,
   };
 }
 
@@ -211,6 +198,7 @@ export function productJsonLd(product: {
   url: string;
   inStock?: boolean;
   rating?: { avg: number; count: number };
+  brandName?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -219,7 +207,9 @@ export function productJsonLd(product: {
     description: product.description,
     image: productImageJsonLd(product.images),
     sku: product.sku,
-    brand: { "@type": "Brand", name: getSiteName() },
+    brand: product.brandName
+      ? { "@type": "Brand", name: product.brandName }
+      : undefined,
     offers: product.price
       ? {
           "@type": "Offer",

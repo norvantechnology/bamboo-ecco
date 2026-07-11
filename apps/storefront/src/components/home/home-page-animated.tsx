@@ -303,7 +303,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                 const img = (
                   <Image
                     src={item.imageUrl}
-                    alt={item.caption || "Terra Living"}
+                    alt={item.caption || "Bamboo Eco-Hub"}
                     fill
                     sizes="16vw"
                     className="object-cover object-center transition-transform duration-500 group-hover:scale-105"

@@ -3,11 +3,13 @@ import { ProductCard } from "@/components/product/product-card";
 import { getFeaturedProducts } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Best Sellers",
-  description: "Our most-loved bamboo decor — popular picks from Terra Living.",
-  path: "/best-sellers",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    title: "Best Sellers",
+    description: "Our most-loved bamboo decor — popular handcrafted picks.",
+    path: "/best-sellers",
+  });
+}
 
 export default async function BestSellersPage() {
   const products = await getFeaturedProducts().catch(() => []);

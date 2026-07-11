@@ -7,32 +7,17 @@ export type TenantSeoConfig = {
   gscVerification: string;
 };
 
-export const DEFAULT_TENANT_SEO: TenantSeoConfig = {
-  description:
-    'Shop handcrafted bamboo furniture and eco-friendly home decor online in India. Sustainable, space-saving designs for modern Indian homes.',
-  defaultTitle: 'Bamboo Furniture & Home Decor',
-  locale: 'en_IN',
-  themeColor: '#4B3621',
-  backgroundColor: '#FAF8F3',
-  gscVerification: '',
-};
-
+/** Map tenant.seo (+ theme chrome) to a public SEO payload — no marketing copy defaults. */
 export function resolveTenantSeo(
   stored?: Partial<TenantSeoConfig> | null,
   theme?: { primary?: string; background?: string } | null,
 ): TenantSeoConfig {
   return {
-    description: stored?.description?.trim() || DEFAULT_TENANT_SEO.description,
-    defaultTitle: stored?.defaultTitle?.trim() || DEFAULT_TENANT_SEO.defaultTitle,
-    locale: stored?.locale?.trim() || DEFAULT_TENANT_SEO.locale,
-    themeColor:
-      stored?.themeColor?.trim() ||
-      theme?.primary?.trim() ||
-      DEFAULT_TENANT_SEO.themeColor,
-    backgroundColor:
-      stored?.backgroundColor?.trim() ||
-      theme?.background?.trim() ||
-      DEFAULT_TENANT_SEO.backgroundColor,
+    description: stored?.description?.trim() || '',
+    defaultTitle: stored?.defaultTitle?.trim() || '',
+    locale: stored?.locale?.trim() || 'en_IN',
+    themeColor: stored?.themeColor?.trim() || theme?.primary?.trim() || '',
+    backgroundColor: stored?.backgroundColor?.trim() || theme?.background?.trim() || '',
     gscVerification: stored?.gscVerification?.trim() || '',
   };
 }

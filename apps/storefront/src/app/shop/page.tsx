@@ -3,11 +3,14 @@ import { ProductCard } from "@/components/product/product-card";
 import { getShopProducts } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Shop Bamboo Furniture & Home Decor Online",
-  description: "Browse handcrafted bamboo furniture, eco-friendly home decor, and space-saving pieces for modern Indian homes.",
-  path: "/shop",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    title: "Shop Bamboo Furniture & Home Decor Online",
+    description:
+      "Browse handcrafted bamboo furniture, eco-friendly home decor, and space-saving pieces for modern Indian homes.",
+    path: "/shop",
+  });
+}
 
 export default async function ShopPage() {
   const products = await getShopProducts().catch(() => []);

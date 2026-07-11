@@ -28,7 +28,7 @@ export function LoginPage() {
     <div className="flex min-h-dvh items-center justify-center bg-background p-4">
       <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-8">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Terra Living Admin</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Bamboo Eco-Hub Admin</h1>
           <p className="mt-1 text-sm text-muted">Sign in to manage your store</p>
           <p className="mt-2 text-xs text-muted">admin@ecoo.local / admin123</p>
         </div>

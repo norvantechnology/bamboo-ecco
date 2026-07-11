@@ -3,11 +3,13 @@ import Link from "next/link";
 import { getJournalPosts } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Journal",
-  description: "Stories, inspiration, and ideas for mindful living with natural home decor.",
-  path: "/journal",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    title: "Journal",
+    description: "Stories, inspiration, and ideas for mindful living with natural home decor.",
+    path: "/journal",
+  });
+}
 
 export default async function JournalPage() {
   const posts = await getJournalPosts("blog").catch(() => []);

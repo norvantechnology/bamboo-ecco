@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
 import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
-import { getSiteName } from "@/lib/site";
+import { resolveSiteSeo } from "@/lib/site";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -15,11 +15,13 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCategory(slug).catch(() => null);
+  const [category, seo] = await Promise.all([
+    getCategory(slug).catch(() => null),
+    resolveSiteSeo(),
+  ]);
   if (!category) return { title: "Brand" };
-  const siteName = getSiteName();
   return buildPageMetadata({
-    title: `${category.name} — ${siteName}`,
+    title: seo.name ? `${category.name} — ${seo.name}` : category.name,
     description: `Shop handcrafted ${category.name.toLowerCase()} made from sustainable bamboo. Premium quality, eco-friendly home decor.`,
     path: `/brand/${slug}`,
   });
@@ -27,15 +29,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BrandPage({ params }: Props) {
   const { slug } = await params;
-  const [category, products] = await Promise.all([
+  const [category, products, seo] = await Promise.all([
     getCategory(slug).catch(() => null),
     getProductsByCategorySlug(slug, 1, "rating").catch(() => ({ data: [], total: 0, page: 1, totalPages: 0 })),
+    resolveSiteSeo(),
   ]);
 
   if (!category) notFound();
 
   const pageUrl = absoluteUrl(`/brand/${slug}`);
-  const siteName = getSiteName();
+  const siteName = seo.name;
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -43,7 +46,7 @@ export default async function BrandPage({ params }: Props) {
         data={{
           "@context": "https://schema.org",
           "@type": "Brand",
-          name: `${siteName} ${category.name}`,
+          name: siteName ? `${siteName} ${category.name}` : category.name,
           description: `Sustainable bamboo ${category.name.toLowerCase()} for modern homes`,
           url: pageUrl,
         }}
@@ -65,7 +68,9 @@ export default async function BrandPage({ params }: Props) {
 
       <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
         <div>
-          <p className="text-sm font-medium uppercase tracking-wider text-secondary">{siteName} Brand</p>
+          {siteName ? (
+            <p className="text-sm font-medium uppercase tracking-wider text-secondary">{siteName} Brand</p>
+          ) : null}
           <h1 className="mt-2 font-display text-4xl text-primary sm:text-5xl">{category.name}</h1>
           <p className="mt-4 text-muted leading-relaxed">
             Discover our curated {category.name.toLowerCase()} collection — handcrafted from sustainably sourced bamboo,
