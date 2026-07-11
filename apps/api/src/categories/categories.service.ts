@@ -19,6 +19,20 @@ export interface CategoryNode {
   children: CategoryNode[];
 }
 
+type StorySection = {
+  title: string;
+  body: string;
+  imageUrl: string;
+  align?: string;
+};
+
+type CategoryStory = {
+  headline?: string;
+  subheading?: string;
+  heroImageUrl?: string;
+  sections?: StorySection[];
+};
+
 type LeanCategory = {
   _id: Types.ObjectId;
   slug: string;
@@ -26,6 +40,7 @@ type LeanCategory = {
   imageUrl?: string;
   parentId?: Types.ObjectId | null;
   meta?: { title?: string; description?: string };
+  story?: CategoryStory;
 };
 
 @Injectable()
@@ -39,6 +54,38 @@ export class CategoriesService {
     return new Types.ObjectId(tenantId);
   }
 
+  private formatStory(story?: CategoryStory | null) {
+    return {
+      headline: story?.headline ?? '',
+      subheading: story?.subheading ?? '',
+      heroImageUrl: story?.heroImageUrl ?? '',
+      sections: (story?.sections ?? []).map((s) => ({
+        title: s.title ?? '',
+        body: s.body ?? '',
+        imageUrl: s.imageUrl ?? '',
+        align: s.align === 'right' ? 'right' : 'left',
+      })),
+    };
+  }
+
+  private normalizeStory(story?: CategoryStory | null) {
+    if (!story) return undefined;
+    const sections = (story.sections ?? [])
+      .filter((s) => s.title?.trim() && s.body?.trim() && s.imageUrl?.trim())
+      .map((s) => ({
+        title: s.title.trim(),
+        body: s.body.trim(),
+        imageUrl: s.imageUrl.trim(),
+        align: s.align === 'right' ? 'right' : 'left',
+      }));
+    return {
+      headline: story.headline?.trim() || '',
+      subheading: story.subheading?.trim() || '',
+      heroImageUrl: story.heroImageUrl?.trim() || '',
+      sections,
+    };
+  }
+
   private format(cat: LeanCategory) {
     return {
       _id: cat._id.toString(),
@@ -50,6 +97,7 @@ export class CategoriesService {
         title: cat.meta?.title ?? '',
         description: cat.meta?.description ?? '',
       },
+      story: this.formatStory(cat.story),
     };
   }
 
@@ -181,6 +229,12 @@ export class CategoriesService {
         title: dto.meta?.title?.trim() || '',
         description: dto.meta?.description?.trim() || '',
       },
+      story: this.normalizeStory(dto.story) ?? {
+        headline: '',
+        subheading: '',
+        heroImageUrl: '',
+        sections: [],
+      },
       tenantId: tid,
       parentId: dto.parentId ? new Types.ObjectId(dto.parentId) : null,
     });
@@ -200,6 +254,9 @@ export class CategoriesService {
         title: dto.meta?.title?.trim() || '',
         description: dto.meta?.description?.trim() || '',
       };
+    }
+    if (dto.story !== undefined) {
+      patch.story = this.normalizeStory(dto.story);
     }
 
     if ('parentId' in dto) {

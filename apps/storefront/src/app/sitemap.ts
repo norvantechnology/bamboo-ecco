@@ -45,18 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  // Collection story pages
+  // Category product listing pages
   const collectionRoutes = data.categories.map((c) =>
     entry(`/collections/${c.slug}`, {
-      lastModified: c.updatedAt,
-      changeFrequency: "weekly",
-      priority: 0.75,
-    }),
-  );
-
-  // Category PLPs (shop-by-room)
-  const categoryRoutes = data.categories.map((c) =>
-    entry(`/category/${c.slug}`, {
       lastModified: c.updatedAt,
       changeFrequency: "weekly",
       priority: 0.8,
@@ -93,7 +84,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...pageRoutes,
     ...collectionRoutes,
-    ...categoryRoutes,
     ...brandRoutes,
     ...productRoutes,
     ...postRoutes,

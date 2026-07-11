@@ -130,7 +130,8 @@ export function CategoriesPage() {
         <div>
           <h1 className="text-xl font-semibold sm:text-2xl">Categories</h1>
           <p className="text-sm text-muted">
-            {categories.length} total · {roots.length} top-level · {categories.length - roots.length} sub-categories
+            {categories.length} total · {roots.length} top-level · {categories.length - roots.length}{" "}
+            sub-categories
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -198,50 +199,10 @@ export function CategoriesPage() {
                 </select>
               </label>
 
-              <div className="col-span-full space-y-3 rounded-lg border border-border bg-background p-4">
-                <div>
-                  <p className="text-sm font-medium">SEO / Google listing</p>
-                  <p className="text-xs text-muted">
-                    Used on /collections/{form.slug || "…"} and /category/{form.slug || "…"} (title &amp; meta description).
-                  </p>
-                </div>
-                <label className="block text-sm">
-                  <span className="text-muted">Meta title</span>
-                  <input
-                    value={form.meta?.title ?? ""}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        meta: { ...form.meta, title: e.target.value, description: form.meta?.description ?? "" },
-                      })
-                    }
-                    placeholder={form.name ? `${form.name} | Bamboo Eco-Hub` : "Category page title for Google"}
-                    className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-                  />
-                </label>
-                <label className="block text-sm">
-                  <span className="text-muted">Meta description</span>
-                  <textarea
-                    rows={3}
-                    value={form.meta?.description ?? ""}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        meta: { ...form.meta, title: form.meta?.title ?? "", description: e.target.value },
-                      })
-                    }
-                    placeholder="Short summary for search results (~150–160 characters)"
-                    className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-                  />
-                  <span className="mt-1 block text-xs text-muted">
-                    {(form.meta?.description ?? "").length}/160 characters
-                  </span>
-                </label>
-              </div>
               <div className="col-span-full space-y-2">
-                <p className="text-sm font-medium">Category image</p>
+                <p className="text-sm font-medium">Category banner image</p>
                 <p className="text-xs text-muted">
-                  Upload from your computer — saved to Cloudinary and used as the category image.
+                  Shown at the top of /collections/{form.slug || "…"} — full image, no crop.
                 </p>
                 <ImageUpload
                   folder="categories"
@@ -282,6 +243,58 @@ export function CategoriesPage() {
                   />
                 )}
               </div>
+
+              <div className="col-span-full space-y-3 rounded-lg border border-border bg-background p-4">
+                <div>
+                  <p className="text-sm font-medium">SEO &amp; page intro</p>
+                  <p className="text-xs text-muted">
+                    Meta title for Google. Meta description is also shown as the intro under the
+                    category heading on the storefront.
+                  </p>
+                </div>
+                <label className="block text-sm">
+                  <span className="text-muted">Meta title</span>
+                  <input
+                    value={form.meta?.title ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        meta: {
+                          ...form.meta,
+                          title: e.target.value,
+                          description: form.meta?.description ?? "",
+                        },
+                      })
+                    }
+                    placeholder={
+                      form.name ? `${form.name} | Bamboo Eco-Hub` : "Category page title for Google"
+                    }
+                    className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted">Meta description / intro</span>
+                  <textarea
+                    rows={3}
+                    value={form.meta?.description ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        meta: {
+                          ...form.meta,
+                          title: form.meta?.title ?? "",
+                          description: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="Short summary for search results and the category page (~150–160 characters)"
+                    className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                  />
+                  <span className="mt-1 block text-xs text-muted">
+                    {(form.meta?.description ?? "").length}/160 characters
+                  </span>
+                </label>
+              </div>
             </div>
             <div className="mt-4 flex gap-3">
               <button
@@ -309,7 +322,7 @@ export function CategoriesPage() {
             <div className="flex flex-wrap items-start justify-between gap-3 p-4">
               <div>
                 <h3 className="font-semibold">{root.name}</h3>
-                <p className="text-sm text-muted">/category/{root.slug}</p>
+                <p className="text-sm text-muted">/collections/{root.slug}</p>
               </div>
               <div className="flex flex-wrap gap-1">
                 <button
@@ -319,7 +332,12 @@ export function CategoriesPage() {
                 >
                   + Sub-category
                 </button>
-                <button type="button" onClick={() => openEdit(root)} className="rounded p-1 hover:bg-background" aria-label="Edit">
+                <button
+                  type="button"
+                  onClick={() => openEdit(root)}
+                  className="rounded p-1 hover:bg-background"
+                  aria-label="Edit"
+                >
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
@@ -342,10 +360,15 @@ export function CategoriesPage() {
                   >
                     <div>
                       <p className="font-medium">{child.name}</p>
-                      <p className="text-xs text-muted">/category/{child.slug}</p>
+                      <p className="text-xs text-muted">/collections/{child.slug}</p>
                     </div>
                     <div className="flex gap-1">
-                      <button type="button" onClick={() => openEdit(child)} className="rounded p-1 hover:bg-surface" aria-label="Edit">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(child)}
+                        className="rounded p-1 hover:bg-surface"
+                        aria-label="Edit"
+                      >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button

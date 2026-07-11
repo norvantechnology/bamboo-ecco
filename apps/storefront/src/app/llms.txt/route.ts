@@ -30,8 +30,7 @@ ${INDEXABLE_STATIC_ROUTES.map((p) => `- ${siteUrl}${p === "/" ? "" : p}`).join("
 
 ## Content types
 - Products: \`${siteUrl}/product/{slug}\`
-- Categories: \`${siteUrl}/category/{slug}\`
-- Collections: \`${siteUrl}/collections/{slug}\`
+- Categories: \`${siteUrl}/collections/{slug}\`
 - Journal: \`${siteUrl}/journal/{slug}\`
 - Buying guides: \`${siteUrl}/guides/{slug}\`
 - Static pages: \`${siteUrl}/pages/{slug}\`

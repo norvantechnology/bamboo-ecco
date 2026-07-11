@@ -77,11 +77,8 @@ export default async function BrandPage({ params }: Props) {
             designed for calm, modern living spaces across India.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={`/category/${slug}`} className="inline-flex h-11 items-center rounded-sm bg-primary px-6 text-sm font-medium text-surface">
+            <Link href={`/collections/${slug}`} className="inline-flex h-11 items-center rounded-sm bg-primary px-6 text-sm font-medium text-surface">
               Shop {category.name}
-            </Link>
-            <Link href={`/collections/${slug}`} className="inline-flex h-11 items-center rounded-sm border border-border px-6 text-sm font-medium hover:bg-surface">
-              View collection story
             </Link>
           </div>
         </div>
@@ -101,7 +98,7 @@ export default async function BrandPage({ params }: Props) {
         </div>
         {products.totalPages > 1 && (
           <div className="mt-8 text-center">
-            <Link href={`/category/${slug}`} className="text-sm font-medium text-secondary hover:underline">
+            <Link href={`/collections/${slug}`} className="text-sm font-medium text-secondary hover:underline">
               View all {products.total} products →
             </Link>
           </div>

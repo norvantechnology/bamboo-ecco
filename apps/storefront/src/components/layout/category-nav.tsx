@@ -39,7 +39,7 @@ function CategoryColumn({
       <div className="flex items-start gap-3">
         {root.imageUrl ? (
           <Link
-            href={`/category/${root.slug}`}
+            href={`/collections/${root.slug}`}
             className="relative mt-0.5 h-8 w-8 shrink-0 overflow-hidden rounded-md bg-background ring-1 ring-border/60"
             aria-hidden
             tabIndex={-1}
@@ -62,7 +62,7 @@ function CategoryColumn({
 
         <div className="min-w-0 flex-1 space-y-2.5">
           <Link
-            href={`/category/${root.slug}`}
+            href={`/collections/${root.slug}`}
             className="group/name relative inline-block max-w-full font-display text-base font-semibold leading-snug text-foreground transition-colors hover:text-secondary sm:text-lg"
           >
             <span className="relative">
@@ -75,7 +75,7 @@ function CategoryColumn({
           </Link>
 
           <Link
-            href={`/category/${root.slug}`}
+            href={`/collections/${root.slug}`}
             className="group/shop inline-flex items-center gap-1 text-xs font-medium text-secondary sm:text-sm"
           >
             <span className="relative">
@@ -98,7 +98,7 @@ function CategoryColumn({
           {root.children!.map((child) => (
             <li key={child._id}>
               <Link
-                href={`/category/${child.slug}`}
+                href={`/collections/${child.slug}`}
                 className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-sm text-muted transition-colors hover:bg-background/80 hover:text-foreground"
               >
                 <span className="min-w-0 truncate">{child.name}</span>
@@ -107,21 +107,7 @@ function CategoryColumn({
             </li>
           ))}
         </ul>
-      ) : (
-        <Link
-          href={`/collections/${root.slug}`}
-          className="group/story mt-1 inline-flex items-center gap-1 pt-1 text-xs font-medium text-muted transition-colors hover:text-secondary sm:text-sm"
-        >
-          <span className="relative">
-            Collection story
-            <span
-              className="pointer-events-none absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-gold transition-transform duration-300 ease-out group-hover/story:scale-x-100"
-              aria-hidden
-            />
-          </span>
-          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover/story:translate-x-[3px]" />
-        </Link>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -257,7 +243,7 @@ export function CategoryMobileSection({
             <li key={root._id} className="overflow-hidden rounded-xl border border-border bg-background">
               <div className="flex items-stretch">
                 <Link
-                  href={`/category/${root.slug}`}
+                  href={`/collections/${root.slug}`}
                   onClick={onClose}
                   className="flex min-w-0 flex-1 items-center gap-2 px-3 py-3 font-display text-[15px] font-semibold leading-tight max-[480px]:px-2.5"
                 >
@@ -283,7 +269,7 @@ export function CategoryMobileSection({
                 <ul className="border-t border-border bg-surface/50 px-2 py-1.5">
                   <li>
                     <Link
-                      href={`/category/${root.slug}`}
+                      href={`/collections/${root.slug}`}
                       onClick={onClose}
                       className="block rounded-lg px-2 py-2 text-sm font-medium text-secondary"
                     >
@@ -293,7 +279,7 @@ export function CategoryMobileSection({
                   {root.children!.map((child) => (
                     <li key={child._id}>
                       <Link
-                        href={`/category/${child.slug}`}
+                        href={`/collections/${child.slug}`}
                         onClick={onClose}
                         className="block rounded-lg px-2 py-2 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
                       >

@@ -63,25 +63,6 @@ export interface Category {
   parent?: { _id: string; slug: string; name: string } | null;
 }
 
-export interface CollectionStorySection {
-  title: string;
-  body: string;
-  imageUrl: string;
-  align: "left" | "right";
-}
-
-export interface CollectionStory {
-  headline?: string;
-  subheading?: string;
-  heroImageUrl?: string;
-  sections?: CollectionStorySection[];
-}
-
-export interface CollectionData {
-  category: Category & { story?: CollectionStory };
-  products: Product[];
-}
-
 export interface ProductImage {
   url: string;
   alt: string;
@@ -323,10 +304,6 @@ export interface SitemapUrls {
 
 export function getSitemapUrls() {
   return fetchApi<SitemapUrls>("/storefront/sitemap-urls");
-}
-
-export function getCollection(slug: string) {
-  return fetchApi<CollectionData>(`/storefront/collections/${slug}`);
 }
 
 export interface CheckoutPayload {

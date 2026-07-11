@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsIn,
   IsNumber,
   IsOptional,
   IsString,
@@ -121,6 +122,41 @@ export class CategoryMetaDto {
   description?: string;
 }
 
+export class CollectionStorySectionDto {
+  @IsString()
+  title: string;
+
+  @IsString()
+  body: string;
+
+  @IsString()
+  imageUrl: string;
+
+  @IsOptional()
+  @IsIn(['left', 'right'])
+  align?: 'left' | 'right';
+}
+
+export class CollectionStoryDto {
+  @IsOptional()
+  @IsString()
+  headline?: string;
+
+  @IsOptional()
+  @IsString()
+  subheading?: string;
+
+  @IsOptional()
+  @IsString()
+  heroImageUrl?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CollectionStorySectionDto)
+  sections?: CollectionStorySectionDto[];
+}
+
 export class CreateCategoryDto {
   @IsString()
   slug: string;
@@ -140,6 +176,11 @@ export class CreateCategoryDto {
   @ValidateNested()
   @Type(() => CategoryMetaDto)
   meta?: CategoryMetaDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CollectionStoryDto)
+  story?: CollectionStoryDto;
 }
 
 export class UpdateCategoryDto extends CreateCategoryDto {}

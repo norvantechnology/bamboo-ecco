@@ -175,7 +175,7 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
                     {roots.map((cat) => (
                       <li key={cat._id}>
                         <Link
-                          href={`/category/${cat.slug}`}
+                          href={`/collections/${cat.slug}`}
                           className="block py-1.5 text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg active:text-gold sm:py-1 sm:text-sm"
                         >
                           {cat.name}

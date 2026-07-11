@@ -63,6 +63,20 @@ export interface AdminProduct {
   ratingSummary: { avg: number; count: number };
 }
 
+export interface CollectionStorySection {
+  title: string;
+  body: string;
+  imageUrl: string;
+  align: "left" | "right";
+}
+
+export interface CollectionStory {
+  headline?: string;
+  subheading?: string;
+  heroImageUrl?: string;
+  sections?: CollectionStorySection[];
+}
+
 export interface AdminCategory {
   _id: string;
   name: string;
@@ -70,6 +84,7 @@ export interface AdminCategory {
   imageUrl?: string;
   parentId?: string | null;
   meta?: { title?: string; description?: string };
+  story?: CollectionStory;
   children?: AdminCategory[];
 }
 
@@ -221,6 +236,7 @@ export interface CategoryPayload {
   imageUrl?: string;
   parentId?: string | null;
   meta?: { title?: string; description?: string };
+  story?: CollectionStory;
 }
 
 export function createCategory(data: CategoryPayload) {
