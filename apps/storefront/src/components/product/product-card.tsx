@@ -30,7 +30,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const hoverImage = product.images.find((i) => i.type === "lifestyle") ?? productImages[1];
   const image = productImages[0];
   const variant = product.variants[0];
-  const outOfStock = !variant || variant.stockQty === 0;
+  const outOfStock =
+    product.status === "out_of_stock" || !variant || variant.stockQty === 0;
   const subtitle = getProductCardSubtitle(product);
 
   const displayImage = hovered && hoverImage ? hoverImage : image;

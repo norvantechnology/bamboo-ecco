@@ -92,7 +92,7 @@ export class Product {
   @Prop({ default: '' })
   description: string;
 
-  @Prop({ default: 'draft', enum: ['draft', 'active', 'archived'] })
+  @Prop({ default: 'draft', enum: ['draft', 'active', 'out_of_stock', 'hidden', 'archived'] })
   status: string;
 
   @Prop({ type: { title: String, description: String }, default: {} })

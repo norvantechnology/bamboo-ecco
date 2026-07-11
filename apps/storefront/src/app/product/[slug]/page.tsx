@@ -55,7 +55,9 @@ export default async function ProductPage({ params }: Props) {
         sku={product.variants[0]?.sku}
         price={product.variants[0]?.price}
         currency={product.variants[0]?.currency}
-        inStock={(product.variants[0]?.stockQty ?? 0) > 0}
+        inStock={
+          product.status !== "out_of_stock" && (product.variants[0]?.stockQty ?? 0) > 0
+        }
         rating={product.ratingSummary}
         url={productUrl}
         brandName={seo.name || undefined}

@@ -102,6 +102,7 @@ export interface Product {
   slug: string;
   title: string;
   description: string;
+  status?: string;
   categoryId?: string;
   meta?: { title?: string; description?: string };
   images: ProductImage[];
@@ -117,6 +118,13 @@ export interface Product {
   videoUrl?: string;
   model3d?: { glbUrl?: string; usdzUrl?: string; posterUrl?: string };
   ratingSummary: { avg: number; count: number };
+}
+
+/** True when customers can add the product to cart / checkout. */
+export function isProductInStock(product: Product, stockQty?: number) {
+  if (product.status === "out_of_stock") return false;
+  const qty = stockQty ?? product.variants[0]?.stockQty ?? 0;
+  return qty > 0;
 }
 
 export interface Review {

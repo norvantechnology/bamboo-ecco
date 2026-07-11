@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import { Product, ProductDocument } from '../schemas/product.schema';
 import { Review, ReviewDocument } from '../schemas/review.schema';
 import { CreateProductDto, UpdateProductDto } from '../admin/dto/admin.dto';
+import { catalogStatusFilter, isPurchasableStatus } from './product-status';
 
 @Injectable()
 export class ProductsService {
@@ -18,7 +19,7 @@ export class ProductsService {
 
   findAllActive(tenantId: string) {
     return this.productModel
-      .find({ tenantId: this.tid(tenantId), status: 'active' })
+      .find({ tenantId: this.tid(tenantId), ...catalogStatusFilter() })
       .sort({ title: 1 })
       .lean()
       .exec();
@@ -34,7 +35,11 @@ export class ProductsService {
 
   findFeatured(tenantId: string, limit = 8) {
     return this.productModel
-      .find({ tenantId: this.tid(tenantId), status: 'active', isFeatured: true })
+      .find({
+        tenantId: this.tid(tenantId),
+        ...catalogStatusFilter(),
+        isFeatured: true,
+      })
       .sort({ 'ratingSummary.avg': -1, createdAt: -1 })
       .limit(limit)
       .lean()
@@ -43,7 +48,11 @@ export class ProductsService {
 
   findNewArrivals(tenantId: string, limit = 8) {
     return this.productModel
-      .find({ tenantId: this.tid(tenantId), status: 'active', isNewArrival: true })
+      .find({
+        tenantId: this.tid(tenantId),
+        ...catalogStatusFilter(),
+        isNewArrival: true,
+      })
       .sort({ createdAt: -1 })
       .limit(limit)
       .lean()
@@ -52,7 +61,12 @@ export class ProductsService {
 
   findRelated(tenantId: string, categoryId: string, excludeSlug: string, limit = 4) {
     return this.productModel
-      .find({ tenantId: this.tid(tenantId), categoryId, status: 'active', slug: { $ne: excludeSlug } })
+      .find({
+        tenantId: this.tid(tenantId),
+        categoryId,
+        ...catalogStatusFilter(),
+        slug: { $ne: excludeSlug },
+      })
       .limit(limit)
       .lean()
       .exec();
@@ -86,7 +100,11 @@ export class ProductsService {
       rating: { 'ratingSummary.avg': -1 },
     };
 
-    const filter = { tenantId: tid, categoryId: { $in: cids }, status: 'active' as const };
+    const filter = {
+      tenantId: tid,
+      categoryId: { $in: cids },
+      ...catalogStatusFilter(),
+    };
 
     return Promise.all([
       this.productModel
@@ -108,7 +126,7 @@ export class ProductsService {
 
   findBySlug(tenantId: string, slug: string) {
     return this.productModel
-      .findOne({ tenantId: this.tid(tenantId), slug, status: 'active' })
+      .findOne({ tenantId: this.tid(tenantId), slug, ...catalogStatusFilter() })
       .lean()
       .exec();
   }
@@ -167,6 +185,9 @@ export class ProductsService {
       .findOne({ _id: productId, tenantId: this.tid(tenantId) })
       .exec();
     if (!product) throw new BadRequestException(`Product not found: ${productId}`);
+    if (!isPurchasableStatus(product.status)) {
+      throw new BadRequestException(`${product.title} is not available for purchase`);
+    }
 
     const variant = product.variants.find((v) => v.sku === sku);
     if (!variant) throw new BadRequestException(`Variant not found: ${sku}`);
@@ -175,6 +196,9 @@ export class ProductsService {
     }
 
     variant.stockQty -= quantity;
+    if (variant.stockQty === 0) {
+      product.status = 'out_of_stock';
+    }
     await product.save();
     return variant;
   }
@@ -182,10 +206,8 @@ export class ProductsService {
   async search(tenantId: string, query: string, page = 1, limit = 12) {
     const tid = this.tid(tenantId);
     const q = query.trim();
-    const filter: Record<string, unknown> = { tenantId: tid, status: 'active' };
+    const filter: Record<string, unknown> = { tenantId: tid, ...catalogStatusFilter() };
     if (q) {
-      // Escaped regex avoids requiring a Mongo text index (which caused 500s)
-      // and stays safe against special characters in the query.
       const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = { $regex: safe, $options: 'i' };
       filter.$or = [

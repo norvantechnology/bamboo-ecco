@@ -93,6 +93,46 @@ export function ProductsPage() {
     }
   }
 
+  async function setStatus(product: AdminProduct, status: string) {
+    try {
+      await updateProduct(product._id, {
+        categoryId: product.categoryId ?? categories[0]?._id ?? "",
+        slug: product.slug,
+        title: product.title,
+        description: product.description,
+        status,
+        isFeatured: product.isFeatured,
+        isNewArrival: product.isNewArrival,
+        images: product.images,
+        variants: product.variants,
+      });
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Status update failed");
+    }
+  }
+
+  function statusBadge(status: string) {
+    const key = status === "archived" ? "hidden" : status;
+    const styles: Record<string, string> = {
+      active: "bg-green-50 text-green-800",
+      out_of_stock: "bg-amber-50 text-amber-900",
+      draft: "bg-slate-100 text-slate-700",
+      hidden: "bg-red-50 text-red-800",
+    };
+    const labels: Record<string, string> = {
+      active: "Active",
+      out_of_stock: "Out of stock",
+      draft: "Draft",
+      hidden: "Hidden",
+    };
+    return (
+      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${styles[key] ?? "bg-background text-muted"}`}>
+        {labels[key] ?? status}
+      </span>
+    );
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -203,17 +243,21 @@ export function ProductsPage() {
                   })}
               </select>
             </label>
-            <label className="block text-sm">
+            <label className="block text-sm sm:col-span-2">
               <span className="text-muted">Status</span>
               <select
-                value={form.status}
+                value={form.status === "archived" ? "hidden" : form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="mt-1 w-full rounded-lg border border-border px-3 py-2"
               >
-                <option value="active">Active</option>
-                <option value="draft">Draft</option>
-                <option value="archived">Archived</option>
+                <option value="active">Active (in stock — shown in shop)</option>
+                <option value="out_of_stock">Out of stock (shown, cannot buy)</option>
+                <option value="draft">Draft (not shown on site)</option>
+                <option value="hidden">Hidden (not shown anywhere)</option>
               </select>
+              <span className="mt-1 block text-xs text-muted">
+                Hidden and draft products are never returned by shop, search, homepage, or sitemap.
+              </span>
             </label>
             <label className="block text-sm">
               <span className="text-muted">SKU</span>
@@ -417,9 +461,20 @@ export function ProductsPage() {
                   <td className="px-4 py-3 text-muted">{variant?.sku ?? "—"}</td>
                   <td className="px-4 py-3">{variant ? formatInr(variant.price) : "—"}</td>
                   <td className="px-4 py-3">{variant?.stockQty ?? 0}</td>
-                  <td className="px-4 py-3 capitalize">{product.status}</td>
+                  <td className="px-4 py-3">{statusBadge(product.status)}</td>
                   <td className="px-4 py-3">
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <select
+                        aria-label={`Status for ${product.title}`}
+                        value={product.status === "archived" ? "hidden" : product.status}
+                        onChange={(e) => setStatus(product, e.target.value)}
+                        className="max-w-[140px] rounded-lg border border-border bg-background px-2 py-1 text-xs"
+                      >
+                        <option value="active">Active</option>
+                        <option value="out_of_stock">Out of stock</option>
+                        <option value="draft">Draft</option>
+                        <option value="hidden">Hidden</option>
+                      </select>
                       <button
                         type="button"
                         onClick={() => openEdit(product)}

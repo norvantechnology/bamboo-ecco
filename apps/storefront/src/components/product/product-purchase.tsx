@@ -5,6 +5,7 @@ import { Minus, Plus } from "lucide-react";
 import { AddToCartButton } from "./add-to-cart-button";
 import { formatPrice, formatVariantSubtitle, cn } from "@/lib/utils";
 import type { Product } from "@/lib/api";
+import { isProductInStock } from "@/lib/api";
 
 interface Props {
   product: Product;
@@ -18,6 +19,7 @@ export function ProductPurchase({ product, defaultImage }: Props) {
 
   if (!variant) return null;
 
+  const inStock = isProductInStock(product, variant.stockQty);
   const maxQty = Math.max(1, variant.stockQty || 1);
 
   const hasMultiple = product.variants.length > 1;
@@ -61,7 +63,7 @@ export function ProductPurchase({ product, defaultImage }: Props) {
           {formatPrice(variant.price, variant.currency)}
         </p>
         <p className="mt-1.5 text-sm font-medium sm:text-base">
-          {variant.stockQty > 0 ? (
+          {inStock ? (
             <span className="text-secondary">In stock — {variant.stockQty} available</span>
           ) : (
             <span className="text-red-700">Out of stock</span>
@@ -69,7 +71,7 @@ export function ProductPurchase({ product, defaultImage }: Props) {
         </p>
       </div>
 
-      {variant.stockQty > 0 && (
+      {inStock && (
         <div className="mt-5 flex items-center gap-3">
           <span className="text-sm font-medium text-muted">Quantity</span>
           <div className="flex items-center rounded-xl border border-border">
@@ -105,7 +107,7 @@ export function ProductPurchase({ product, defaultImage }: Props) {
           image={defaultImage}
           price={variant.price}
           quantity={quantity}
-          disabled={variant.stockQty === 0}
+          disabled={!inStock}
         />
       </div>
     </div>

@@ -74,7 +74,7 @@ export class CreateProductDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(['draft', 'active', 'archived'])
+  @IsEnum(['draft', 'active', 'out_of_stock', 'hidden', 'archived'])
   status?: string;
 
   @IsOptional()

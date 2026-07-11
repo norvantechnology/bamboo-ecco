@@ -53,7 +53,7 @@ export function ContentPage() {
     load();
   }, [filter]);
 
-  useRefetchOnFocus(load);
+  useRefetchOnFocus(load, { enabled: !showEditor });
 
   function startNew() {
     setEditing(null);

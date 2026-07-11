@@ -318,10 +318,16 @@ export function HomepagePage() {
         setCounts((c) => ({
           ...c,
           categoriesWithImage: roots.filter((cat) => cat.imageUrl).length,
-          featuredProducts: products.filter((p) => p.isFeatured && p.status === "active").length,
-          newArrivals: products.filter((p) => p.isNewArrival && p.status === "active").length,
+          featuredProducts: products.filter(
+            (p) => p.isFeatured && (p.status === "active" || p.status === "out_of_stock"),
+          ).length,
+          newArrivals: products.filter(
+            (p) => p.isNewArrival && (p.status === "active" || p.status === "out_of_stock"),
+          ).length,
           lifestyleProducts: products.filter(
-            (p) => p.status === "active" && p.images?.some((img) => img.type === "lifestyle"),
+            (p) =>
+              (p.status === "active" || p.status === "out_of_stock") &&
+              p.images?.some((img) => img.type === "lifestyle"),
           ).length,
           approvedReviews: reviews.length,
           publishedPhotos: customerPhotos.filter((p) => p.published).length,
@@ -354,18 +360,22 @@ export function HomepagePage() {
       .catch(() => setCloudinaryReady(false));
   }, []);
 
-  useRefetchOnFocus(() => {
-    getAdminSettings()
-      .then((s) => {
-        setSections(s.homepageSections ?? null);
-        setHero(s.hero);
-        setTagline(s.tagline);
-        setBrandPillars(s.brandPillars ?? []);
-        setWhyChooseUs(s.whyChooseUs ?? []);
-      })
-      .catch(() => {});
-    loadCounts();
-  });
+  useRefetchOnFocus(
+    () => {
+      getAdminSettings()
+        .then((s) => {
+          setSections(s.homepageSections ?? null);
+          setHero(s.hero);
+          setTagline(s.tagline);
+          setBrandPillars(s.brandPillars ?? []);
+          setWhyChooseUs(s.whyChooseUs ?? []);
+        })
+        .catch(() => {});
+      loadCounts();
+    },
+    // Don't overwrite in-progress edits when returning from Preview / file picker
+    { enabled: saved },
+  );
 
   function updateSection(key: SectionKey, patch: Partial<HomepageSection>) {
     if (!sections) return;

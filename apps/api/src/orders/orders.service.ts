@@ -9,6 +9,7 @@ import { ProductsService } from '../products/products.service';
 import { PaymentsService } from '../payments/payments.service';
 import { InvoiceService } from '../invoices/invoice.service';
 import { CheckoutDto, UpdateOrderStatusDto } from '../admin/dto/admin.dto';
+import { isPurchasableStatus } from '../products/product-status';
 
 @Injectable()
 export class OrdersService {
@@ -367,7 +368,7 @@ export class OrdersService {
 
     for (const item of items) {
       const product = await this.productsService.findById(tenantId, item.productId);
-      if (!product || product.status !== 'active') {
+      if (!product || !isPurchasableStatus(product.status)) {
         throw new BadRequestException(`Product unavailable: ${item.productId}`);
       }
       const variant = product.variants.find((v) => v.sku === item.sku);

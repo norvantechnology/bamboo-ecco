@@ -11,6 +11,7 @@ import { GalleryItem, GalleryItemDocument } from '../schemas/gallery-item.schema
 import { resolveHomepageSections } from '../cms/homepage-sections.defaults';
 import { resolveWelcomePopup, resolveAnnouncementBar } from '../cms/promotions.defaults';
 import { resolveTenantSeo } from '../cms/seo.defaults';
+import { catalogStatusFilter } from '../products/product-status';
 
 export interface CategoryTreeNode {
   _id: string;
@@ -77,7 +78,7 @@ export class StorefrontService {
     ] = await Promise.all([
       sections.bestSellers.enabled
         ? this.productModel
-            .find({ tenantId: tid, status: 'active', isFeatured: true })
+            .find({ tenantId: tid, ...catalogStatusFilter(), isFeatured: true })
             .sort({ 'ratingSummary.avg': -1 })
             .limit(sections.bestSellers.limit ?? 8)
             .lean()
@@ -85,14 +86,14 @@ export class StorefrontService {
         : Promise.resolve([]),
       sections.lifestyle.enabled
         ? this.productModel
-            .find({ tenantId: tid, status: 'active', 'images.type': 'lifestyle' })
+            .find({ tenantId: tid, ...catalogStatusFilter(), 'images.type': 'lifestyle' })
             .limit(sections.lifestyle.limit ?? 6)
             .lean()
             .exec()
         : Promise.resolve([]),
       sections.newArrivals.enabled
         ? this.productModel
-            .find({ tenantId: tid, status: 'active', isNewArrival: true })
+            .find({ tenantId: tid, ...catalogStatusFilter(), isNewArrival: true })
             .sort({ createdAt: -1 })
             .limit(sections.newArrivals.limit ?? 4)
             .lean()
@@ -318,7 +319,7 @@ export class StorefrontService {
         .exec(),
       this.categoryModel.find({ tenantId: tid }).select('slug updatedAt').lean().exec(),
       this.productModel
-        .find({ tenantId: tid, status: 'active' })
+        .find({ tenantId: tid, ...catalogStatusFilter() })
         .select('slug updatedAt')
         .lean()
         .exec(),
@@ -367,7 +368,7 @@ export class StorefrontService {
     );
 
     const products = await this.productModel
-      .find({ tenantId: tid, categoryId: { $in: scopeIds }, status: 'active' })
+      .find({ tenantId: tid, categoryId: { $in: scopeIds }, ...catalogStatusFilter() })
       .sort({ isFeatured: -1, 'ratingSummary.avg': -1 })
       .limit(8)
       .lean()
