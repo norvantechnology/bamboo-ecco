@@ -1,4 +1,4 @@
-import { getRuntimeApiUrl } from "./api-config";
+import { getRuntimeApiUrl, getTenantDomain } from "./api-config";
 
 export interface AuthUser {
   id: string;
@@ -25,13 +25,6 @@ export interface AccountOrder {
 
 let refreshPromise: Promise<string | null> | null = null;
 
-function tenantDomainHeader(): string {
-  if (typeof window !== "undefined") {
-    return window.location.hostname || "localhost";
-  }
-  return "localhost";
-}
-
 async function refreshAccessToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   const refresh = localStorage.getItem("terra_refresh");
@@ -42,7 +35,7 @@ async function refreshAccessToken(): Promise<string | null> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-tenant-domain": tenantDomainHeader(),
+        "x-tenant-domain": getTenantDomain(),
       },
       body: JSON.stringify({ refreshToken: refresh }),
     });
@@ -66,7 +59,7 @@ async function customerApi<T>(
     ...rest,
     headers: {
       "Content-Type": "application/json",
-      "x-tenant-domain": tenantDomainHeader(),
+      "x-tenant-domain": getTenantDomain(),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...rest.headers,
     },
@@ -157,7 +150,7 @@ export function getAccountOrder(id: string) {
 export async function searchProducts(q: string, page = 1) {
   const res = await fetch(
     `${getRuntimeApiUrl()}/products/search?q=${encodeURIComponent(q)}&page=${page}`,
-    { headers: { "x-tenant-domain": tenantDomainHeader() }, cache: "no-store" },
+    { headers: { "x-tenant-domain": getTenantDomain() }, cache: "no-store" },
   );
   if (!res.ok) throw new Error(`Search failed: ${res.status}`);
   return res.json() as Promise<{

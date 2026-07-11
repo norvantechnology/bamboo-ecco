@@ -1,5 +1,5 @@
 import { withHomepageSections } from "./homepage-sections";
-import { getApiUrl, getRuntimeApiUrl } from "./api-config";
+import { getApiUrl, getRuntimeApiUrl, getTenantDomain } from "./api-config";
 import { fetchWithTimeout } from "./fetch-with-timeout";
 
 const IS_DEV = process.env.NODE_ENV === "development";
@@ -14,7 +14,7 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      "x-tenant-domain": "localhost",
+      "x-tenant-domain": getTenantDomain(),
       ...options?.headers,
     },
     // In dev, always fetch fresh data so admin edits show on normal refresh.
@@ -359,7 +359,7 @@ export interface PaymentConfig {
 
 export async function getPaymentConfig() {
   const res = await fetch(`${getRuntimeApiUrl()}/checkout/payment-config`, {
-    headers: { "x-tenant-domain": "localhost" },
+    headers: { "x-tenant-domain": getTenantDomain() },
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`Payment config unavailable: ${res.status}`);
@@ -372,7 +372,7 @@ export async function checkout(data: CheckoutPayload) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-tenant-domain": "localhost",
+      "x-tenant-domain": getTenantDomain(),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(data),
@@ -387,7 +387,7 @@ export async function checkout(data: CheckoutPayload) {
 export async function mockPayOrder(orderId: string) {
   const res = await fetch(`${getRuntimeApiUrl()}/checkout/mock-pay/${orderId}`, {
     method: "POST",
-    headers: { "x-tenant-domain": "localhost" },
+    headers: { "x-tenant-domain": getTenantDomain() },
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -406,7 +406,7 @@ export async function verifyPayment(data: {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-tenant-domain": "localhost",
+      "x-tenant-domain": getTenantDomain(),
     },
     body: JSON.stringify(data),
   });
@@ -438,7 +438,7 @@ export interface OrderDetail {
 
 export async function getOrder(id: string) {
   const res = await fetch(`${getRuntimeApiUrl()}/checkout/order/${id}`, {
-    headers: { "x-tenant-domain": "localhost" },
+    headers: { "x-tenant-domain": getTenantDomain() },
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`Order not found: ${res.status}`);
@@ -452,7 +452,7 @@ export interface TrackOrderResult extends OrderDetail {
 export async function trackOrder(orderId: string, email: string) {
   const params = new URLSearchParams({ orderId, email });
   const res = await fetch(`${getRuntimeApiUrl()}/checkout/track?${params}`, {
-    headers: { "x-tenant-domain": "localhost" },
+    headers: { "x-tenant-domain": getTenantDomain() },
     cache: "no-store",
   });
   if (!res.ok) {

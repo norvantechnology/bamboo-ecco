@@ -1,5 +1,5 @@
 import type { AnnouncementBarConfig, Category, FooterLinks } from "./api";
-import { getApiUrl } from "./api-config";
+import { getApiUrl, getTenantDomain } from "./api-config";
 import { fetchWithTimeout } from "./fetch-with-timeout";
 
 const IS_DEV = process.env.NODE_ENV === "development";
@@ -25,7 +25,7 @@ export async function getLayoutData(): Promise<LayoutData | null> {
     const res = await fetchWithTimeout(`${apiUrl}/storefront/layout`, {
       headers: {
         "Content-Type": "application/json",
-        "x-tenant-domain": "localhost",
+        "x-tenant-domain": getTenantDomain(),
       },
       ...(IS_DEV ? { cache: "no-store" as const } : { next: { revalidate: 120 } }),
     });

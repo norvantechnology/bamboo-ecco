@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getApiUrl } from "@/lib/api-config";
+import { getApiUrl, getTenantDomain } from "@/lib/api-config";
 import { fetchWithTimeout } from "@/lib/fetch-with-timeout";
 
 type RedirectRule = { fromPath: string; toPath: string; statusCode: number };
@@ -15,7 +15,7 @@ async function loadRedirects(): Promise<RedirectRule[]> {
 
   try {
     const res = await fetchWithTimeout(`${api}/storefront/redirects`, {
-      headers: { "x-tenant-domain": "localhost" },
+      headers: { "x-tenant-domain": getTenantDomain() },
       next: { revalidate: 300 },
       timeoutMs: 5_000,
     });

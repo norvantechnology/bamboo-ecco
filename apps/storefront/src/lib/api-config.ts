@@ -26,3 +26,17 @@ export function getApiUrl(): string | null {
 export function getRuntimeApiUrl(): string {
   return process.env.NEXT_PUBLIC_API_URL?.trim() || LOCAL_API;
 }
+
+/**
+ * Tenant hostname sent as `x-tenant-domain`.
+ * Prefer NEXT_PUBLIC_TENANT_DOMAIN so Vercel/custom domains can map to the
+ * domain stored on the tenant document (often "localhost" after seeding).
+ */
+export function getTenantDomain(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_TENANT_DOMAIN?.trim();
+  if (fromEnv) return fromEnv.replace(/^www\./, "").toLowerCase();
+  if (typeof window !== "undefined" && window.location?.hostname) {
+    return window.location.hostname.replace(/^www\./, "").toLowerCase();
+  }
+  return "localhost";
+}

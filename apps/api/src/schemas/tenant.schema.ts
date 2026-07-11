@@ -134,6 +134,10 @@ export class Tenant {
   @Prop({ required: true, unique: true, lowercase: true, trim: true })
   domain: string;
 
+  /** Extra hostnames that resolve to this tenant (e.g. Vercel preview, custom domain). */
+  @Prop({ type: [String], default: [] })
+  domains: string[];
+
   @Prop({ default: 'starter', enum: ['starter', 'growth', 'enterprise'] })
   plan: string;
 

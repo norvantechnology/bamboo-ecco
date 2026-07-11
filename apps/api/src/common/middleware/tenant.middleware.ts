@@ -15,9 +15,27 @@ export class TenantMiddleware implements NestMiddleware {
 
   async use(req: TenantRequest, _res: Response, next: NextFunction) {
     const host = (req.headers['x-tenant-domain'] as string) || req.hostname;
-    const domain = host.replace(/^www\./, '').toLowerCase();
+    const domain = host.replace(/^www\./, '').toLowerCase().trim();
 
-    const tenant = await this.tenantModel.findOne({ domain }).exec();
+    let tenant =
+      (await this.tenantModel
+        .findOne({
+          $or: [{ domain }, { domains: domain }],
+        })
+        .exec()) || null;
+
+    // Single-tenant fallback (e.g. Railway seeded as "localhost" but storefront sends Vercel host)
+    if (!tenant) {
+      const fallback = process.env.DEFAULT_TENANT_DOMAIN?.trim().toLowerCase();
+      if (fallback) {
+        tenant = await this.tenantModel
+          .findOne({
+            $or: [{ domain: fallback }, { domains: fallback }],
+          })
+          .exec();
+      }
+    }
+
     if (!tenant) {
       throw new NotFoundException(`Tenant not found for domain: ${domain}`);
     }
