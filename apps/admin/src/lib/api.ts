@@ -464,6 +464,8 @@ export interface TenantSeoSettings {
 export interface TenantSettings {
   name: string;
   tagline: string;
+  /** When false, checkout skips online payment and still places the order. */
+  paymentEnabled?: boolean;
   hero: { headline: string; subheading: string; imageUrl?: string; primaryCta: string; secondaryCta: string };
   brandPillars: { icon: string; title: string; description: string }[];
   whyChooseUs: { icon: string; title: string; description: string }[];

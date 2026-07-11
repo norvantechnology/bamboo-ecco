@@ -205,6 +205,7 @@ export class CmsService {
       homepageSections: resolveHomepageSections(tenant.homepageSections),
       welcomePopup: resolveWelcomePopup(tenant.welcomePopup),
       announcementBar: resolveAnnouncementBar(tenant.announcementBar),
+      paymentEnabled: tenant.paymentEnabled !== false,
     };
   }
 
@@ -225,6 +226,7 @@ export class CmsService {
       homepageSections: Record<string, unknown>;
       welcomePopup: Record<string, unknown>;
       announcementBar: Record<string, unknown>;
+      paymentEnabled: boolean;
     }>,
   ) {
     const $set: Record<string, unknown> = { ...data };
@@ -256,6 +258,7 @@ export class CmsService {
       homepageSections: resolveHomepageSections(tenant.homepageSections),
       welcomePopup: resolveWelcomePopup(tenant.welcomePopup),
       announcementBar: resolveAnnouncementBar(tenant.announcementBar),
+      paymentEnabled: tenant.paymentEnabled !== false,
     };
   }
 }

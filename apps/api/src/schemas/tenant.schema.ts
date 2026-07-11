@@ -226,6 +226,13 @@ export class Tenant {
     animation: 'marquee' | 'pulse' | 'slide' | 'none';
     dismissible: boolean;
   };
+
+  /**
+   * When false, checkout creates the order and completes without Razorpay
+   * (same customer flow, payment step skipped).
+   */
+  @Prop({ default: true })
+  paymentEnabled: boolean;
 }
 
 export const TenantSchema = SchemaFactory.createForClass(Tenant);

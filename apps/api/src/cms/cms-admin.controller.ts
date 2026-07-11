@@ -148,6 +148,7 @@ export class CmsAdminController {
       homepageSections: Record<string, unknown>;
       welcomePopup: Record<string, unknown>;
       announcementBar: Record<string, unknown>;
+      paymentEnabled: boolean;
     }>,
   ) {
     return this.cmsService.updateTenantSettings(tenantId, body);

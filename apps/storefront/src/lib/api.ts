@@ -84,7 +84,7 @@ export interface CollectionData {
 export interface ProductImage {
   url: string;
   alt: string;
-  sortOrder: number;
+  sortOrder?: number;
   type?: string;
 }
 
@@ -362,6 +362,9 @@ export interface CheckoutCompleteResult {
 export interface PaymentConfig {
   provider: string;
   enabled: boolean;
+  /** Store setting — false means checkout skips gateway. */
+  paymentEnabled?: boolean;
+  skipPayment?: boolean;
   keyId?: string;
 }
 

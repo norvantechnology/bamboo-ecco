@@ -230,6 +230,25 @@ export class OrdersService {
     return this.formatOrderSummary(order.toObject());
   }
 
+  private async isTenantPaymentEnabled(tenantId: string) {
+    const tenant = await this.tenantModel.findById(this.tid(tenantId)).select('paymentEnabled').lean().exec();
+    return tenant?.paymentEnabled !== false;
+  }
+
+  /** Public checkout payment config (Razorpay + store payment toggle). */
+  async getPaymentConfig(tenantId: string) {
+    const paymentEnabled = await this.isTenantPaymentEnabled(tenantId);
+    const razorpayReady = this.paymentsService.isConfigured();
+    const enabled = paymentEnabled && razorpayReady;
+    return {
+      provider: 'razorpay',
+      enabled,
+      paymentEnabled,
+      skipPayment: !enabled,
+      keyId: enabled ? this.paymentsService.getPublicKey() : undefined,
+    };
+  }
+
   async checkout(tenantId: string, dto: CheckoutDto, userId?: string) {
     const { orderItems, total, currency } = await this.validateCart(tenantId, dto.items);
 
@@ -250,6 +269,9 @@ export class OrdersService {
       }
     }
 
+    const paymentEnabled = await this.isTenantPaymentEnabled(tenantId);
+    const useOnlinePayment = paymentEnabled && this.paymentsService.isConfigured();
+
     const order = await this.orderModel.create({
       tenantId: this.tid(tenantId),
       userId: orderUserId,
@@ -260,18 +282,32 @@ export class OrdersService {
       items: orderItems,
       total,
       currency,
-      events: [{ type: 'pending', note: 'Order created — awaiting payment', at: new Date() }],
+      paymentProvider: useOnlinePayment ? 'razorpay' : 'none',
+      events: [
+        {
+          type: 'pending',
+          note: useOnlinePayment
+            ? 'Order created — awaiting payment'
+            : paymentEnabled
+              ? 'Order created — completing without gateway'
+              : 'Order created — online payment disabled by store',
+          at: new Date(),
+        },
+      ],
     });
 
     const orderId = order._id.toString();
 
-    if (!this.paymentsService.isConfigured()) {
+    if (!useOnlinePayment) {
       return {
         orderId,
         mock: true,
+        skipPayment: !paymentEnabled,
         total,
         currency,
-        message: 'Dev mode — call POST /checkout/mock-pay to complete',
+        message: paymentEnabled
+          ? 'Payment gateway not configured — complete without online payment'
+          : 'Online payment disabled — complete without payment',
       };
     }
 
@@ -313,22 +349,29 @@ export class OrdersService {
       throw new BadRequestException('Invalid payment signature');
     }
 
-    return this.finalizePayment(order, paymentId);
+    return this.finalizePayment(order, paymentId, false);
   }
 
   async mockPay(tenantId: string, orderId: string) {
-    if (this.paymentsService.isConfigured()) {
-      throw new BadRequestException('Mock payment disabled when Razorpay is configured');
+    const paymentEnabled = await this.isTenantPaymentEnabled(tenantId);
+    // Allow skip when store disabled payments OR gateway is not configured
+    if (paymentEnabled && this.paymentsService.isConfigured()) {
+      throw new BadRequestException('Online payment is required for this order');
     }
     const order = await this.orderModel
       .findOne({ _id: orderId, tenantId: this.tid(tenantId) })
       .exec();
     if (!order) throw new NotFoundException('Order not found');
     if (order.status !== 'pending') throw new BadRequestException('Order already processed');
-    return this.finalizePayment(order, `mock_${Date.now()}`);
+    const skipPayment = !paymentEnabled;
+    return this.finalizePayment(
+      order,
+      skipPayment ? `skipped_${Date.now()}` : `mock_${Date.now()}`,
+      skipPayment,
+    );
   }
 
-  private async finalizePayment(order: OrderDocument, paymentId: string) {
+  private async finalizePayment(order: OrderDocument, paymentId: string, paymentSkipped = false) {
     for (const item of order.items) {
       const product = await this.productModel
         .findOne({ tenantId: order.tenantId, 'variants.sku': item.sku })
@@ -345,7 +388,14 @@ export class OrdersService {
 
     order.status = 'paid';
     order.paymentId = paymentId;
-    order.events.push({ type: 'paid', note: 'Payment confirmed', at: new Date() });
+    if (!order.paymentProvider) {
+      order.paymentProvider = paymentSkipped ? 'none' : 'mock';
+    }
+    order.events.push({
+      type: 'paid',
+      note: paymentSkipped ? 'Order confirmed — online payment skipped' : 'Payment confirmed',
+      at: new Date(),
+    });
     await order.save();
 
     return {

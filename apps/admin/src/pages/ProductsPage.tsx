@@ -328,68 +328,173 @@ export function ProductsPage() {
             </label>
           </div>
 
-          <div className="mt-4 space-y-2">
-            <p className="text-sm text-muted">Product image</p>
-            <ImageUpload
-              folder="products"
-              alt={form.title || "Product"}
-              onUploaded={(r) => {
-                const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
-                setForm({
-                  ...form,
-                  images: [
-                    { url: r.url, alt: form.title || "Product", sortOrder: 0, type: "product" },
-                    ...lifestyle,
-                  ],
-                });
-              }}
-            />
+          <div className="mt-4 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-medium">Product images</p>
+                <p className="text-xs text-muted">
+                  Add several photos — customers can scroll through them on the product page.
+                </p>
+              </div>
+              <ImageUpload
+                folder="products"
+                alt={form.title || "Product"}
+                label="Add images"
+                multiple
+                onUploadedMany={(results) => {
+                  const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                  const existing = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                  const added = results.map((r, idx) => ({
+                    url: r.url,
+                    alt: form.title || "Product",
+                    sortOrder: existing.length + idx,
+                    type: "product" as const,
+                  }));
+                  setForm({
+                    ...form,
+                    images: [...existing, ...added, ...lifestyle],
+                  });
+                }}
+              />
+            </div>
+
+            {(form.images?.filter((i) => i.type !== "lifestyle").length ?? 0) > 0 ? (
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {form.images
+                  ?.filter((i) => i.type !== "lifestyle")
+                  .map((img, index) => (
+                    <li
+                      key={`${img.url}-${index}`}
+                      className="group relative overflow-hidden rounded-lg border border-border bg-background"
+                    >
+                      <img
+                        src={img.url}
+                        alt={img.alt || form.title}
+                        className="aspect-square w-full object-contain p-2"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-black/55 px-2 py-1.5 text-xs text-white">
+                        <span>#{index + 1}</span>
+                        <div className="flex gap-1">
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => {
+                              const productImgs =
+                                form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                              const lifestyle =
+                                form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                              if (index <= 0) return;
+                              const next = [...productImgs];
+                              [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                              setForm({
+                                ...form,
+                                images: [
+                                  ...next.map((im, i) => ({ ...im, sortOrder: i, type: "product" })),
+                                  ...lifestyle,
+                                ],
+                              });
+                            }}
+                            className="rounded bg-white/15 px-1.5 py-0.5 disabled:opacity-30"
+                            title="Move earlier"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const productImgs =
+                                form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                              const lifestyle =
+                                form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                              const next = productImgs.filter((_, i) => i !== index);
+                              setForm({
+                                ...form,
+                                images: [
+                                  ...next.map((im, i) => ({ ...im, sortOrder: i, type: "product" })),
+                                  ...lifestyle,
+                                ],
+                              });
+                            }}
+                            className="rounded bg-red-500/80 px-1.5 py-0.5"
+                            title="Remove"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <p className="rounded-lg border border-dashed border-border px-3 py-6 text-center text-sm text-muted">
+                No product photos yet. Upload one or more images.
+              </p>
+            )}
+
             <input
-              placeholder="Image URL"
-              value={form.images?.find((i) => i.type !== "lifestyle")?.url ?? ""}
-              onChange={(e) => {
+              placeholder="Or paste an image URL and press Enter"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+                e.preventDefault();
+                const input = e.currentTarget;
+                const url = input.value.trim();
+                if (!url) return;
                 const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                const existing = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
                 setForm({
                   ...form,
                   images: [
-                    { url: e.target.value, alt: form.title || "Product", sortOrder: 0, type: "product" },
+                    ...existing,
+                    {
+                      url,
+                      alt: form.title || "Product",
+                      sortOrder: existing.length,
+                      type: "product",
+                    },
                     ...lifestyle,
                   ],
                 });
+                input.value = "";
               }}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
             />
           </div>
 
           <div className="mt-4 space-y-2">
-            <p className="text-sm text-muted">Lifestyle image (optional — shows in “In Real Homes” on homepage)</p>
+            <p className="text-sm text-muted">
+              Lifestyle image (optional — shows in “In Real Homes” on homepage)
+            </p>
             <ImageUpload
               folder="products/lifestyle"
               alt={`${form.title || "Product"} in a home`}
               label="Upload lifestyle photo"
               onUploaded={(r) => {
-                const product = form.images?.find((i) => i.type !== "lifestyle");
-                const images = product ? [product] : [];
-                images.push({
-                  url: r.url,
-                  alt: `${form.title || "Product"} in a home`,
-                  sortOrder: 1,
-                  type: "lifestyle",
+                const productImgs = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                setForm({
+                  ...form,
+                  images: [
+                    ...productImgs,
+                    {
+                      url: r.url,
+                      alt: `${form.title || "Product"} in a home`,
+                      sortOrder: productImgs.length,
+                      type: "lifestyle",
+                    },
+                  ],
                 });
-                setForm({ ...form, images });
               }}
             />
             <input
               placeholder="Lifestyle image URL"
               value={form.images?.find((i) => i.type === "lifestyle")?.url ?? ""}
               onChange={(e) => {
-                const product = form.images?.find((i) => i.type !== "lifestyle");
-                const images = product ? [product] : [];
+                const productImgs = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                const images = [...productImgs];
                 if (e.target.value) {
                   images.push({
                     url: e.target.value,
                     alt: `${form.title || "Product"} in a home`,
-                    sortOrder: 1,
+                    sortOrder: productImgs.length,
                     type: "lifestyle",
                   });
                 }

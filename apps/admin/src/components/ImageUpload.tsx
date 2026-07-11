@@ -9,21 +9,44 @@ interface Props {
   alt?: string;
   caption?: string;
   slug?: string;
-  onUploaded: (result: { url: string; publicId: string; alt?: string }) => void;
+  onUploaded?: (result: { url: string; publicId: string; alt?: string }) => void;
+  /** Called once per file when multiple is enabled. */
+  onUploadedMany?: (results: { url: string; publicId: string; alt?: string }[]) => void;
   label?: string;
+  /** Allow selecting multiple files at once. */
+  multiple?: boolean;
 }
 
-export function ImageUpload({ folder = "media", alt, caption, slug, onUploaded, label = "Upload image" }: Props) {
+export function ImageUpload({
+  folder = "media",
+  alt,
+  caption,
+  slug,
+  onUploaded,
+  onUploadedMany,
+  label = "Upload image",
+  multiple = false,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleFile(file: File) {
+  async function handleFiles(files: FileList | File[]) {
+    const list = Array.from(files);
+    if (!list.length) return;
     setLoading(true);
     setError("");
     try {
-      const result = await uploadMedia(file, { folder, alt, caption, slug });
-      onUploaded(result);
+      const results: { url: string; publicId: string; alt?: string }[] = [];
+      for (const file of list) {
+        const result = await uploadMedia(file, { folder, alt, caption, slug });
+        results.push(result);
+      }
+      if (multiple) {
+        onUploadedMany?.(results);
+      } else if (results[0]) {
+        onUploaded(results[0]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -38,10 +61,10 @@ export function ImageUpload({ folder = "media", alt, caption, slug, onUploaded, 
         ref={inputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+        multiple={multiple}
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleFile(file);
+          if (e.target.files?.length) handleFiles(e.target.files);
         }}
       />
       <button
@@ -53,7 +76,10 @@ export function ImageUpload({ folder = "media", alt, caption, slug, onUploaded, 
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
         {loading ? "Uploading…" : label}
       </button>
-      <p className="text-xs text-muted">JPEG, PNG, WebP, AVIF, GIF — max 10MB. Optimized via Cloudinary.</p>
+      <p className="text-xs text-muted">
+        JPEG, PNG, WebP, AVIF, GIF — max 10MB
+        {multiple ? " each. Select multiple files." : "."} Optimized via Cloudinary.
+      </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

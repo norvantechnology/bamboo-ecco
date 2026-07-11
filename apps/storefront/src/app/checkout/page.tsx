@@ -40,6 +40,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [razorpayEnabled, setRazorpayEnabled] = useState<boolean | null>(null);
+  const [skipPayment, setSkipPayment] = useState(false);
   const [form, setForm] = useState({
     customerName: "",
     customerEmail: "",
@@ -52,8 +53,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     getPaymentConfig()
-      .then((cfg) => setRazorpayEnabled(cfg.enabled))
-      .catch(() => setRazorpayEnabled(false));
+      .then((cfg) => {
+        setRazorpayEnabled(cfg.enabled);
+        setSkipPayment(Boolean(cfg.skipPayment) || !cfg.enabled);
+      })
+      .catch(() => {
+        setRazorpayEnabled(false);
+        setSkipPayment(true);
+      });
 
     const user = getCustomerUser();
     if (user) {
@@ -180,10 +187,10 @@ export default function CheckoutPage() {
 
   const paymentLabel =
     razorpayEnabled === null
-      ? "Loading payment…"
+      ? "Loading…"
       : razorpayEnabled
         ? "Pay securely with Razorpay"
-        : "Continue to payment";
+        : "Place order";
 
   return (
     <div className="container-page py-8 sm:py-12">
@@ -191,7 +198,9 @@ export default function CheckoutPage() {
       <p className="mt-2 text-sm text-muted">
         {razorpayEnabled
           ? "Secure payment powered by Razorpay. UPI, cards, and netbanking accepted."
-          : "Enter your details below to place your order."}
+          : skipPayment
+            ? "Enter your details to place your order. Online payment is not required."
+            : "Enter your details below to place your order."}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 grid gap-6 lg:mt-8 lg:grid-cols-[1fr_340px] lg:gap-10">

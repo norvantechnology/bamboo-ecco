@@ -1,6 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Param, Post, Query, StreamableFile, UseGuards } from '@nestjs/common';
 import { OrdersService } from '../orders/orders.service';
-import { PaymentsService } from '../payments/payments.service';
 import { CurrentTenantId } from '../common/decorators/tenant.decorator';
 import { CurrentUser, AuthUser } from '../common/decorators/user.decorator';
 import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
@@ -8,14 +7,11 @@ import { CheckoutDto, VerifyPaymentDto } from '../admin/dto/admin.dto';
 
 @Controller('checkout')
 export class CheckoutController {
-  constructor(
-    private ordersService: OrdersService,
-    private paymentsService: PaymentsService,
-  ) {}
+  constructor(private ordersService: OrdersService) {}
 
   @Get('payment-config')
-  paymentConfig() {
-    return this.paymentsService.getPaymentConfig();
+  paymentConfig(@CurrentTenantId() tenantId: string) {
+    return this.ordersService.getPaymentConfig(tenantId);
   }
 
   @Post()
