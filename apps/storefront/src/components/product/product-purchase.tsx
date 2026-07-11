@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Minus, Plus } from "lucide-react";
 import { AddToCartButton } from "./add-to-cart-button";
 import { formatPrice, formatVariantSubtitle, cn } from "@/lib/utils";
 import type { Product } from "@/lib/api";
@@ -12,9 +13,12 @@ interface Props {
 
 export function ProductPurchase({ product, defaultImage }: Props) {
   const [selectedSku, setSelectedSku] = useState(product.variants[0]?.sku ?? "");
+  const [quantity, setQuantity] = useState(1);
   const variant = product.variants.find((v) => v.sku === selectedSku) ?? product.variants[0];
 
   if (!variant) return null;
+
+  const maxQty = Math.max(1, variant.stockQty || 1);
 
   const hasMultiple = product.variants.length > 1;
   const attrKey = hasMultiple
@@ -52,19 +56,47 @@ export function ProductPurchase({ product, defaultImage }: Props) {
         </div>
       )}
 
-      <p className="mt-5 font-numeric text-3xl font-semibold sm:text-4xl">
-        {formatPrice(variant.price, variant.currency)}
-      </p>
+      <div className="mt-5">
+        <p className="font-numeric text-3xl font-semibold sm:text-4xl">
+          {formatPrice(variant.price, variant.currency)}
+        </p>
+        <p className="mt-1.5 text-sm font-medium sm:text-base">
+          {variant.stockQty > 0 ? (
+            <span className="text-secondary">In stock — {variant.stockQty} available</span>
+          ) : (
+            <span className="text-red-700">Out of stock</span>
+          )}
+        </p>
+      </div>
 
-      <p className="mt-3 text-base font-medium">
-        {variant.stockQty > 0 ? (
-          <span className="text-secondary">In stock — {variant.stockQty} available</span>
-        ) : (
-          <span className="text-red-700">Out of stock</span>
-        )}
-      </p>
+      {variant.stockQty > 0 && (
+        <div className="mt-5 flex items-center gap-3">
+          <span className="text-sm font-medium text-muted">Quantity</span>
+          <div className="flex items-center rounded-xl border border-border">
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              disabled={quantity <= 1}
+              className="flex h-11 w-11 items-center justify-center rounded-l-xl transition-transform active:scale-90 active:bg-background disabled:opacity-40"
+              aria-label="Decrease quantity"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <span className="w-10 text-center text-base font-medium tabular-nums">{quantity}</span>
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.min(maxQty, q + 1))}
+              disabled={quantity >= maxQty}
+              className="flex h-11 w-11 items-center justify-center rounded-r-xl transition-transform active:scale-90 active:bg-background disabled:opacity-40"
+              aria-label="Increase quantity"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
-      <div className="mt-6 sm:sticky sm:bottom-4">
+      <div className="mt-5 sm:sticky sm:bottom-4">
         <AddToCartButton
           productId={product._id}
           sku={variant.sku}
@@ -72,6 +104,7 @@ export function ProductPurchase({ product, defaultImage }: Props) {
           title={product.title}
           image={defaultImage}
           price={variant.price}
+          quantity={quantity}
           disabled={variant.stockQty === 0}
         />
       </div>

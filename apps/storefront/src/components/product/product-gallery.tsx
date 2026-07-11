@@ -70,6 +70,12 @@ export function ProductGallery({ images, title, model3d }: Props) {
                 className="image-fit-contain p-2"
               />
             )}
+            {productImages.length > 1 && (
+              <span className="absolute bottom-2.5 right-2.5 z-[2] flex items-center gap-1 rounded-full bg-foreground/75 px-2.5 py-1 text-xs font-medium text-background backdrop-blur-sm">
+                <ImageIcon className="h-3.5 w-3.5" />
+                {productImages.length}
+              </span>
+            )}
           </div>
           {productImages.length > 1 && (
             <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-4 sm:gap-2">

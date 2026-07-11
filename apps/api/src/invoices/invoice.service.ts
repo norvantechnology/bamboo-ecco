@@ -33,23 +33,32 @@ const PAGE_RIGHT = 547;
 const PAGE_WIDTH = PAGE_RIGHT - PAGE_LEFT;
 const PAGE_BOTTOM = 780;
 
+// Serif for brand + section headers, sans for body, mono for figures/IDs.
+const FONT_SERIF = 'InvoiceSerif';
 const FONT_BODY = 'InvoiceBody';
 const FONT_BOLD = 'InvoiceBold';
+const FONT_MONO = 'InvoiceMono';
+const FONT_MONO_SB = 'InvoiceMonoSemi';
 
 const COLORS = {
   brand: '#4B3621',
+  brandDark: '#3a2a19',
+  brandLight: '#5c4530',
   accent: '#7A8F6B',
+  gold: '#c4a962',
   text: '#1a1816',
   muted: '#6b6b6b',
-  light: '#999999',
+  light: '#9a978f',
   border: '#e5e3de',
   surface: '#f7f5f0',
+  zebra: '#faf8f5',
   white: '#ffffff',
   paid: '#2d6a4f',
   paidBg: '#e8f5ee',
   pending: '#b8860b',
   pendingBg: '#fef9ec',
   cancelled: '#9b2c2c',
+  cancelledBg: '#fdecec',
 };
 
 @Injectable()
@@ -71,9 +80,9 @@ export class InvoiceService {
       const subtotal = order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
       const currency = (order.currency || 'INR').toUpperCase();
 
-      this.setBodyFont(doc);
+      this.setBody(doc);
       this.drawHeaderBand(doc, store);
-      this.drawTitleRow(doc, isPaid ? 'Tax Invoice' : 'Order Summary', currency);
+      this.drawTitleRow(doc, isPaid ? 'Tax Invoice' : 'Order Summary');
       this.drawMetaPanel(doc, {
         invoiceNo: `INV-${orderNo}`,
         orderId: this.truncateId(order.id),
@@ -85,14 +94,12 @@ export class InvoiceService {
         status: this.formatStatus(order.status),
         statusColor: this.statusColor(order.status),
         statusBg: this.statusBg(order.status),
+        statusSolid: this.statusSolid(order.status),
       });
 
-      doc.moveDown(0.8);
       this.drawAddressRow(doc, order);
-      doc.moveDown(1);
-
       this.drawLineItemsTable(doc, order);
-      this.drawTotalsPanel(doc, order, subtotal);
+      this.drawTotalsPanel(doc, order, subtotal, currency);
       this.drawPaymentPanel(doc, order, isPaid);
       this.drawFooter(doc, store);
 
@@ -100,50 +107,75 @@ export class InvoiceService {
     });
   }
 
+  // ---- fonts -------------------------------------------------------------
+
   private registerFonts(doc: PDFKit.PDFDocument) {
     const fontsDir = path.join(__dirname, 'fonts');
     doc.registerFont(FONT_BODY, path.join(fontsDir, 'Roboto-Regular.ttf'));
     doc.registerFont(FONT_BOLD, path.join(fontsDir, 'Roboto-Bold.ttf'));
-    this.setBodyFont(doc);
+    doc.registerFont(FONT_SERIF, path.join(fontsDir, 'IBMPlexSerif-SemiBold.ttf'));
+    doc.registerFont(FONT_MONO, path.join(fontsDir, 'IBMPlexMono-Regular.ttf'));
+    doc.registerFont(FONT_MONO_SB, path.join(fontsDir, 'IBMPlexMono-SemiBold.ttf'));
+    this.setBody(doc);
   }
 
-  private setBodyFont(doc: PDFKit.PDFDocument) {
+  private setBody(doc: PDFKit.PDFDocument) {
     doc.font(FONT_BODY);
   }
-
-  private setBoldFont(doc: PDFKit.PDFDocument) {
+  private setBold(doc: PDFKit.PDFDocument) {
     doc.font(FONT_BOLD);
   }
+  private setSerif(doc: PDFKit.PDFDocument) {
+    doc.font(FONT_SERIF);
+  }
+  private setMono(doc: PDFKit.PDFDocument) {
+    doc.font(FONT_MONO);
+  }
+  private setMonoSemi(doc: PDFKit.PDFDocument) {
+    doc.font(FONT_MONO_SB);
+  }
+
+  // ---- header ------------------------------------------------------------
 
   private drawHeaderBand(doc: PDFKit.PDFDocument, store: InvoiceStoreInfo) {
-    const y = PAGE_LEFT - 20;
+    const bandHeight = 80;
     const website = this.formatWebsite(store.website);
 
     doc.save();
-    doc.rect(0, 0, 595, 92).fill(COLORS.brand);
-    this.setBoldFont(doc);
-    doc.fillColor(COLORS.white).fontSize(24).text(store.name, PAGE_LEFT, y, { width: 360 });
-    this.setBodyFont(doc);
+    const grad = doc.linearGradient(0, 0, 595, bandHeight);
+    grad.stop(0, COLORS.brandDark).stop(0.55, COLORS.brand).stop(1, COLORS.brandLight);
+    doc.rect(0, 0, 595, bandHeight).fill(grad);
+    // thin gold hairline under the band
+    doc.rect(0, bandHeight, 595, 2).fill(COLORS.gold);
+
+    this.setSerif(doc);
+    doc.fillColor(COLORS.white).fontSize(23).text(store.name, PAGE_LEFT, 18, { width: 380 });
+
+    this.setBody(doc);
     if (store.tagline) {
-      doc.fontSize(9).fillColor('#d4cfc4').text(store.tagline, PAGE_LEFT, y + 30, { width: 360, lineGap: 2 });
+      doc
+        .fontSize(9)
+        .fillColor('#d8d2c6')
+        .text(store.tagline, PAGE_LEFT, 50, { width: 380, lineGap: 2 });
     }
     if (website) {
-      doc.fontSize(9).fillColor('#c4a962').text(website, PAGE_LEFT, y + (store.tagline ? 52 : 34), { width: 360 });
+      doc
+        .fontSize(8.5)
+        .fillColor(COLORS.gold)
+        .text(website, PAGE_LEFT, store.tagline ? 66 : 52, { width: 380 });
     }
     doc.restore();
     doc.y = 104;
   }
 
-  private drawTitleRow(doc: PDFKit.PDFDocument, title: string, currency: string) {
-    this.setBoldFont(doc);
-    doc.fontSize(20).fillColor(COLORS.text).text(title, PAGE_LEFT, doc.y, { align: 'left' });
-    this.setBodyFont(doc);
-    doc.fontSize(9).fillColor(COLORS.muted).text(`All amounts in ${currency}`, PAGE_LEFT, doc.y + 2, {
-      align: 'right',
-      width: PAGE_WIDTH,
-    });
-    doc.y += 28;
+  private drawTitleRow(doc: PDFKit.PDFDocument, title: string) {
+    this.setSerif(doc);
+    doc.fontSize(21).fillColor(COLORS.text).text(title, PAGE_LEFT, doc.y);
+    this.setBody(doc);
+    doc.y += 30;
   }
+
+  // ---- meta panel --------------------------------------------------------
 
   private drawMetaPanel(
     doc: PDFKit.PDFDocument,
@@ -154,45 +186,52 @@ export class InvoiceService {
       status: string;
       statusColor: string;
       statusBg: string;
+      statusSolid: boolean;
     },
   ) {
     const top = doc.y;
-    const panelHeight = 76;
-    const colWidth = PAGE_WIDTH / 2 - 8;
+    const panelHeight = 82;
+    const midX = PAGE_LEFT + PAGE_WIDTH / 2;
+    const leftX = PAGE_LEFT + 18;
+    const rightX = midX + 18;
+    const colWidth = PAGE_WIDTH / 2 - 34;
 
     doc.save();
-    doc.roundedRect(PAGE_LEFT, top, PAGE_WIDTH, panelHeight, 8).fill(COLORS.surface);
+    doc.roundedRect(PAGE_LEFT, top, PAGE_WIDTH, panelHeight, 10).fill(COLORS.surface);
     doc.restore();
 
-    const labelY = top + 14;
-    const valueY = top + 28;
+    // vertical rule grouping the 2x2 grid
+    doc.save();
+    doc
+      .moveTo(midX, top + 16)
+      .lineTo(midX, top + panelHeight - 16)
+      .lineWidth(1)
+      .strokeColor(COLORS.border)
+      .stroke();
+    doc.restore();
 
-    this.drawMetaField(doc, 'Invoice number', meta.invoiceNo, PAGE_LEFT + 16, labelY, valueY, colWidth, true);
-    this.drawMetaField(doc, 'Order date', meta.date, PAGE_LEFT + 16 + colWidth + 16, labelY, valueY, colWidth);
-    this.drawMetaField(doc, 'Order ID', meta.orderId, PAGE_LEFT + 16, labelY + 38, valueY + 38, colWidth);
+    const labelY1 = top + 16;
+    const valueY1 = top + 29;
+    const rowGap = 40;
 
-    const statusX = PAGE_LEFT + 16 + colWidth + 16;
-    doc.fontSize(8).fillColor(COLORS.muted).text('STATUS', statusX, labelY + 38, { width: colWidth });
-    this.drawStatusBadge(doc, meta.status, meta.statusColor, meta.statusBg, statusX, valueY + 38);
+    this.drawMetaField(doc, 'Invoice Number', meta.invoiceNo, leftX, labelY1, valueY1, colWidth, FONT_MONO_SB);
+    this.drawMetaField(doc, 'Order Date', meta.date, rightX, labelY1, valueY1, colWidth, FONT_BODY);
+    this.drawMetaField(doc, 'Order ID', meta.orderId, leftX, labelY1 + rowGap, valueY1 + rowGap, colWidth, FONT_MONO);
 
-    doc.y = top + panelHeight + 10;
+    // status
+    this.drawLabel(doc, 'Status', rightX, labelY1 + rowGap, colWidth);
+    this.drawStatusBadge(doc, meta.status, meta.statusColor, meta.statusBg, meta.statusSolid, rightX, valueY1 + rowGap - 3);
+
+    doc.y = top + panelHeight + 26;
   }
 
-  private drawStatusBadge(
-    doc: PDFKit.PDFDocument,
-    label: string,
-    color: string,
-    bg: string,
-    x: number,
-    y: number,
-  ) {
-    const badgeWidth = Math.min(doc.widthOfString(label) + 20, 120);
-    doc.save();
-    doc.roundedRect(x, y - 2, badgeWidth, 18, 9).fill(bg);
-    this.setBoldFont(doc);
-    doc.fontSize(9).fillColor(color).text(label, x + 10, y + 1, { width: badgeWidth - 20 });
-    this.setBodyFont(doc);
-    doc.restore();
+  private drawLabel(doc: PDFKit.PDFDocument, label: string, x: number, y: number, width: number) {
+    this.setBold(doc);
+    doc
+      .fontSize(7.5)
+      .fillColor(COLORS.light)
+      .text(label.toUpperCase(), x, y, { width, characterSpacing: 0.6 });
+    this.setBody(doc);
   }
 
   private drawMetaField(
@@ -203,20 +242,60 @@ export class InvoiceService {
     labelY: number,
     valueY: number,
     width: number,
-    bold = false,
+    valueFont: string,
   ) {
-    doc.fontSize(8).fillColor(COLORS.muted).text(label.toUpperCase(), x, labelY, { width });
-    if (bold) this.setBoldFont(doc);
-    doc.fontSize(10).fillColor(COLORS.text).text(value, x, valueY, { width });
-    if (bold) this.setBodyFont(doc);
+    this.drawLabel(doc, label, x, labelY, width);
+    doc.font(valueFont);
+    doc.fontSize(10.5).fillColor(COLORS.text).text(value, x, valueY, { width, lineBreak: false });
+    this.setBody(doc);
   }
+
+  private drawStatusBadge(
+    doc: PDFKit.PDFDocument,
+    label: string,
+    color: string,
+    bg: string,
+    solid: boolean,
+    x: number,
+    y: number,
+  ) {
+    this.setBold(doc);
+    doc.fontSize(8.5);
+    const textWidth = doc.widthOfString(label);
+    const badgeWidth = textWidth + 24; // 12px padding each side
+    const badgeHeight = 19;
+
+    doc.save();
+    if (solid) {
+      doc.roundedRect(x, y, badgeWidth, badgeHeight, badgeHeight / 2).fill(color);
+      doc.fillColor(COLORS.white);
+    } else {
+      doc.roundedRect(x, y, badgeWidth, badgeHeight, badgeHeight / 2).fill(bg);
+      doc
+        .roundedRect(x, y, badgeWidth, badgeHeight, badgeHeight / 2)
+        .lineWidth(1)
+        .strokeColor(color)
+        .stroke();
+      doc.fillColor(color);
+    }
+    doc.text(label, x + 12, y + (badgeHeight - 8.5) / 2 - 0.5, {
+      width: badgeWidth - 24,
+      align: 'center',
+      lineBreak: false,
+    });
+    doc.restore();
+    this.setBody(doc);
+  }
+
+  // ---- addresses ---------------------------------------------------------
 
   private drawAddressRow(doc: PDFKit.PDFDocument, order: InvoiceOrderData) {
     const top = doc.y;
-    const boxWidth = (PAGE_WIDTH - 12) / 2;
-    const boxHeight = 100;
+    const gap = 16;
+    const boxWidth = (PAGE_WIDTH - gap) / 2;
+    const boxHeight = 96;
 
-    this.drawAddressBox(doc, 'Bill to', PAGE_LEFT, top, boxWidth, boxHeight, [
+    this.drawAddressBox(doc, 'Bill To', 'person', PAGE_LEFT, top, boxWidth, boxHeight, [
       order.customerName || 'Customer',
       order.customerEmail ? `Email: ${order.customerEmail}` : '',
     ]);
@@ -229,155 +308,241 @@ export class InvoiceService {
         ]
       : ['Same as billing address'];
 
-    this.drawAddressBox(doc, 'Ship to', PAGE_LEFT + boxWidth + 12, top, boxWidth, boxHeight, shipLines);
+    this.drawAddressBox(doc, 'Ship To', 'pin', PAGE_LEFT + boxWidth + gap, top, boxWidth, boxHeight, shipLines);
 
-    doc.y = top + boxHeight + 6;
+    doc.y = top + boxHeight + 26;
   }
 
   private drawAddressBox(
     doc: PDFKit.PDFDocument,
     title: string,
+    icon: 'person' | 'pin',
     x: number,
     y: number,
     width: number,
     height: number,
     lines: string[],
   ) {
+    const padX = 16;
     doc.save();
-    doc.roundedRect(x, y, width, height, 8).lineWidth(1).strokeColor(COLORS.border).stroke();
+    doc.roundedRect(x, y, width, height, 10).lineWidth(1).strokeColor(COLORS.border).stroke();
     doc.restore();
 
-    this.setBoldFont(doc);
-    doc.fontSize(9).fillColor(COLORS.accent).text(title.toUpperCase(), x + 14, y + 12, { width: width - 28 });
-    this.setBodyFont(doc);
-    doc.fontSize(10).fillColor(COLORS.text);
+    // heading with icon
+    if (icon === 'person') this.drawPersonIcon(doc, x + padX, y + 14, COLORS.accent);
+    else this.drawPinIcon(doc, x + padX, y + 14, COLORS.accent);
 
-    let lineY = y + 30;
+    this.setBold(doc);
+    doc
+      .fontSize(9)
+      .fillColor(COLORS.accent)
+      .text(title.toUpperCase(), x + padX + 16, y + 15, { width: width - padX - 16, characterSpacing: 0.6 });
+
+    this.setBody(doc);
+    doc.fontSize(9.5).fillColor(COLORS.text);
+
+    let lineY = y + 38;
     for (const line of lines.filter(Boolean)) {
-      doc.text(line, x + 14, lineY, { width: width - 28, lineGap: 2 });
-      lineY += 16;
+      doc.text(line, x + padX, lineY, { width: width - padX * 2, lineGap: 4 });
+      lineY = doc.y + 4;
     }
   }
 
+  private drawPersonIcon(doc: PDFKit.PDFDocument, x: number, y: number, color: string) {
+    doc.save();
+    doc.fillColor(color);
+    doc.circle(x + 5, y + 3, 2.6).fill();
+    doc
+      .moveTo(x, y + 12)
+      .quadraticCurveTo(x, y + 7, x + 5, y + 7)
+      .quadraticCurveTo(x + 10, y + 7, x + 10, y + 12)
+      .lineTo(x, y + 12)
+      .fill();
+    doc.restore();
+  }
+
+  private drawPinIcon(doc: PDFKit.PDFDocument, x: number, y: number, color: string) {
+    doc.save();
+    doc.fillColor(color);
+    doc.circle(x + 5, y + 4, 3.4).fill();
+    doc
+      .moveTo(x + 1.7, y + 6)
+      .lineTo(x + 8.3, y + 6)
+      .lineTo(x + 5, y + 12)
+      .fill();
+    doc.fillColor(COLORS.white).circle(x + 5, y + 4, 1.3).fill();
+    doc.restore();
+  }
+
+  // ---- line items --------------------------------------------------------
+
   private drawLineItemsTable(doc: PDFKit.PDFDocument, order: InvoiceOrderData) {
     const cols = {
-      num: PAGE_LEFT + 6,
-      item: PAGE_LEFT + 28,
-      sku: PAGE_LEFT + 228,
-      qty: PAGE_LEFT + 318,
-      price: PAGE_LEFT + 358,
-      amount: PAGE_LEFT + 448,
+      num: PAGE_LEFT + 10,
+      item: PAGE_LEFT + 30,
+      sku: PAGE_LEFT + 232,
+      qty: PAGE_LEFT + 300,
+      price: PAGE_LEFT + 345,
+      amount: PAGE_LEFT + 420,
     };
-    const priceWidth = 82;
-    const amountWidth = 90;
+    const itemWidth = 196;
+    const skuWidth = 66;
+    const qtyWidth = 40;
+    const priceWidth = 72;
+    const amountWidth = 79;
+    const headerHeight = 26;
+    const rowHeight = 28;
 
-    this.ensureSpace(doc, 60);
+    this.ensureSpace(doc, 70);
     const headerY = doc.y;
 
     doc.save();
-    doc.roundedRect(PAGE_LEFT, headerY, PAGE_WIDTH, 24, 4).fill(COLORS.brand);
-    this.setBoldFont(doc);
+    doc.roundedRect(PAGE_LEFT, headerY, PAGE_WIDTH, headerHeight, 5).fill(COLORS.brand);
+    this.setBold(doc);
     doc.fillColor(COLORS.white).fontSize(8);
-    doc.text('#', cols.num, headerY + 8);
-    doc.text('PRODUCT', cols.item, headerY + 8);
-    doc.text('SKU', cols.sku, headerY + 8);
-    doc.text('QTY', cols.qty, headerY + 8);
-    doc.text('UNIT PRICE', cols.price, headerY + 8, { width: priceWidth, align: 'right' });
-    doc.text('AMOUNT', cols.amount, headerY + 8, { width: amountWidth, align: 'right' });
-    this.setBodyFont(doc);
+    const hy = headerY + 9;
+    doc.text('#', cols.num, hy, { characterSpacing: 0.4 });
+    doc.text('PRODUCT', cols.item, hy, { characterSpacing: 0.4 });
+    doc.text('SKU', cols.sku, hy, { characterSpacing: 0.4 });
+    doc.text('QTY', cols.qty, hy, { width: qtyWidth, align: 'right', characterSpacing: 0.4 });
+    doc.text('UNIT PRICE', cols.price, hy, { width: priceWidth, align: 'right', characterSpacing: 0.4 });
+    doc.text('AMOUNT', cols.amount, hy, { width: amountWidth, align: 'right', characterSpacing: 0.4 });
+    this.setBody(doc);
     doc.restore();
 
-    let y = headerY + 32;
+    let y = headerY + headerHeight;
     let row = 0;
 
     for (const item of order.items) {
-      const rowHeight = 24;
-      if (y > PAGE_BOTTOM - 130) {
+      if (y + rowHeight > PAGE_BOTTOM - 130) {
         doc.addPage();
         y = PAGE_LEFT + 16;
       }
 
       if (row % 2 === 1) {
         doc.save();
-        doc.rect(PAGE_LEFT, y - 5, PAGE_WIDTH, rowHeight).fill('#faf8f5');
+        doc.rect(PAGE_LEFT, y, PAGE_WIDTH, rowHeight).fill(COLORS.zebra);
         doc.restore();
       }
 
       const lineTotal = item.unitPrice * item.quantity;
-      const title = item.title.length > 34 ? `${item.title.slice(0, 31)}...` : item.title;
+      const title = item.title.length > 36 ? `${item.title.slice(0, 33)}...` : item.title;
+      const textY = y + 9;
 
-      doc.fontSize(9).fillColor(COLORS.muted).text(String(row + 1), cols.num, y);
-      doc.fillColor(COLORS.text).text(title, cols.item, y, { width: 190 });
-      doc.fillColor(COLORS.muted).fontSize(8).text(item.sku, cols.sku, y + 1, { width: 82 });
-      doc.fontSize(9).fillColor(COLORS.text).text(String(item.quantity), cols.qty, y);
-      doc.text(this.formatMoney(item.unitPrice, order.currency), cols.price, y, {
+      this.setMono(doc);
+      doc.fontSize(8.5).fillColor(COLORS.light).text(String(row + 1), cols.num, textY);
+
+      this.setBody(doc);
+      doc.fontSize(9.5).fillColor(COLORS.text).text(title, cols.item, textY, { width: itemWidth, lineBreak: false });
+
+      this.setMono(doc);
+      doc.fontSize(8).fillColor(COLORS.muted).text(item.sku, cols.sku, textY + 0.5, { width: skuWidth, lineBreak: false });
+
+      doc.fontSize(9).fillColor(COLORS.text).text(String(item.quantity), cols.qty, textY, {
+        width: qtyWidth,
+        align: 'right',
+      });
+      doc.text(this.formatMoney(item.unitPrice, order.currency), cols.price, textY, {
         width: priceWidth,
         align: 'right',
       });
-      this.setBoldFont(doc);
-      doc.text(this.formatMoney(lineTotal, order.currency), cols.amount, y, {
+      this.setMonoSemi(doc);
+      doc.fillColor(COLORS.text).text(this.formatMoney(lineTotal, order.currency), cols.amount, textY, {
         width: amountWidth,
         align: 'right',
       });
-      this.setBodyFont(doc);
+      this.setBody(doc);
+
+      // thin row divider
+      doc.save();
+      doc
+        .moveTo(PAGE_LEFT, y + rowHeight)
+        .lineTo(PAGE_RIGHT, y + rowHeight)
+        .lineWidth(0.5)
+        .strokeColor(COLORS.border)
+        .stroke();
+      doc.restore();
 
       y += rowHeight;
       row += 1;
     }
 
-    doc.moveTo(PAGE_LEFT, y + 2).lineTo(PAGE_RIGHT, y + 2).lineWidth(1).strokeColor(COLORS.border).stroke();
-    doc.y = y + 14;
+    doc.y = y + 24;
   }
 
-  private drawTotalsPanel(doc: PDFKit.PDFDocument, order: InvoiceOrderData, subtotal: number) {
-    this.ensureSpace(doc, 100);
+  // ---- totals ------------------------------------------------------------
 
-    const panelWidth = 232;
+  private drawTotalsPanel(
+    doc: PDFKit.PDFDocument,
+    order: InvoiceOrderData,
+    subtotal: number,
+    currency: string,
+  ) {
+    this.ensureSpace(doc, 110);
+
+    const panelWidth = 250;
     const panelX = PAGE_RIGHT - panelWidth;
     const top = doc.y;
+    const labelX = panelX + 4;
+    const valueWidth = 110;
+    const valueX = panelX + panelWidth - valueWidth;
 
+    // left-side note fills the empty space and keeps the "amounts in" note near totals
+    this.setBody(doc);
+    doc.fontSize(8.5).fillColor(COLORS.light).text(
+      `All amounts shown in ${currency}. Taxes included where applicable.`,
+      PAGE_LEFT,
+      top + 4,
+      { width: panelX - PAGE_LEFT - 24, lineGap: 3 },
+    );
+
+    // subtotal
+    doc.fontSize(9.5).fillColor(COLORS.muted).text('Subtotal', labelX, top + 4);
+    this.setMono(doc);
+    doc.fillColor(COLORS.text).text(this.formatMoney(subtotal, order.currency), valueX, top + 4, {
+      width: valueWidth,
+      align: 'right',
+    });
+    this.setBody(doc);
+
+    // grand total — colored strip for strong visual weight
+    const bandY = top + 26;
+    const bandHeight = 36;
     doc.save();
-    doc.roundedRect(panelX, top, panelWidth, 84, 8).fill(COLORS.surface);
-    doc.roundedRect(panelX, top, panelWidth, 84, 8).lineWidth(1).strokeColor(COLORS.border).stroke();
+    const grad = doc.linearGradient(panelX, bandY, panelX + panelWidth, bandY);
+    grad.stop(0, COLORS.brand).stop(1, COLORS.brandLight);
+    doc.roundedRect(panelX, bandY, panelWidth, bandHeight, 8).fill(grad);
     doc.restore();
 
-    const labelX = panelX + 16;
-    const valueWidth = 96;
-    const valueX = panelX + panelWidth - valueWidth - 16;
-    let y = top + 16;
-
-    doc.fontSize(9).fillColor(COLORS.muted).text('Subtotal', labelX, y);
-    doc.fillColor(COLORS.text).text(this.formatMoney(subtotal, order.currency), valueX, y, {
+    this.setSerif(doc);
+    doc.fontSize(12).fillColor(COLORS.white).text('Grand Total', labelX + 12, bandY + 12);
+    this.setMonoSemi(doc);
+    doc.fontSize(14).fillColor(COLORS.white).text(this.formatMoney(order.total, order.currency), valueX - 12, bandY + 10, {
       width: valueWidth,
       align: 'right',
     });
+    this.setBody(doc);
 
-    y += 20;
-    doc.moveTo(labelX, y).lineTo(panelX + panelWidth - 16, y).strokeColor(COLORS.border).stroke();
-
-    y += 12;
-    this.setBoldFont(doc);
-    doc.fontSize(11).fillColor(COLORS.text).text('Grand total', labelX, y);
-    doc.fontSize(13).fillColor(COLORS.brand).text(this.formatMoney(order.total, order.currency), valueX, y - 1, {
-      width: valueWidth,
-      align: 'right',
-    });
-    this.setBodyFont(doc);
-
-    doc.y = top + 96;
+    doc.y = bandY + bandHeight + 26;
   }
 
+  // ---- payment -----------------------------------------------------------
+
   private drawPaymentPanel(doc: PDFKit.PDFDocument, order: InvoiceOrderData, isPaid: boolean) {
-    this.ensureSpace(doc, 78);
+    this.ensureSpace(doc, 82);
 
     const top = doc.y;
+    const height = 68;
     doc.save();
-    doc.roundedRect(PAGE_LEFT, top, PAGE_WIDTH, 64, 8).lineWidth(1).strokeColor(COLORS.border).stroke();
+    doc.roundedRect(PAGE_LEFT, top, PAGE_WIDTH, height, 10).lineWidth(1).strokeColor(COLORS.border).stroke();
     doc.restore();
 
-    this.setBoldFont(doc);
-    doc.fontSize(9).fillColor(COLORS.accent).text('PAYMENT DETAILS', PAGE_LEFT + 14, top + 12);
-    this.setBodyFont(doc);
+    this.setBold(doc);
+    doc
+      .fontSize(9)
+      .fillColor(COLORS.accent)
+      .text('PAYMENT DETAILS', PAGE_LEFT + 16, top + 14, { characterSpacing: 0.6 });
+    this.setBody(doc);
 
     const method = order.paymentProvider
       ? order.paymentProvider.charAt(0).toUpperCase() + order.paymentProvider.slice(1)
@@ -385,51 +550,90 @@ export class InvoiceService {
         ? 'Online payment'
         : 'Pending';
 
-    const leftX = PAGE_LEFT + 14;
-    const rightX = PAGE_LEFT + PAGE_WIDTH / 2;
+    const leftX = PAGE_LEFT + 16;
+    const rightX = PAGE_LEFT + PAGE_WIDTH / 2 + 8;
 
-    doc.fontSize(10).fillColor(COLORS.muted).text('Payment method', leftX, top + 30);
-    this.setBoldFont(doc);
-    doc.fillColor(COLORS.text).text(method, leftX, top + 44);
-    this.setBodyFont(doc);
+    // payment method with a small card icon
+    this.drawLabel(doc, 'Payment Method', leftX, top + 34, PAGE_WIDTH / 2 - 24);
+    this.drawCardIcon(doc, leftX, top + 47, COLORS.accent);
+    this.setBold(doc);
+    doc.fontSize(10).fillColor(COLORS.text).text(method, leftX + 26, top + 47, { width: PAGE_WIDTH / 2 - 50 });
+    this.setBody(doc);
 
     if (order.paymentId) {
-      doc.fontSize(10).fillColor(COLORS.muted).text('Transaction reference', rightX, top + 30);
-      doc.fillColor(COLORS.text).text(order.paymentId, rightX, top + 44, { width: PAGE_WIDTH / 2 - 28 });
-    } else if (!isPaid) {
-      doc.fontSize(10).fillColor(COLORS.muted).text('Payment status', rightX, top + 30);
-      this.setBoldFont(doc);
-      doc.fillColor(COLORS.pending).text('Not yet received', rightX, top + 44);
-      this.setBodyFont(doc);
+      this.drawLabel(doc, 'Transaction Reference', rightX, top + 34, PAGE_WIDTH / 2 - 24);
+      this.setMono(doc);
+      doc
+        .fontSize(9)
+        .fillColor(COLORS.text)
+        .text(order.paymentId, rightX, top + 47, { width: PAGE_WIDTH / 2 - 24, lineBreak: false });
+      this.setBody(doc);
     } else {
-      doc.fontSize(10).fillColor(COLORS.muted).text('Payment status', rightX, top + 30);
-      this.setBoldFont(doc);
-      doc.fillColor(COLORS.paid).text('Completed', rightX, top + 44);
-      this.setBodyFont(doc);
+      this.drawLabel(doc, 'Payment Status', rightX, top + 34, PAGE_WIDTH / 2 - 24);
+      this.setBold(doc);
+      doc
+        .fontSize(10)
+        .fillColor(isPaid ? COLORS.paid : COLORS.pending)
+        .text(isPaid ? 'Completed' : 'Not yet received', rightX, top + 47);
+      this.setBody(doc);
     }
 
-    doc.y = top + 76;
+    doc.y = top + height + 24;
   }
+
+  private drawCardIcon(doc: PDFKit.PDFDocument, x: number, y: number, color: string) {
+    doc.save();
+    doc.roundedRect(x, y, 18, 12, 2).lineWidth(1).strokeColor(color).stroke();
+    doc.rect(x, y + 3, 18, 3).fill(color);
+    doc.restore();
+  }
+
+  // ---- footer ------------------------------------------------------------
 
   private drawFooter(doc: PDFKit.PDFDocument, store: InvoiceStoreInfo) {
-    this.ensureSpace(doc, 56);
+    this.ensureSpace(doc, 70);
 
-    doc.moveDown(1.2);
-    doc.moveTo(PAGE_LEFT, doc.y).lineTo(PAGE_RIGHT, doc.y).strokeColor(COLORS.border).stroke();
-    doc.moveDown(0.8);
+    const website = this.formatWebsite(store.website);
+    const support = website ? `${website}` : 'hello@terraliving.com';
 
-    doc.fontSize(8).fillColor(COLORS.light).text(
-      `Computer-generated invoice from ${store.name}. No signature required.`,
-      PAGE_LEFT,
-      doc.y,
-      { width: PAGE_WIDTH, align: 'center' },
-    );
-    doc.moveDown(0.35);
-    doc.text('Thank you for your purchase.', {
-      width: PAGE_WIDTH,
-      align: 'center',
-    });
+    doc.moveDown(0.5);
+    doc
+      .moveTo(PAGE_LEFT, doc.y)
+      .lineTo(PAGE_RIGHT, doc.y)
+      .lineWidth(1)
+      .strokeColor(COLORS.border)
+      .stroke();
+    doc.moveDown(0.9);
+
+    this.setSerif(doc);
+    doc
+      .fontSize(12)
+      .fillColor(COLORS.brand)
+      .text(`Thank you for shopping with ${store.name}`, PAGE_LEFT, doc.y, {
+        width: PAGE_WIDTH,
+        align: 'center',
+      });
+
+    this.setBody(doc);
+    doc.moveDown(0.4);
+    doc
+      .fontSize(8.5)
+      .fillColor(COLORS.muted)
+      .text(`Questions about your order? Reach us at ${support}`, {
+        width: PAGE_WIDTH,
+        align: 'center',
+      });
+    doc.moveDown(0.25);
+    doc
+      .fontSize(7.5)
+      .fillColor(COLORS.light)
+      .text(`Computer-generated invoice from ${store.name}. No signature required.`, {
+        width: PAGE_WIDTH,
+        align: 'center',
+      });
   }
+
+  // ---- helpers -----------------------------------------------------------
 
   private ensureSpace(doc: PDFKit.PDFDocument, needed: number) {
     if (doc.y + needed > PAGE_BOTTOM) {
@@ -461,8 +665,16 @@ export class InvoiceService {
 
   private statusBg(status: string) {
     if (['paid', 'fulfilled', 'shipped', 'delivered'].includes(status)) return COLORS.paidBg;
-    if (['cancelled', 'refunded'].includes(status)) return '#fdecec';
+    if (['cancelled', 'refunded'].includes(status)) return COLORS.cancelledBg;
     return COLORS.pendingBg;
+  }
+
+  // Solid (filled) badge for success/terminal states; outlined for pending.
+  private statusSolid(status: string) {
+    return (
+      ['paid', 'fulfilled', 'shipped', 'delivered'].includes(status) ||
+      ['cancelled', 'refunded'].includes(status)
+    );
   }
 
   private formatMoney(amount: number, currency: string) {
@@ -476,7 +688,6 @@ export class InvoiceService {
         maximumFractionDigits: code === 'INR' ? 0 : 2,
       }).format(amount);
 
-      // Roboto supports INR symbol; fallback if font ever fails.
       if (code === 'INR' && formatted.includes('\uFFFD')) {
         return `Rs. ${this.formatNumber(amount)}`;
       }

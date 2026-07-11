@@ -194,16 +194,17 @@ export default function CheckoutPage() {
           : "Razorpay keys not configured — using dev mock payment for local testing."}
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 grid gap-8 lg:mt-8 lg:grid-cols-[1fr_340px] lg:gap-10">
-        <div className="space-y-5 sm:space-y-6">
+      <form onSubmit={handleSubmit} className="mt-6 grid gap-6 lg:mt-8 lg:grid-cols-[1fr_340px] lg:gap-10">
+        <div className="space-y-4 sm:space-y-6">
           <section className="data-card">
             <h2 className="font-display text-lg sm:text-xl">Contact</h2>
             {loggedInUser && (
               <p className="mt-2 text-sm text-muted">
-                Signed in as <span className="font-medium text-foreground">{loggedInUser.email}</span>. Orders will appear in your account.
+                Signed in as{" "}
+                <span className="font-medium text-foreground [overflow-wrap:anywhere]">{loggedInUser.email}</span>. Orders will appear in your account.
               </p>
             )}
-            <div className="mt-4 grid gap-4">
+            <div className="mt-4 grid gap-5">
               <label className="block text-sm">
                 <span className="text-muted">Full name</span>
                 <input
@@ -229,7 +230,7 @@ export default function CheckoutPage() {
 
           <section className="data-card">
             <h2 className="font-display text-lg sm:text-xl">Shipping address</h2>
-            <div className="mt-4 space-y-4">
+            <div className="mt-4 space-y-5">
               <label className="block text-sm">
                 <span className="text-muted">Address</span>
                 <input
@@ -239,7 +240,7 @@ export default function CheckoutPage() {
                   className="input-field"
                 />
               </label>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-5 sm:grid-cols-2">
                 <label className="block text-sm">
                   <span className="text-muted">City</span>
                   <input
@@ -259,13 +260,16 @@ export default function CheckoutPage() {
                   />
                 </label>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-5 sm:grid-cols-2">
                 <label className="block text-sm">
                   <span className="text-muted">PIN code</span>
                   <input
                     required
+                    type="text"
                     pattern="[0-9]{6}"
                     inputMode="numeric"
+                    maxLength={6}
+                    autoComplete="postal-code"
                     value={form.pincode}
                     onChange={(e) => updateField("pincode", e.target.value)}
                     className="input-field"
@@ -277,6 +281,7 @@ export default function CheckoutPage() {
                     required
                     type="tel"
                     inputMode="tel"
+                    autoComplete="tel"
                     value={form.phone}
                     onChange={(e) => updateField("phone", e.target.value)}
                     className="input-field"
@@ -295,14 +300,14 @@ export default function CheckoutPage() {
 
         <aside className="data-card h-fit lg:sticky lg:top-24">
           <h2 className="font-display text-lg sm:text-xl">Your order</h2>
-          <ul className="mt-4 space-y-3 text-sm">
+          <ul className="mt-4 space-y-3.5 text-sm">
             {items.map((item) => (
               <li key={`${item.productId}-${item.sku}`} className="flex justify-between gap-3">
                 <span className="min-w-0 text-muted">
-                  <span className="line-clamp-2">{item.title}</span>
-                  <span className="text-xs"> × {item.quantity}</span>
+                  <span className="line-clamp-2 text-foreground">{item.title}</span>
+                  <span className="mt-1 block text-xs text-muted">Qty {item.quantity}</span>
                 </span>
-                <span className="shrink-0">{formatPrice(item.price * item.quantity)}</span>
+                <span className="shrink-0 font-medium">{formatPrice(item.price * item.quantity)}</span>
               </li>
             ))}
           </ul>

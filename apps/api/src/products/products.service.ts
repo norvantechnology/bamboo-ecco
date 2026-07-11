@@ -184,10 +184,14 @@ export class ProductsService {
     const q = query.trim();
     const filter: Record<string, unknown> = { tenantId: tid, status: 'active' };
     if (q) {
+      // Escaped regex avoids requiring a Mongo text index (which caused 500s)
+      // and stays safe against special characters in the query.
+      const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = { $regex: safe, $options: 'i' };
       filter.$or = [
-        { $text: { $search: q } },
-        { title: { $regex: q, $options: 'i' } },
-        { description: { $regex: q, $options: 'i' } },
+        { title: regex },
+        { description: regex },
+        { 'variants.sku': regex },
       ];
     }
     const skip = (page - 1) * limit;

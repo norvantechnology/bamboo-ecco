@@ -155,7 +155,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               e.preventDefault();
               handleWishlistToggle();
             }}
-            className="absolute right-1.5 top-1.5 z-[2] flex h-8 w-8 items-center justify-center rounded-full bg-surface/95 text-muted shadow-warm backdrop-blur-sm transition-all duration-300 ease-out hover:scale-110 hover:text-secondary active:scale-95 sm:right-3 sm:top-3 sm:h-11 sm:w-11"
+            className="absolute right-2.5 top-2.5 z-[2] flex h-9 w-9 items-center justify-center rounded-full bg-surface/95 text-muted shadow-warm backdrop-blur-sm transition-all duration-300 ease-out hover:scale-110 hover:text-secondary active:scale-95 sm:right-3 sm:top-3 sm:h-11 sm:w-11"
             aria-label="Add to wishlist"
           >
             <Heart
@@ -178,7 +178,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           ) : null}
 
           <Link href={`/product/${product.slug}`} className="block">
-            <h3 className="line-clamp-2 font-display text-[0.8125rem] font-semibold leading-snug transition-colors sm:text-base lg:group-hover:text-wood">
+            <h3 className="line-clamp-2 min-h-[2.25rem] font-display text-[0.8125rem] font-semibold leading-snug transition-colors sm:min-h-[2.75rem] sm:text-base lg:group-hover:text-wood">
               {product.title}
             </h3>
           </Link>
@@ -200,7 +200,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               disabled={outOfStock}
               onClick={handleQuickAdd}
               className={cn(
-                "inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-lg px-2.5 text-[11px] font-semibold transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] sm:h-10 sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm",
+                "inline-flex h-9 shrink-0 items-center justify-center gap-1 rounded-lg px-3 text-xs font-semibold transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.95] sm:h-10 sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm",
                 added
                   ? "bg-secondary text-white"
                   : "border border-border bg-background text-foreground sm:bg-transparent lg:opacity-0 lg:group-hover:opacity-100 lg:hover:border-secondary lg:hover:bg-secondary lg:hover:text-white",

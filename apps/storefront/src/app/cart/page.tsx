@@ -37,7 +37,7 @@ export default function CartPage() {
               <div className="flex gap-3 sm:gap-4">
                 <Link
                   href={`/product/${item.slug}`}
-                  className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg sm:h-24 sm:w-24"
+                  className="relative aspect-square h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-border bg-background sm:h-24 sm:w-24"
                 >
                   {item.image && (
                     <Image src={item.image} alt={item.title} fill sizes="96px" className="object-cover" />
@@ -62,16 +62,16 @@ export default function CartPage() {
                     <div className="flex items-center rounded-xl border border-border">
                       <button
                         type="button"
-                        className="touch-target flex h-11 w-11 items-center justify-center"
+                        className="flex h-11 w-11 items-center justify-center rounded-l-xl transition-transform active:scale-90 active:bg-background"
                         onClick={() => updateQuantity(item.productId, item.sku, item.quantity - 1)}
                         aria-label="Decrease quantity"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
-                      <span className="w-10 text-center text-base font-medium">{item.quantity}</span>
+                      <span className="w-10 text-center text-base font-medium tabular-nums">{item.quantity}</span>
                       <button
                         type="button"
-                        className="touch-target flex h-11 w-11 items-center justify-center"
+                        className="flex h-11 w-11 items-center justify-center rounded-r-xl transition-transform active:scale-90 active:bg-background"
                         onClick={() => updateQuantity(item.productId, item.sku, item.quantity + 1)}
                         aria-label="Increase quantity"
                       >
@@ -81,9 +81,9 @@ export default function CartPage() {
                     <button
                       type="button"
                       onClick={() => removeItem(item.productId, item.sku)}
-                      className="touch-target flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-muted hover:bg-background hover:text-red-700"
+                      className="flex min-h-11 items-center gap-2 rounded-lg px-3.5 text-sm font-medium text-muted transition-transform hover:bg-background hover:text-red-700 active:scale-[0.97]"
                     >
-                      <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <Trash2 className="h-4 w-4" />
                       Remove
                     </button>
                   </div>
@@ -95,15 +95,20 @@ export default function CartPage() {
 
         <aside className="data-card h-fit lg:sticky lg:top-24">
           <h2 className="font-display text-lg sm:text-xl">Order summary</h2>
-          <div className="data-row mt-4 border-b border-border pb-3">
+          <div className="data-row mt-4">
             <span className="label">Subtotal</span>
             <span className="value">{formatPrice(subtotal)}</span>
           </div>
-          <p className="mt-2 text-xs text-muted">Shipping calculated at checkout</p>
+          <div className="mt-3 border-t border-border pt-3">
+            <p className="text-xs text-muted">Shipping calculated at checkout</p>
+          </div>
           <Link href="/checkout" className="mt-5 block sm:mt-6">
             <Button variant="secondary" className="w-full rounded-xl">Proceed to checkout</Button>
           </Link>
-          <Link href="/shop" className="mt-3 block text-center text-sm text-muted hover:text-secondary">
+          <Link
+            href="/shop"
+            className="mt-3 block rounded-lg py-2 text-center text-sm font-medium text-muted transition-transform hover:text-secondary active:scale-[0.98]"
+          >
             Continue shopping
           </Link>
         </aside>

@@ -10,6 +10,7 @@ interface AddToCartButtonProps {
   title: string;
   image: string;
   price: number;
+  quantity?: number;
   disabled?: boolean;
 }
 
@@ -20,6 +21,7 @@ export function AddToCartButton({
   title,
   image,
   price,
+  quantity = 1,
   disabled,
 }: AddToCartButtonProps) {
   const { addItem } = useCart();
@@ -30,7 +32,7 @@ export function AddToCartButton({
       size="lg"
       className="w-full rounded-xl sm:rounded-lg"
       disabled={disabled}
-      onClick={() => addItem({ productId, sku, slug, title, image, price })}
+      onClick={() => addItem({ productId, sku, slug, title, image, price }, quantity)}
     >
       Add to cart
     </Button>

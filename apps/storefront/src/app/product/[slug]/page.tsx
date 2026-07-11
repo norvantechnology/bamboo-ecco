@@ -64,12 +64,12 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="container-page py-4 sm:py-10">
-      <nav className="mb-4 flex flex-wrap items-center gap-1 text-xs text-muted sm:mb-6 sm:text-sm">
-        <Link href="/" className="hover:text-foreground">Home</Link>
-        <ChevronRight className="h-4 w-4" />
-        <Link href="/shop" className="hover:text-foreground">Shop</Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="line-clamp-1 text-foreground">{product.title}</span>
+      <nav className="mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[13px] text-muted sm:mb-6 sm:gap-x-2 sm:text-sm">
+        <Link href="/" className="-mx-1 rounded px-1 py-1 hover:text-foreground active:text-foreground">Home</Link>
+        <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
+        <Link href="/shop" className="rounded px-1 py-1 hover:text-foreground active:text-foreground">Shop</Link>
+        <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
+        <span className="line-clamp-1 px-1 py-1 text-foreground">{product.title}</span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
@@ -90,13 +90,13 @@ export default async function ProductPage({ params }: Props) {
           <ProductPurchase product={product} defaultImage={image?.url ?? ""} />
 
           {product.specs && (
-            <dl className="mt-8 space-y-3 border-t border-border pt-8 text-sm">
-              {product.specs.material && (<div><dt className="font-medium">Material</dt><dd className="text-muted">{product.specs.material}</dd></div>)}
-              {product.specs.dimensions && (<div><dt className="font-medium">Dimensions</dt><dd className="text-muted">{product.specs.dimensions}</dd></div>)}
-              {product.specs.weight && (<div><dt className="font-medium">Weight</dt><dd className="text-muted">{product.specs.weight}</dd></div>)}
-              {product.specs.careInstructions && (<div><dt className="font-medium">Care</dt><dd className="text-muted">{product.specs.careInstructions}</dd></div>)}
-              {product.specs.shippingInfo && (<div><dt className="font-medium">Shipping</dt><dd className="text-muted">{product.specs.shippingInfo}</dd></div>)}
-              {product.specs.warranty && (<div><dt className="font-medium">Warranty</dt><dd className="text-muted">{product.specs.warranty}</dd></div>)}
+            <dl className="mt-6 divide-y divide-border border-t-2 border-border/70 pt-5 text-sm sm:mt-8 sm:pt-6">
+              {product.specs.material && (<div className="flex items-start justify-between gap-4 py-2"><dt className="shrink-0 text-muted">Material</dt><dd className="text-right font-medium text-foreground">{product.specs.material}</dd></div>)}
+              {product.specs.dimensions && (<div className="flex items-start justify-between gap-4 py-2"><dt className="shrink-0 text-muted">Dimensions</dt><dd className="text-right font-medium text-foreground">{product.specs.dimensions}</dd></div>)}
+              {product.specs.weight && (<div className="flex items-start justify-between gap-4 py-2"><dt className="shrink-0 text-muted">Weight</dt><dd className="text-right font-medium text-foreground">{product.specs.weight}</dd></div>)}
+              {product.specs.careInstructions && (<div className="flex items-start justify-between gap-4 py-2"><dt className="shrink-0 text-muted">Care</dt><dd className="text-right font-medium text-foreground">{product.specs.careInstructions}</dd></div>)}
+              {product.specs.shippingInfo && (<div className="flex items-start justify-between gap-4 py-2"><dt className="shrink-0 text-muted">Shipping</dt><dd className="text-right font-medium text-foreground">{product.specs.shippingInfo}</dd></div>)}
+              {product.specs.warranty && (<div className="flex items-start justify-between gap-4 py-2"><dt className="shrink-0 text-muted">Warranty</dt><dd className="text-right font-medium text-foreground">{product.specs.warranty}</dd></div>)}
             </dl>
           )}
         </div>

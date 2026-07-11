@@ -69,7 +69,7 @@ const defaultFooterLinks: FooterLinks = {
 
 function FooterLink({ href, label, external }: { href: string; label: string; external?: boolean }) {
   const className =
-    "inline-flex items-center gap-1 text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg sm:text-base";
+    "inline-flex items-center gap-1 py-1.5 text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg active:text-footer-fg sm:py-0 sm:text-base";
 
   if (external) {
     return (
@@ -208,12 +208,12 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
                   <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-footer-fg/70 sm:mb-2.5 sm:text-xs">
                     Categories
                   </p>
-                  <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 sm:gap-y-2">
+                  <ul className="grid grid-cols-2 gap-x-3 gap-y-1 sm:gap-y-1.5">
                     {roots.map((cat) => (
                       <li key={cat._id}>
                         <Link
                           href={`/category/${cat.slug}`}
-                          className="text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg sm:text-sm"
+                          className="block py-1.5 text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg active:text-gold sm:py-1 sm:text-sm"
                         >
                           {cat.name}
                         </Link>
