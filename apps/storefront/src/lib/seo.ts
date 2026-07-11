@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
 import { productImageJsonLd } from "./cloudinary";
+import { BRAND_ASSETS, brandAssetUrl } from "./brand";
 import { getSiteUrl, resolveSiteSeo } from "./site";
 
 export { getSiteUrl, resolveSiteSeo };
+
+function defaultOgImages(alt: string) {
+  return [
+    {
+      url: BRAND_ASSETS.icon,
+      width: 512,
+      height: 512,
+      alt,
+    },
+  ];
+}
 
 /** Metadata for pages that must not be indexed */
 export const noIndexMetadata: Metadata = {
@@ -39,7 +51,9 @@ export async function buildPageMetadata({
   const siteName = seo.name;
   const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
-  const ogImage = image ? [{ url: image, alt: imageAlt || title }] : undefined;
+  const ogImage = image
+    ? [{ url: image, alt: imageAlt || title }]
+    : defaultOgImages(imageAlt || siteName || title);
 
   return {
     title,
@@ -57,7 +71,7 @@ export async function buildPageMetadata({
       card: image ? "summary_large_image" : "summary",
       title,
       description: desc || undefined,
-      images: image ? [image] : undefined,
+      images: image ? [image] : [BRAND_ASSETS.icon],
     },
     ...(noIndex ? { robots: { index: false, follow: false } } : {}),
   };
@@ -90,6 +104,11 @@ export function rootMetadataFromSeo(seo: {
     creator: seo.name || undefined,
     publisher: seo.name || undefined,
     formatDetection: { email: false, address: false, telephone: false },
+    icons: {
+      icon: [{ url: BRAND_ASSETS.icon, type: "image/svg+xml" }],
+      apple: [{ url: BRAND_ASSETS.icon, type: "image/svg+xml" }],
+      shortcut: BRAND_ASSETS.icon,
+    },
     openGraph: {
       type: "website",
       locale: seo.locale || undefined,
@@ -97,11 +116,13 @@ export function rootMetadataFromSeo(seo: {
       title: seo.name || undefined,
       description: seo.description || undefined,
       url: siteUrl,
+      images: defaultOgImages(seo.name || "Bamboo Eco-Hub"),
     },
     twitter: {
       card: "summary_large_image",
       title: seo.name || undefined,
       description: seo.description || undefined,
+      images: [BRAND_ASSETS.icon],
     },
     robots: {
       index: true,
@@ -141,7 +162,9 @@ export function organizationJsonLd(brand: { name?: string; tagline?: string }) {
     name: brand.name || undefined,
     description: brand.tagline || undefined,
     url: siteUrl,
-    logo: `${siteUrl}/icon`,
+    logo: brandAssetUrl("icon", siteUrl),
+    image: brandAssetUrl("icon", siteUrl),
+    email: "info@bambooecohub.com",
   };
 }
 

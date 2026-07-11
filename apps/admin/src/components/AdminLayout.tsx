@@ -24,8 +24,18 @@ export function AdminLayout() {
     <div className="flex min-h-dvh bg-background">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface lg:flex">
         <div className="border-b border-border px-5 py-4">
-          <p className="font-semibold tracking-tight">Ecoo Admin</p>
-          <p className="mt-0.5 text-xs text-muted">Manage your store in one place</p>
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/brand/icon.svg"
+              alt=""
+              aria-hidden
+              className="h-9 w-9 shrink-0 rounded-full"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-base font-semibold tracking-tight">Bamboo Eco-Hub</p>
+              <p className="text-xs text-muted">Admin · manage your store</p>
+            </div>
+          </div>
         </div>
         <nav className="flex-1 overflow-y-auto">
           <AdminNav />
@@ -50,9 +60,17 @@ export function AdminLayout() {
             className="absolute left-0 top-0 flex h-full w-[min(85vw,300px)] flex-col bg-surface shadow-xl"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <div>
-                <p className="font-semibold">Menu</p>
-                <p className="text-xs text-muted">Shop · Website · Settings</p>
+              <div className="flex min-w-0 items-center gap-2.5">
+                <img
+                  src="/brand/icon.svg"
+                  alt=""
+                  aria-hidden
+                  className="h-8 w-8 shrink-0 rounded-full"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold tracking-tight">Bamboo Eco-Hub</p>
+                  <p className="text-xs text-muted">Shop · Website · Settings</p>
+                </div>
               </div>
               <button
                 type="button"

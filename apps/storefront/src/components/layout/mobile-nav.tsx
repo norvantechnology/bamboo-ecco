@@ -21,6 +21,8 @@ import {
 import { cn } from "@/lib/utils";
 import { MotionOverlay, MotionDrawer } from "@/components/ui/motion";
 import { CategoryMobileSection } from "@/components/layout/category-nav";
+import { BrandLogo } from "@/components/brand/brand-logo";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import type { Category } from "@/lib/api";
 
 const primaryNav = [
@@ -112,8 +114,8 @@ export function MobileNav({
             <X className="h-5 w-5" />
           </button>
           <Link href="/" onClick={onClose} className="relative block pr-12">
-            <p className="font-display text-xl font-semibold tracking-tight sm:text-2xl">{storeName}</p>
-            <p className="mt-1 line-clamp-2 text-[13px] font-medium leading-snug text-footer-muted sm:mt-1.5 sm:text-sm">
+            <BrandLogo storeName={storeName} variant="dark" size="md" />
+            <p className="mt-2 truncate text-[13px] font-medium leading-snug text-footer-muted sm:mt-2.5 sm:text-sm">
               {tagline || "Nature · Craftsmanship · Timeless Design"}
             </p>
           </Link>
@@ -195,7 +197,10 @@ export function MobileNav({
 
           {/* Quick actions */}
           <div className="mt-auto border-t border-border bg-background/60 px-4 py-3.5 max-[480px]:px-3">
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-muted">Quick links</p>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Quick links</p>
+              <ThemeToggle />
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <Link
                 href="/account"

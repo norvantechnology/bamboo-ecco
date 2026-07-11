@@ -23,6 +23,7 @@ export function SectionHeader({
   return (
     <div
       data-scroll-reveal
+      suppressHydrationWarning
       className={cn(
         "scroll-reveal flex min-w-0 items-end justify-between gap-3 sm:gap-4",
         centered && "flex-col items-center text-center",

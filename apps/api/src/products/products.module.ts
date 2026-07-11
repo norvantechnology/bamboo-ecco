@@ -4,7 +4,6 @@ import { Product, ProductSchema } from '../schemas/product.schema';
 import { Review, ReviewSchema } from '../schemas/review.schema';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
-import { ProductsResolver } from './products.resolver';
 import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
@@ -16,7 +15,7 @@ import { CategoriesModule } from '../categories/categories.module';
     CategoriesModule,
   ],
   controllers: [ProductsController],
-  providers: [ProductsService, ProductsResolver],
+  providers: [ProductsService],
   exports: [ProductsService],
 })
 export class ProductsModule {}

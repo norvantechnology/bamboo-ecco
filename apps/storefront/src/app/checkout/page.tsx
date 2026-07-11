@@ -183,7 +183,7 @@ export default function CheckoutPage() {
       ? "Loading payment…"
       : razorpayEnabled
         ? "Pay securely with Razorpay"
-        : "Pay now (dev mock — add Razorpay keys to .env)";
+        : "Continue to payment";
 
   return (
     <div className="container-page py-8 sm:py-12">
@@ -191,7 +191,7 @@ export default function CheckoutPage() {
       <p className="mt-2 text-sm text-muted">
         {razorpayEnabled
           ? "Secure payment powered by Razorpay. UPI, cards, and netbanking accepted."
-          : "Razorpay keys not configured — using dev mock payment for local testing."}
+          : "Enter your details below to place your order."}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 grid gap-6 lg:mt-8 lg:grid-cols-[1fr_340px] lg:gap-10">

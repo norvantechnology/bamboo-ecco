@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
+import { BRAND_ASSETS } from "@/lib/brand";
 import { getSiteUrl, resolveSiteSeo } from "@/lib/site";
 
 /** App Router manifest — brand fields from tenant SEO (Admin). */
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  const siteUrl = getSiteUrl();
   const seo = await resolveSiteSeo();
   return {
     name: seo.name || "Store",
@@ -17,21 +17,21 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     scope: "/",
     icons: [
       {
-        src: `${siteUrl}/icon`,
-        sizes: "32x32",
-        type: "image/png",
+        src: BRAND_ASSETS.icon,
+        sizes: "any",
+        type: "image/svg+xml",
         purpose: "any",
       },
       {
-        src: `${siteUrl}/icon`,
+        src: BRAND_ASSETS.icon,
         sizes: "192x192",
-        type: "image/png",
+        type: "image/svg+xml",
         purpose: "any",
       },
       {
-        src: `${siteUrl}/icon`,
+        src: BRAND_ASSETS.icon,
         sizes: "512x512",
-        type: "image/png",
+        type: "image/svg+xml",
         purpose: "maskable",
       },
     ],

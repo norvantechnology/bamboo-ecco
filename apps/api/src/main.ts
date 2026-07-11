@@ -25,7 +25,6 @@ async function bootstrap() {
   const port = resolvePort(config);
   await app.listen(port);
   console.log(`🚀 API running on http://localhost:${port}`);
-  console.log(`📊 GraphQL playground: http://localhost:${port}/graphql`);
 
   const rzKey = config.get('RAZORPAY_KEY_ID', '')?.trim();
   if (rzKey) {

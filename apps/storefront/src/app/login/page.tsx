@@ -68,7 +68,6 @@ export default function LoginPage() {
             Register
           </Link>
         </p>
-        <p className="text-center text-xs text-muted">Demo: priya@example.com / customer123</p>
       </form>
     </div>
   );

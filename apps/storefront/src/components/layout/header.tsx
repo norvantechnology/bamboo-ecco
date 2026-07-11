@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/components/cart/cart-context";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { CategoryMegaMenu } from "@/components/layout/category-nav";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import type { Category } from "@/lib/api";
 
 const SearchDialog = dynamic(
@@ -87,12 +88,12 @@ export function Header({ storeName, tagline, categoryTree }: HeaderProps) {
             : "border-transparent bg-background/90 backdrop-blur-md",
         )}
       >
-        <div className="container-page flex h-12 items-center gap-1 sm:h-16 sm:gap-3 lg:gap-6">
+        <div className="container-page flex h-14 items-center gap-2 sm:h-16 sm:gap-3 lg:gap-6">
           {/* Mobile menu */}
           <button
             type="button"
             className={cn(
-              "touch-target -ml-1.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 lg:hidden",
+              "touch-target -ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 lg:hidden",
               menuOpen
                 ? "bg-secondary/10 text-secondary"
                 : "text-foreground hover:bg-background",
@@ -104,12 +105,13 @@ export function Header({ storeName, tagline, categoryTree }: HeaderProps) {
             <Menu className="h-5 w-5 stroke-[2.25]" />
           </button>
 
-          {/* Logo */}
+          {/* Logo — single-line wordmark */}
           <Link
             href="/"
-            className="min-w-0 flex-1 truncate text-center font-display text-xl font-semibold tracking-tight transition-colors hover:text-secondary sm:text-2xl lg:flex-none lg:text-left lg:text-3xl"
+            className="flex min-w-0 flex-1 items-center justify-start overflow-hidden transition-opacity hover:opacity-90 lg:flex-none"
+            aria-label={storeName}
           >
-            {storeName}
+            <BrandLogo storeName={storeName} variant="auto" size="md" priority />
           </Link>
 
           {/* Desktop nav */}
@@ -126,10 +128,12 @@ export function Header({ storeName, tagline, categoryTree }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Action icons */}
-          <div className="-mr-1.5 flex shrink-0 items-center gap-0 rounded-xl border border-transparent bg-transparent p-0 shadow-none sm:-mr-0 sm:gap-1 sm:border-border/70 sm:bg-surface/80 sm:p-1 sm:shadow-warm">
+          {/* Actions — keep mobile lean: search + cart; theme on sm+ */}
+          <div className="-mr-1 flex shrink-0 items-center gap-0.5 sm:-mr-0 sm:gap-1 sm:rounded-xl sm:border sm:border-border/70 sm:bg-surface/80 sm:p-1 sm:shadow-warm">
             <SearchDialog />
-            <ThemeToggle />
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
             <HeaderIconLink href="/account" label="Account" className="hidden sm:flex">
               <User className="icon-brand" />
             </HeaderIconLink>

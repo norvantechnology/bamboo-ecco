@@ -4,8 +4,8 @@ import { login, setStoredAuth } from "../lib/api";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@ecoo.local");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -28,9 +28,16 @@ export function LoginPage() {
     <div className="flex min-h-dvh items-center justify-center bg-background p-4">
       <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-8">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Bamboo Eco-Hub Admin</h1>
-          <p className="mt-1 text-sm text-muted">Sign in to manage your store</p>
-          <p className="mt-2 text-xs text-muted">admin@ecoo.local / admin123</p>
+          <div className="mx-auto flex items-center justify-center gap-3">
+            <img
+              src="/brand/icon.svg"
+              alt=""
+              aria-hidden
+              className="h-11 w-11 shrink-0 rounded-full"
+            />
+            <span className="text-2xl font-semibold tracking-tight text-foreground">Bamboo Eco-Hub</span>
+          </div>
+          <p className="mt-3 text-sm text-muted">Sign in to manage your store</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

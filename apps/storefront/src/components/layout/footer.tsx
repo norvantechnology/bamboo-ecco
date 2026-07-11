@@ -2,26 +2,7 @@ import Link from "next/link";
 import { Mail, ArrowUpRight } from "lucide-react";
 import type { Category, FooterLinks } from "@/lib/api";
 import { FooterColumn } from "./footer-column";
-
-function InstagramIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-    </svg>
-  );
-}
+import { BrandLogo } from "@/components/brand/brand-logo";
 
 interface FooterProps {
   storeName: string;
@@ -133,8 +114,8 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
         {/* Brand row — compact on mobile */}
         <div className="flex items-start justify-between gap-4 lg:hidden">
           <div className="min-w-0 flex-1">
-            <Link href="/" className="inline-block font-display text-xl tracking-tight text-footer-fg">
-              {storeName}
+            <Link href="/" className="inline-block transition-opacity hover:opacity-90" aria-label={storeName}>
+              <BrandLogo storeName={storeName} variant="dark" size="md" />
             </Link>
             <p className="mt-1.5 line-clamp-2 max-w-xs text-[13px] leading-snug text-footer-muted">
               {tagline || "Handcrafted bamboo furniture & eco-friendly home decor."}
@@ -142,16 +123,7 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-icon-btn flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-gold/45 hover:text-gold"
-              aria-label="Instagram"
-            >
-              <InstagramIcon className="h-4 w-4" />
-            </a>
-            <a
-              href="mailto:hello@bambooecohub.com"
+              href="mailto:info@bambooecohub.com"
               className="social-icon-btn flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-wood/45 hover:text-wood"
               aria-label="Email us"
             >
@@ -163,8 +135,8 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
         <div className="mt-5 grid gap-0 lg:mt-0 lg:grid-cols-12 lg:gap-10 xl:gap-12">
           {/* Desktop brand column */}
           <div className="hidden lg:col-span-4 lg:block">
-            <Link href="/" className="inline-block font-display text-3xl tracking-tight text-footer-fg">
-              {storeName}
+            <Link href="/" className="inline-block transition-opacity hover:opacity-90" aria-label={storeName}>
+              <BrandLogo storeName={storeName} variant="dark" size="lg" />
             </Link>
             <p className="mt-3 max-w-sm text-base leading-relaxed text-footer-muted">
               {tagline || "Handcrafted bamboo furniture & eco-friendly home decor for modern Indian homes."}
@@ -172,26 +144,17 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
 
             <div className="mt-6 space-y-2 text-sm text-footer-muted">
               <a
-                href="mailto:hello@bambooecohub.com"
+                href="mailto:info@bambooecohub.com"
                 className="inline-flex items-center gap-2 transition-colors hover:text-footer-fg"
               >
                 <Mail className="h-4 w-4 shrink-0" />
-                hello@bambooecohub.com
+                info@bambooecohub.com
               </a>
             </div>
 
             <div className="mt-6 flex items-center gap-3">
               <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-icon-btn flex h-10 w-10 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-gold/45 hover:text-gold"
-                aria-label="Instagram"
-              >
-                <InstagramIcon className="h-5 w-5" />
-              </a>
-              <a
-                href="mailto:hello@bambooecohub.com"
+                href="mailto:info@bambooecohub.com"
                 className="social-icon-btn flex h-10 w-10 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-wood/45 hover:text-wood"
                 aria-label="Email us"
               >

@@ -594,7 +594,7 @@ export class InvoiceService {
     this.ensureSpace(doc, 70);
 
     const website = this.formatWebsite(store.website);
-    const support = website ? `${website}` : 'hello@bambooecohub.com';
+    const support = website ? `${website}` : 'info@bambooecohub.com';
 
     doc.moveDown(0.5);
     doc

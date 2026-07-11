@@ -70,6 +70,11 @@ export default function cloudinaryLoader({
     return injectTransforms(src, width);
   }
 
+  // Local public assets (/brand/*, etc.) — never rewrite to Cloudinary
+  if (src.startsWith("/") || src.startsWith("data:")) {
+    return src;
+  }
+
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   if (cloudName && !src.startsWith("http")) {
     return `https://res.cloudinary.com/${cloudName}/image/upload/${TRANSFORM},w_${width}/${src}`;
