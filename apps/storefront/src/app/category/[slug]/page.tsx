@@ -5,8 +5,9 @@ import { Suspense } from "react";
 import { ChevronRight } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
 import { CategoryToolbar } from "@/components/category/category-toolbar";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { getCategory, getProductsByCategorySlug } from "@/lib/api";
-import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -45,21 +46,19 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const products = result?.data ?? [];
   const total = result?.total ?? 0;
   const totalPages = result?.totalPages ?? 1;
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const children = category.children ?? [];
 
   const crumbs = [
-    { name: "Home", url: base },
+    { name: "Home", url: absoluteUrl("/") },
     ...(category.parent
-      ? [{ name: category.parent.name, url: `${base}/category/${category.parent.slug}` }]
+      ? [{ name: category.parent.name, url: absoluteUrl(`/category/${category.parent.slug}`) }]
       : []),
-    { name: category.name, url: `${base}/category/${slug}` },
+    { name: category.name, url: absoluteUrl(`/category/${slug}`) },
   ];
-
-  const jsonLd = breadcrumbJsonLd(crumbs);
 
   return (
     <div className="container-page py-4 sm:py-10">
+      <BreadcrumbJsonLd items={crumbs} />
       <nav className="mb-3 flex flex-wrap items-center gap-1 text-xs text-muted sm:mb-6 sm:text-sm" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-foreground">
           Home
@@ -119,8 +118,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       {products.length === 0 && (
         <p className="py-10 text-center text-sm text-muted sm:py-16">No products in this category yet.</p>
       )}
-
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </div>
   );
 }

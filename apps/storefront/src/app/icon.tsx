@@ -1,9 +1,12 @@
 import { ImageResponse } from "next/og";
+import { resolveSiteSeo } from "@/lib/site";
 
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default async function Icon() {
+  const seo = await resolveSiteSeo();
+  const initial = seo.name.charAt(0).toUpperCase() || "T";
   return new ImageResponse(
     (
       <div
@@ -13,14 +16,14 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#4B3621",
-          color: "#FAF8F3",
+          background: seo.themeColor,
+          color: seo.backgroundColor,
           fontSize: 18,
           fontWeight: 700,
           borderRadius: 6,
         }}
       >
-        T
+        {initial}
       </div>
     ),
     size,

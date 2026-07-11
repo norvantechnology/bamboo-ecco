@@ -452,12 +452,22 @@ export async function uploadMedia(
   return res.json();
 }
 
+export interface TenantSeoSettings {
+  description: string;
+  defaultTitle: string;
+  locale: string;
+  themeColor: string;
+  backgroundColor: string;
+  gscVerification: string;
+}
+
 export interface TenantSettings {
   name: string;
   tagline: string;
   hero: { headline: string; subheading: string; imageUrl?: string; primaryCta: string; secondaryCta: string };
   brandPillars: { icon: string; title: string; description: string }[];
   whyChooseUs: { icon: string; title: string; description: string }[];
+  seo?: TenantSeoSettings;
   homepageSections?: HomepageSections;
   welcomePopup?: {
     enabled: boolean;

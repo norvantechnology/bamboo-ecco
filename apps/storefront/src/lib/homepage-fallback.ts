@@ -1,24 +1,23 @@
 import type { HomepageData } from "./api";
 import { DEFAULT_HOMEPAGE_SECTIONS } from "./homepage-sections";
-
-const DEFAULT_THEME = {
-  background: "#faf8f5",
-  primary: "#2c4a3e",
-  secondary: "#8b7355",
-  text: "#1a1a1a",
-  gold: "#c9a962",
-};
+import { SITE_SEO_FALLBACK } from "./site";
 
 /** Used when the API is unreachable during build or at runtime. */
 export function getDefaultHomepageData(): HomepageData {
   return {
     brand: {
-      name: "Terra Living",
-      tagline: "Handcrafted bamboo furniture & eco-friendly home decor",
-      theme: DEFAULT_THEME,
+      name: SITE_SEO_FALLBACK.name,
+      tagline: SITE_SEO_FALLBACK.description,
+      theme: {
+        background: SITE_SEO_FALLBACK.backgroundColor.toLowerCase(),
+        primary: SITE_SEO_FALLBACK.themeColor.toLowerCase(),
+        secondary: "#8b7355",
+        text: "#1a1a1a",
+        gold: "#c9a962",
+      },
       hero: {
         headline: "Natural Living, Beautifully Crafted",
-        subheading: "Sustainable bamboo furniture and decor for modern Indian homes",
+        subheading: SITE_SEO_FALLBACK.description,
         primaryCta: "Shop Now",
         secondaryCta: "Explore Collections",
       },

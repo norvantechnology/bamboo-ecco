@@ -6,8 +6,10 @@ import { AnnouncementBar } from "@/components/promo/announcement-bar";
 import { CartProvider } from "@/components/cart/cart-context";
 import { WishlistProvider } from "@/components/wishlist/wishlist-context";
 import { Providers } from "@/components/providers";
+import { OrganizationJsonLd } from "@/components/seo/organization-json-ld";
 import { getLayoutData } from "@/lib/layout-data";
-import { rootMetadata } from "@/lib/seo";
+import { rootMetadataFromSeo } from "@/lib/seo";
+import { resolveSiteSeo } from "@/lib/site";
 import "./globals.css";
 
 const sans = DM_Sans({
@@ -23,25 +25,30 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-export const metadata: Metadata = rootMetadata();
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await resolveSiteSeo();
+  return rootMetadataFromSeo(seo);
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const data = await getLayoutData();
+  const [data, seo] = await Promise.all([getLayoutData(), resolveSiteSeo()]);
   const brand = data?.brand;
   const categoryTree = data?.categoryTree ?? [];
+  const storeName = brand?.name ?? seo.name;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={seo.locale.replace("_", "-")} suppressHydrationWarning>
       <body className={`${sans.variable} ${cormorant.variable} flex min-h-dvh flex-col overflow-x-hidden font-medium`}>
         <Providers>
           <CartProvider>
             <WishlistProvider>
+            <OrganizationJsonLd name={brand?.name ?? seo.name} tagline={brand?.tagline ?? seo.description} includeWebsite />
             {data?.promotions?.announcementBar && (
               <AnnouncementBar config={data.promotions.announcementBar} />
             )}
-            <Header storeName={brand?.name ?? "Terra Living"} tagline={brand?.tagline} categoryTree={categoryTree} />
+            <Header storeName={storeName} tagline={brand?.tagline} categoryTree={categoryTree} />
             <main className="min-w-0 flex-1">{children}</main>
-            <Footer storeName={brand?.name ?? "Terra Living"} tagline={brand?.tagline ?? ""} categoryTree={categoryTree} footerLinks={data?.footerLinks} />
+            <Footer storeName={storeName} tagline={brand?.tagline ?? ""} categoryTree={categoryTree} footerLinks={data?.footerLinks} />
             </WishlistProvider>
           </CartProvider>
         </Providers>

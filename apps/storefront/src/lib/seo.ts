@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import { productImageJsonLd } from "./cloudinary";
-import { getSiteUrl, SITE_DESCRIPTION, SITE_NAME } from "./site";
+import {
+  getSiteDefaultTitle,
+  getSiteDescription,
+  getSiteLocale,
+  getSiteName,
+  getSiteUrl,
+  getThemeColor,
+  getBackgroundColor,
+} from "./site";
 
-export { getSiteUrl, SITE_NAME, SITE_DESCRIPTION };
+export { getSiteUrl, getSiteName, getSiteDescription };
 
 /** Metadata for pages that must not be indexed */
 export const noIndexMetadata: Metadata = {
@@ -34,7 +42,8 @@ export function buildPageMetadata({
   imageAlt?: string;
   noIndex?: boolean;
 }): Metadata {
-  const desc = description?.slice(0, 160) || SITE_DESCRIPTION;
+  const siteName = getSiteName();
+  const desc = description?.slice(0, 160) || getSiteDescription();
   const canonical = path ? absoluteUrl(path) : undefined;
   const ogImage = image ? [{ url: image, alt: imageAlt || title }] : undefined;
 
@@ -44,7 +53,7 @@ export function buildPageMetadata({
     alternates: canonical ? { canonical } : undefined,
     openGraph: {
       type: "website",
-      siteName: SITE_NAME,
+      siteName,
       title,
       description: desc,
       url: canonical,
@@ -61,34 +70,69 @@ export function buildPageMetadata({
 }
 
 export function rootMetadata(): Metadata {
+  return rootMetadataFromSeo({
+    name: getSiteName(),
+    description: getSiteDescription(),
+    defaultTitle: getSiteDefaultTitle(),
+    locale: getSiteLocale(),
+    themeColor: getThemeColor(),
+    backgroundColor: getBackgroundColor(),
+    gscVerification: "",
+  });
+}
+
+/** Build root metadata from DB-backed SEO (preferred). */
+export function rootMetadataFromSeo(seo: {
+  name: string;
+  description: string;
+  defaultTitle: string;
+  locale: string;
+  themeColor: string;
+  backgroundColor: string;
+  gscVerification: string;
+}): Metadata {
   const siteUrl = getSiteUrl();
   return {
     metadataBase: new URL(siteUrl),
-    title: { default: SITE_NAME, template: `%s | ${SITE_NAME}` },
-    description: SITE_DESCRIPTION,
-    applicationName: SITE_NAME,
+    title: {
+      default: `${seo.name} | ${seo.defaultTitle}`,
+      template: `%s | ${seo.name}`,
+    },
+    description: seo.description,
+    applicationName: seo.name,
+    authors: [{ name: seo.name }],
+    creator: seo.name,
+    publisher: seo.name,
     formatDetection: { email: false, address: false, telephone: false },
     openGraph: {
       type: "website",
-      locale: "en_IN",
-      siteName: SITE_NAME,
-      title: SITE_NAME,
-      description: SITE_DESCRIPTION,
+      locale: seo.locale,
+      siteName: seo.name,
+      title: seo.name,
+      description: seo.description,
       url: siteUrl,
     },
     twitter: {
       card: "summary_large_image",
-      title: SITE_NAME,
-      description: SITE_DESCRIPTION,
+      title: seo.name,
+      description: seo.description,
     },
     robots: {
       index: true,
       follow: true,
-      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
     },
-    ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
-      ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
-      : {}),
+    manifest: "/manifest.webmanifest",
+    ...(seo.gscVerification ? { verification: { google: seo.gscVerification } } : {}),
+    other: {
+      "theme-color": seo.themeColor,
+    },
   };
 }
 
@@ -110,8 +154,8 @@ export function organizationJsonLd(brand?: { name?: string; tagline?: string; ur
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: brand?.name || SITE_NAME,
-    description: brand?.tagline || SITE_DESCRIPTION,
+    name: brand?.name || getSiteName(),
+    description: brand?.tagline || getSiteDescription(),
     url: siteUrl,
     logo: `${siteUrl}/icon`,
   };
@@ -122,8 +166,8 @@ export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: SITE_NAME,
-    description: SITE_DESCRIPTION,
+    name: getSiteName(),
+    description: getSiteDescription(),
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",
@@ -144,6 +188,7 @@ export function articleJsonLd(post: {
   pathPrefix?: "journal" | "guides";
 }) {
   const prefix = post.pathPrefix ?? "journal";
+  const siteName = getSiteName();
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -151,8 +196,8 @@ export function articleJsonLd(post: {
     description: post.description,
     datePublished: post.publishedAt,
     url: absoluteUrl(`/${prefix}/${post.slug}`),
-    author: { "@type": "Organization", name: SITE_NAME },
-    publisher: { "@type": "Organization", name: SITE_NAME },
+    author: { "@type": "Organization", name: siteName },
+    publisher: { "@type": "Organization", name: siteName },
   };
 }
 
@@ -174,7 +219,7 @@ export function productJsonLd(product: {
     description: product.description,
     image: productImageJsonLd(product.images),
     sku: product.sku,
-    brand: { "@type": "Brand", name: SITE_NAME },
+    brand: { "@type": "Brand", name: getSiteName() },
     offers: product.price
       ? {
           "@type": "Offer",
@@ -196,4 +241,36 @@ export function productJsonLd(product: {
           }
         : undefined,
   };
+}
+
+export function faqJsonLd(items: { question: string; answer: string }[]) {
+  if (!items.length) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+}
+
+/** Best-effort FAQ extraction from CMS HTML (h2/h3 + following paragraph or list). */
+export function extractFaqsFromHtml(html: string): { question: string; answer: string }[] {
+  const faqs: { question: string; answer: string }[] = [];
+  const re =
+    /<h[23][^>]*>([\s\S]*?)<\/h[23]>\s*(?:<p[^>]*>([\s\S]*?)<\/p>|<ul[^>]*>([\s\S]*?)<\/ul>)/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html)) !== null) {
+    const question = match[1].replace(/<[^>]+>/g, "").trim();
+    const answer = (match[2] || match[3] || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (question && answer && question.length < 200) {
+      faqs.push({ question, answer });
+    }
+  }
+  return faqs;
 }

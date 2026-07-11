@@ -7,7 +7,9 @@ import { getProduct, getRelatedProducts, getProductReviews } from "@/lib/api";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductPurchase } from "@/components/product/product-purchase";
 import { ProductCard } from "@/components/product/product-card";
-import { breadcrumbJsonLd, buildPageMetadata, productJsonLd } from "@/lib/seo";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
+import { ProductJsonLd } from "@/components/seo/product-json-ld";
+import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -40,30 +42,29 @@ export default async function ProductPage({ params }: Props) {
 
   const productImages = product.images.filter((i) => i.type !== "lifestyle");
   const image = productImages[0];
-
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-
-  const jsonLd = [
-    productJsonLd({
-      name: product.title,
-      description: product.description,
-      images: product.images.map((i) => ({ url: i.url, alt: i.alt })),
-      sku: product.variants[0]?.sku,
-      price: product.variants[0]?.price,
-      currency: product.variants[0]?.currency,
-      inStock: (product.variants[0]?.stockQty ?? 0) > 0,
-      rating: product.ratingSummary,
-      url: `${base}/product/${slug}`,
-    }),
-    breadcrumbJsonLd([
-      { name: "Home", url: base },
-      { name: "Shop", url: `${base}/shop` },
-      { name: product.title, url: `${base}/product/${slug}` },
-    ]),
-  ];
+  const productUrl = absoluteUrl(`/product/${slug}`);
 
   return (
     <div className="container-page py-4 sm:py-10">
+      <ProductJsonLd
+        name={product.title}
+        description={product.description}
+        images={product.images.map((i) => ({ url: i.url, alt: i.alt }))}
+        sku={product.variants[0]?.sku}
+        price={product.variants[0]?.price}
+        currency={product.variants[0]?.currency}
+        inStock={(product.variants[0]?.stockQty ?? 0) > 0}
+        rating={product.ratingSummary}
+        url={productUrl}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: absoluteUrl("/") },
+          { name: "Shop", url: absoluteUrl("/shop") },
+          { name: product.title, url: productUrl },
+        ]}
+      />
+
       <nav className="mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[13px] text-muted sm:mb-6 sm:gap-x-2 sm:text-sm">
         <Link href="/" className="-mx-1 rounded px-1 py-1 hover:text-foreground active:text-foreground">Home</Link>
         <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
@@ -127,8 +128,6 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </section>
       )}
-
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </div>
   );
 }

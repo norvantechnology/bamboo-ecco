@@ -1,17 +1,19 @@
 import type { MetadataRoute } from "next";
-import { getSiteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { getSiteUrl, resolveSiteSeo } from "@/lib/site";
 
-export default function manifest(): MetadataRoute.Manifest {
+/** App Router manifest — brand colors from tenant SEO (admin). */
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const siteUrl = getSiteUrl();
+  const seo = await resolveSiteSeo();
   return {
-    name: SITE_NAME,
-    short_name: SITE_NAME,
-    description: SITE_DESCRIPTION,
+    name: seo.name,
+    short_name: seo.name,
+    description: seo.description,
     start_url: "/",
     display: "standalone",
-    background_color: "#FAF8F3",
-    theme_color: "#4B3621",
-    lang: "en",
+    background_color: seo.backgroundColor,
+    theme_color: seo.themeColor,
+    lang: seo.locale.replace("_", "-"),
     scope: "/",
     icons: [
       {
@@ -19,6 +21,18 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "32x32",
         type: "image/png",
         purpose: "any",
+      },
+      {
+        src: `${siteUrl}/icon`,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: `${siteUrl}/icon`,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
   };

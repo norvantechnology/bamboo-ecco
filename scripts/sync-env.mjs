@@ -27,9 +27,8 @@ const targets = [
 // Storefront uses subset in .env.local
 const storefrontKeys = [
   "NEXT_PUBLIC_API_URL",
-  "NEXT_PUBLIC_GRAPHQL_URL",
+  "NEXT_PUBLIC_TENANT_DOMAIN",
   "NEXT_PUBLIC_SITE_URL",
-  "NEXT_PUBLIC_GSC_VERIFICATION",
   "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME",
 ];
 

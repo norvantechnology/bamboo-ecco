@@ -1,16 +1,18 @@
-import { getSiteUrl, INDEXABLE_STATIC_ROUTES, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { getSiteUrl, INDEXABLE_STATIC_ROUTES, resolveSiteSeo } from "@/lib/site";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export async function GET() {
   const siteUrl = getSiteUrl();
+  const seo = await resolveSiteSeo();
 
-  const body = `# ${SITE_NAME}
+  const body = `# ${seo.name}
 
-> ${SITE_DESCRIPTION}
+> ${seo.description}
 
 ## About
-${SITE_NAME} is an Indian ecommerce store for sustainable bamboo furniture and eco-friendly home decor.
+${seo.name} is an Indian ecommerce store for sustainable bamboo furniture and eco-friendly home decor.
 We sell handcrafted bamboo furniture online across India — living room decor, storage, and natural accents for modern homes.
 
 ## Primary topics
@@ -50,7 +52,7 @@ ${siteUrl}/pages/contact
   return new Response(body.trim() + "\n", {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "public, max-age=86400, s-maxage=86400",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600",
     },
   });
 }

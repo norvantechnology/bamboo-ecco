@@ -10,6 +10,7 @@ import {
   resolveWelcomePopup,
   resolveAnnouncementBar,
 } from './promotions.defaults';
+import { resolveTenantSeo } from './seo.defaults';
 
 @Injectable()
 export class CmsService {
@@ -200,6 +201,7 @@ export class CmsService {
       brandPillars: tenant.brandPillars,
       whyChooseUs: tenant.whyChooseUs,
       theme: tenant.theme,
+      seo: resolveTenantSeo(tenant.seo, tenant.theme),
       homepageSections: resolveHomepageSections(tenant.homepageSections),
       welcomePopup: resolveWelcomePopup(tenant.welcomePopup),
       announcementBar: resolveAnnouncementBar(tenant.announcementBar),
@@ -219,13 +221,27 @@ export class CmsService {
       brandPillars: unknown[];
       whyChooseUs: unknown[];
       theme: Record<string, unknown>;
+      seo: Record<string, unknown>;
       homepageSections: Record<string, unknown>;
       welcomePopup: Record<string, unknown>;
       announcementBar: Record<string, unknown>;
     }>,
   ) {
+    const $set: Record<string, unknown> = { ...data };
+
+    // Keep theme colors in sync when SEO chrome colors are saved
+    if (data.seo && typeof data.seo === 'object') {
+      const seo = data.seo as Record<string, unknown>;
+      if (typeof seo.themeColor === 'string' && seo.themeColor.trim()) {
+        $set['theme.primary'] = seo.themeColor.trim();
+      }
+      if (typeof seo.backgroundColor === 'string' && seo.backgroundColor.trim()) {
+        $set['theme.background'] = seo.backgroundColor.trim();
+      }
+    }
+
     const tenant = await this.tenantModel
-      .findByIdAndUpdate(this.tid(tenantId), { $set: data }, { new: true })
+      .findByIdAndUpdate(this.tid(tenantId), { $set }, { new: true })
       .lean()
       .exec();
     if (!tenant) throw new NotFoundException('Tenant not found');
@@ -236,6 +252,7 @@ export class CmsService {
       brandPillars: tenant.brandPillars,
       whyChooseUs: tenant.whyChooseUs,
       theme: tenant.theme,
+      seo: resolveTenantSeo(tenant.seo, tenant.theme),
       homepageSections: resolveHomepageSections(tenant.homepageSections),
       welcomePopup: resolveWelcomePopup(tenant.welcomePopup),
       announcementBar: resolveAnnouncementBar(tenant.announcementBar),

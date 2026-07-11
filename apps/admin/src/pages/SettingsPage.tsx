@@ -34,7 +34,10 @@ export function SettingsPage() {
     <div className="space-y-6 max-w-2xl">
       <div>
         <h1 className="text-xl font-semibold sm:text-2xl">Store Settings</h1>
-        <p className="text-sm text-muted">General store identity. Homepage hero, sections, and content are managed in Homepage.</p>
+        <p className="text-sm text-muted">
+          General store identity. Search listing, Google verification, and redirects are in{" "}
+          <Link to="/seo" className="font-medium text-secondary hover:underline">SEO</Link>.
+        </p>
       </div>
       {error && <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
       {saved && <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">Settings saved.</div>}

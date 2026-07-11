@@ -1,18 +1,20 @@
-import { getSiteUrl, PRIVATE_PATH_PREFIXES, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { getSiteUrl, PRIVATE_PATH_PREFIXES, resolveSiteSeo } from "@/lib/site";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export async function GET() {
   const siteUrl = getSiteUrl();
+  const seo = await resolveSiteSeo();
 
-  const body = `# AI / LLM access policy for ${SITE_NAME}
+  const body = `# AI / LLM access policy for ${seo.name}
 
 site: ${siteUrl}
 sitemap: ${siteUrl}/sitemap.xml
 llms-txt: ${siteUrl}/llms.txt
 
 ## Summary
-${SITE_DESCRIPTION}
+${seo.description}
 
 ## Allowed uses
 - Indexing public product, category, collection, journal, guide, and static pages
@@ -23,7 +25,7 @@ ${SITE_DESCRIPTION}
 ${PRIVATE_PATH_PREFIXES.map((p) => `- ${siteUrl}${p}*`).join("\n")}
 
 ## Preferred citation format
-${SITE_NAME} — {page title} ({siteUrl}{path})
+${seo.name} — {page title} ({siteUrl}{path})
 
 ## Updates
 Content and URLs may change. Prefer ${siteUrl}/sitemap.xml for current URLs.
@@ -32,7 +34,7 @@ Content and URLs may change. Prefer ${siteUrl}/sitemap.xml for current URLs.
   return new Response(body.trim() + "\n", {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "public, max-age=86400, s-maxage=86400",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600",
     },
   });
 }

@@ -174,6 +174,45 @@
     box-shadow: var(--shadow-warm-xl);
   }
 
+  /* Shop mega-menu — float + staggered column entrance */
+  .mega-menu-panel {
+    box-shadow:
+      0 1px 0 rgba(60, 40, 20, 0.06),
+      0 12px 36px rgba(60, 40, 20, 0.08),
+      0 4px 12px rgba(60, 40, 20, 0.04);
+  }
+
+  .mega-menu-col {
+    opacity: 0;
+  }
+
+  .mega-menu-open .mega-menu-col {
+    animation: mega-menu-col-in 200ms ease-out forwards;
+  }
+
+  .mega-menu-col:hover {
+    background: color-mix(in srgb, var(--gold) 7%, transparent);
+  }
+
+  @keyframes mega-menu-col-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mega-menu-open .mega-menu-col {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;

@@ -10,6 +10,7 @@ import { CustomerPhoto, CustomerPhotoDocument } from '../schemas/customer-photo.
 import { GalleryItem, GalleryItemDocument } from '../schemas/gallery-item.schema';
 import { resolveHomepageSections } from '../cms/homepage-sections.defaults';
 import { resolveWelcomePopup, resolveAnnouncementBar } from '../cms/promotions.defaults';
+import { resolveTenantSeo } from '../cms/seo.defaults';
 
 export interface CategoryTreeNode {
   _id: string;
@@ -170,7 +171,7 @@ export class StorefrontService {
   async getLayout(tenantId: string) {
     const tid = this.tid(tenantId);
     const [tenant, categories, footerLinks] = await Promise.all([
-      this.tenantModel.findById(tid).select('name tagline announcementBar').lean().exec(),
+      this.tenantModel.findById(tid).select('name tagline theme seo announcementBar').lean().exec(),
       this.categoryModel
         .find({ tenantId: tid })
         .sort({ name: 1 })
@@ -185,6 +186,7 @@ export class StorefrontService {
         name: tenant?.name ?? 'Terra Living',
         tagline: tenant?.tagline ?? '',
       },
+      seo: resolveTenantSeo(tenant?.seo, tenant?.theme),
       categoryTree: this.buildCategoryTree(categories),
       footerLinks,
       promotions: {

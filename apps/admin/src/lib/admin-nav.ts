@@ -108,8 +108,8 @@ export const navGroups: NavGroup[] = [
       {
         to: "/seo",
         icon: Search,
-        label: "URLs & SEO",
-        description: "Redirects plus robots, sitemap, and AI crawler files",
+        label: "SEO",
+        description: "Search listing, Google verification, redirects",
       },
       {
         to: "/settings",

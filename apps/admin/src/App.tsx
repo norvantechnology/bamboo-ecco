@@ -35,9 +35,7 @@ export default function App() {
             <Route path="promotions" element={<PromotionsPage />} />
             <Route path="media" element={<MediaPage />} />
             <Route path="seo" element={<SeoPage />} />
-            <Route path="analytics" element={<Navigate to="/" replace />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
+            <Route path="settings" element={<SettingsPage />} />          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

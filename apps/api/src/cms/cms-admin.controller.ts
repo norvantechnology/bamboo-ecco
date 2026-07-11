@@ -144,6 +144,7 @@ export class CmsAdminController {
       brandPillars: unknown[];
       whyChooseUs: unknown[];
       theme: Record<string, unknown>;
+      seo: Record<string, unknown>;
       homepageSections: Record<string, unknown>;
       welcomePopup: Record<string, unknown>;
       announcementBar: Record<string, unknown>;

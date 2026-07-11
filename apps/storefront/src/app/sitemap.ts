@@ -4,22 +4,30 @@ import { getSiteUrl, INDEXABLE_STATIC_ROUTES } from "@/lib/site";
 
 function entry(
   path: string,
-  opts?: { lastModified?: string | Date; changeFrequency?: MetadataRoute.Sitemap[0]["changeFrequency"]; priority?: number },
+  opts?: {
+    lastModified?: string | Date;
+    changeFrequency?: MetadataRoute.Sitemap[0]["changeFrequency"];
+    priority?: number;
+  },
 ): MetadataRoute.Sitemap[0] {
   const base = getSiteUrl();
+  const clean = path === "/" || path === "" ? "" : path.replace(/\/$/, "");
   return {
-    url: path === "/" || path === "" ? base : `${base}${path}`,
+    url: clean ? `${base}${clean}` : base,
     lastModified: opts?.lastModified ? new Date(opts.lastModified) : new Date(),
     changeFrequency: opts?.changeFrequency ?? "weekly",
     priority: opts?.priority ?? 0.7,
   };
 }
 
+/**
+ * Dynamic sitemap — static routes + products, collections/categories, journal/guides, CMS pages.
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = INDEXABLE_STATIC_ROUTES.map((path) =>
     entry(path, {
       changeFrequency: path === "/" ? "daily" : "weekly",
-      priority: path === "/" ? 1 : 0.8,
+      priority: path === "/" ? 1 : path === "/shop" ? 0.9 : 0.8,
     }),
   );
 
@@ -30,15 +38,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const pageRoutes = data.staticPages.map((p) =>
-    entry(`/pages/${p.slug}`, { lastModified: p.updatedAt, changeFrequency: "monthly", priority: 0.5 }),
+    entry(`/pages/${p.slug}`, {
+      lastModified: p.updatedAt,
+      changeFrequency: "monthly",
+      priority: p.slug === "faq" ? 0.6 : 0.5,
+    }),
   );
 
+  // Collection story pages
   const collectionRoutes = data.categories.map((c) =>
-    entry(`/collections/${c.slug}`, { lastModified: c.updatedAt, priority: 0.75 }),
+    entry(`/collections/${c.slug}`, {
+      lastModified: c.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.75,
+    }),
+  );
+
+  // Category PLPs (shop-by-room)
+  const categoryRoutes = data.categories.map((c) =>
+    entry(`/category/${c.slug}`, {
+      lastModified: c.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }),
   );
 
   const productRoutes = data.products.map((p) =>
-    entry(`/product/${p.slug}`, { lastModified: p.updatedAt, priority: 0.6 }),
+    entry(`/product/${p.slug}`, {
+      lastModified: p.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    }),
   );
 
   const postRoutes = data.posts.map((p) => {
@@ -46,14 +76,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return entry(`${prefix}/${p.slug}`, {
       lastModified: p.updatedAt ?? p.publishedAt,
       changeFrequency: "monthly",
-      priority: 0.5,
+      priority: 0.55,
     });
   });
+
+  // Brand landing pages (same categories, alternate URL surface)
+  const brandRoutes = data.categories.map((c) =>
+    entry(`/brand/${c.slug}`, {
+      lastModified: c.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.65,
+    }),
+  );
 
   return [
     ...staticRoutes,
     ...pageRoutes,
     ...collectionRoutes,
+    ...categoryRoutes,
+    ...brandRoutes,
     ...productRoutes,
     ...postRoutes,
   ];

@@ -160,12 +160,3 @@ export function DashboardPage() {
     </div>
   );
 }
-
-export function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div className="flex min-h-[50vh] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface p-8 text-center">
-      <h1 className="text-xl font-semibold">{title}</h1>
-      <p className="mt-2 max-w-sm text-sm text-muted">Coming in the next build phase.</p>
-    </div>
-  );
-}

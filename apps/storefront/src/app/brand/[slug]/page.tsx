@@ -4,7 +4,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCategory, getProductsByCategorySlug } from "@/lib/api";
 import { ProductCard } from "@/components/product/product-card";
-import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { getSiteName } from "@/lib/site";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -14,8 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = await getCategory(slug).catch(() => null);
   if (!category) return { title: "Brand" };
+  const siteName = getSiteName();
   return buildPageMetadata({
-    title: `${category.name} — Terra Living Bamboo`,
+    title: `${category.name} — ${siteName}`,
     description: `Shop handcrafted ${category.name.toLowerCase()} made from sustainable bamboo. Premium quality, eco-friendly home decor.`,
     path: `/brand/${slug}`,
   });
@@ -30,17 +34,27 @@ export default async function BrandPage({ params }: Props) {
 
   if (!category) notFound();
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Brand",
-    name: `Terra Living ${category.name}`,
-    description: `Sustainable bamboo ${category.name.toLowerCase()} for modern homes`,
-    url: `${base}/brand/${slug}`,
-  };
+  const pageUrl = absoluteUrl(`/brand/${slug}`);
+  const siteName = getSiteName();
 
   return (
     <div className="container-page py-10 sm:py-14">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Brand",
+          name: `${siteName} ${category.name}`,
+          description: `Sustainable bamboo ${category.name.toLowerCase()} for modern homes`,
+          url: pageUrl,
+        }}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: absoluteUrl("/") },
+          { name: "Shop", url: absoluteUrl("/shop") },
+          { name: category.name, url: pageUrl },
+        ]}
+      />
       <nav className="mb-6 text-sm text-muted">
         <Link href="/" className="hover:text-primary">Home</Link>
         <span className="mx-2">/</span>
@@ -51,7 +65,7 @@ export default async function BrandPage({ params }: Props) {
 
       <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
         <div>
-          <p className="text-sm font-medium uppercase tracking-wider text-secondary">Terra Living Brand</p>
+          <p className="text-sm font-medium uppercase tracking-wider text-secondary">{siteName} Brand</p>
           <h1 className="mt-2 font-display text-4xl text-primary sm:text-5xl">{category.name}</h1>
           <p className="mt-4 text-muted leading-relaxed">
             Discover our curated {category.name.toLowerCase()} collection — handcrafted from sustainably sourced bamboo,
@@ -89,19 +103,6 @@ export default async function BrandPage({ params }: Props) {
         )}
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            breadcrumbJsonLd([
-              { name: "Home", url: base },
-              { name: "Shop", url: `${base}/shop` },
-              { name: category.name, url: `${base}/brand/${slug}` },
-            ]),
-          ),
-        }}
-      />
     </div>
   );
 }
