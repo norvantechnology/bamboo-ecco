@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import { getRuntimeApiUrl } from "./api-config";
 
 export interface AuthUser {
   id: string;
@@ -25,17 +25,24 @@ export interface AccountOrder {
 
 let refreshPromise: Promise<string | null> | null = null;
 
+function tenantDomainHeader(): string {
+  if (typeof window !== "undefined") {
+    return window.location.hostname || "localhost";
+  }
+  return "localhost";
+}
+
 async function refreshAccessToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   const refresh = localStorage.getItem("terra_refresh");
   if (!refresh) return null;
 
   try {
-    const res = await fetch(`${API_URL}/auth/refresh`, {
+    const res = await fetch(`${getRuntimeApiUrl()}/auth/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-tenant-domain": "localhost",
+        "x-tenant-domain": tenantDomainHeader(),
       },
       body: JSON.stringify({ refreshToken: refresh }),
     });
@@ -55,11 +62,11 @@ async function customerApi<T>(
   const { token: tokenOverride, _retry, ...rest } = options ?? {};
   const token = tokenOverride ?? getCustomerToken();
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`${getRuntimeApiUrl()}${path}`, {
     ...rest,
     headers: {
       "Content-Type": "application/json",
-      "x-tenant-domain": "localhost",
+      "x-tenant-domain": tenantDomainHeader(),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...rest.headers,
     },
@@ -128,15 +135,19 @@ export function customerRegister(data: {
   });
 }
 
+export function isCustomerAuthenticated(): boolean {
+  return Boolean(getCustomerToken() && getCustomerUser());
+}
+
 export function getAccountOrders() {
   const token = getCustomerToken();
-  if (!token) throw new Error("Not authenticated");
+  if (!token) return Promise.reject(new Error("Not authenticated"));
   return customerApi<AccountOrder[]>("/account/orders", { token });
 }
 
 export function getAccountOrder(id: string) {
   const token = getCustomerToken();
-  if (!token) throw new Error("Not authenticated");
+  if (!token) return Promise.reject(new Error("Not authenticated"));
   return customerApi<AccountOrder & {
     items: { sku: string; title: string; quantity: number; unitPrice: number }[];
     shippingAddress?: { line1: string; city: string; state: string; pincode: string; phone: string };
@@ -145,8 +156,8 @@ export function getAccountOrder(id: string) {
 
 export async function searchProducts(q: string, page = 1) {
   const res = await fetch(
-    `${API_URL}/products/search?q=${encodeURIComponent(q)}&page=${page}`,
-    { headers: { "x-tenant-domain": "localhost" }, cache: "no-store" },
+    `${getRuntimeApiUrl()}/products/search?q=${encodeURIComponent(q)}&page=${page}`,
+    { headers: { "x-tenant-domain": tenantDomainHeader() }, cache: "no-store" },
   );
   if (!res.ok) throw new Error(`Search failed: ${res.status}`);
   return res.json() as Promise<{

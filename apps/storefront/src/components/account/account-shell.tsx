@@ -2,7 +2,13 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { clearCustomerAuth, getCustomerUser, type AuthUser } from "@/lib/auth";
+import {
+  clearCustomerAuth,
+  getCustomerToken,
+  getCustomerUser,
+  isCustomerAuthenticated,
+  type AuthUser,
+} from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { AccountNav } from "@/components/account/account-nav";
 import { PageLoader } from "@/components/ui/loading";
@@ -24,20 +30,25 @@ export function AccountShell({
 
   useEffect(() => {
     const current = getCustomerUser();
-    if (!current) {
-      router.replace("/login?next=/account");
+    const token = getCustomerToken();
+
+    // Stale/partial session (user without token) — clear and send to login
+    if (!current || !token) {
+      clearCustomerAuth();
+      router.replace(`/login?next=${encodeURIComponent(pathname || "/account")}`);
       return;
     }
+
     setUser(current);
     setReady(true);
-  }, [router]);
+  }, [router, pathname]);
 
   function logout() {
     clearCustomerAuth();
     router.push("/");
   }
 
-  if (!ready || !user) {
+  if (!ready || !user || !isCustomerAuthenticated()) {
     return <PageLoader label="Loading your account…" />;
   }
 

@@ -4,13 +4,18 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Package, ChevronRight } from "lucide-react";
-import { getAccountOrders, type AccountOrder } from "@/lib/auth";
+import { getAccountOrders, getCustomerToken, type AccountOrder } from "@/lib/auth";
 import { formatPrice, formatOrderDate, formatOrderNumber, formatOrderStatus, getOrderStatusClass } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { PageLoader } from "@/components/ui/loading";
 import { AccountShell } from "@/components/account/account-shell";
 import { MotionListItem } from "@/components/ui/motion";
 import { DownloadInvoiceButton } from "@/components/order/download-invoice-button";
+
+function isAuthError(message: string) {
+  const lower = message.toLowerCase();
+  return lower.includes("not authenticated") || lower.includes("session expired");
+}
 
 export default function AccountPage() {
   const router = useRouter();
@@ -19,11 +24,34 @@ export default function AccountPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Wait until token exists — AccountShell redirects if missing
+    if (!getCustomerToken()) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
     getAccountOrders()
-      .then(setOrders)
-      .catch((err) => setError(err instanceof Error ? err.message : "Could not load orders"))
-      .finally(() => setLoading(false));
-  }, []);
+      .then((data) => {
+        if (!cancelled) setOrders(data);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        const message = err instanceof Error ? err.message : "Could not load orders";
+        if (isAuthError(message)) {
+          router.replace("/login?next=/account");
+          return;
+        }
+        setError(message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   const subtitle =
     orders.length > 0
@@ -37,7 +65,7 @@ export default function AccountPage() {
       ) : error ? (
         <div className="data-card border-red-200 bg-red-50 text-sm text-red-700">
           <p>{error}</p>
-          {error.toLowerCase().includes("session expired") && (
+          {isAuthError(error) && (
             <Button variant="outline" size="sm" className="mt-4" onClick={() => router.push("/login?next=/account")}>
               Sign in again
             </Button>

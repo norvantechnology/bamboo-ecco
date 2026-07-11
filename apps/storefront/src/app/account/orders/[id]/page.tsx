@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getAccountOrder } from "@/lib/auth";
+import { getAccountOrder, getCustomerToken } from "@/lib/auth";
 import { formatPrice, formatOrderDate, formatOrderNumber, formatOrderStatus, getOrderStatusClass } from "@/lib/utils";
 import { PageLoader } from "@/components/ui/loading";
 import { AccountShell } from "@/components/account/account-shell";
@@ -17,10 +17,26 @@ export default function AccountOrderPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    if (!getCustomerToken()) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
     getAccountOrder(params.id)
-      .then(setOrder)
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!cancelled) setOrder(data);
+      })
+      .catch(() => {
+        if (!cancelled) setNotFound(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [params.id]);
 
   if (loading) {
