@@ -23,6 +23,21 @@ const SEO_FILES = [
   { path: "/ai.txt", label: "ai.txt", hint: "AI usage policy" },
 ];
 
+/**
+ * Extract the bare verification token whether the user pastes the full
+ * `<meta … content="TOKEN" />` tag, `google-site-verification=TOKEN`, or the raw token.
+ */
+function normalizeGsc(raw: string): string {
+  const value = (raw ?? "").trim();
+  if (!value) return "";
+  const metaMatch = value.match(/content\s*=\s*["']([^"']+)["']/i);
+  if (metaMatch) return metaMatch[1].trim();
+  const eqMatch = value.match(/google-site-verification\s*=\s*(\S+)/i);
+  if (eqMatch) return eqMatch[1].trim();
+  if (value.includes("<") || value.includes(">")) return "";
+  return value;
+}
+
 const EMPTY_SEO: TenantSeoSettings = {
   description: "",
   defaultTitle: "",
@@ -73,7 +88,7 @@ export function SeoPage() {
           locale: seo.locale.trim() || "en_IN",
           themeColor: seo.themeColor.trim() || "#4B3621",
           backgroundColor: seo.backgroundColor.trim() || "#FAF8F3",
-          gscVerification: seo.gscVerification.trim(),
+          gscVerification: normalizeGsc(seo.gscVerification),
         },
       });
       setSettings(updated);
@@ -232,17 +247,36 @@ export function SeoPage() {
         <div className="border-t border-border pt-6">
           <h2 className="text-base font-semibold">Google Search Console</h2>
           <p className="mt-1 text-sm text-muted">
-            Paste only the <span className="font-mono text-xs">content</span> value from the HTML meta tag verification method.
+            Paste the HTML meta tag (or just its{" "}
+            <span className="font-mono text-xs">content</span> value) from the{" "}
+            <span className="font-medium">HTML tag</span> verification method — we save only the
+            token.
           </p>
           <label className="mt-4 block text-sm">
             <span className="font-medium">Verification code</span>
             <input
               value={seo.gscVerification}
               onChange={(e) => setSeo({ ...seo, gscVerification: e.target.value })}
+              onBlur={(e) => setSeo({ ...seo, gscVerification: normalizeGsc(e.target.value) })}
               className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm font-mono"
-              placeholder="google-site-verification=…"
+              placeholder='<meta name="google-site-verification" content="…" />'
             />
           </label>
+          {normalizeGsc(seo.gscVerification) ? (
+            <p className="mt-2 text-xs text-muted">
+              Renders as:{" "}
+              <span className="font-mono">
+                {`<meta name="google-site-verification" content="${normalizeGsc(
+                  seo.gscVerification,
+                )}" />`}
+              </span>
+            </p>
+          ) : seo.gscVerification.trim() ? (
+            <p className="mt-2 text-xs text-red-600">
+              Could not detect a verification token from that value. Paste the full meta tag from
+              Google.
+            </p>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">

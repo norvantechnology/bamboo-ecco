@@ -77,6 +77,30 @@ export async function buildPageMetadata({
   };
 }
 
+/**
+ * Extract the bare Google Search Console token from whatever the admin pasted.
+ * Accepts the full `<meta … content="TOKEN" />` tag, `google-site-verification=TOKEN`,
+ * or the raw token itself.
+ */
+export function normalizeGscVerification(raw?: string): string {
+  if (!raw) return "";
+  const value = raw.trim();
+  if (!value) return "";
+
+  // Full/partial meta tag: pull the content attribute.
+  const metaMatch = value.match(/content\s*=\s*["']([^"']+)["']/i);
+  if (metaMatch) return metaMatch[1].trim();
+
+  // `google-site-verification=TOKEN` form.
+  const eqMatch = value.match(/google-site-verification\s*=\s*(\S+)/i);
+  if (eqMatch) return eqMatch[1].trim();
+
+  // Looks like a stray tag fragment but no clean token found — reject it.
+  if (value.includes("<") || value.includes(">")) return "";
+
+  return value;
+}
+
 /** Build root metadata from DB-backed SEO. */
 export function rootMetadataFromSeo(seo: {
   name: string;
@@ -136,7 +160,10 @@ export function rootMetadataFromSeo(seo: {
       },
     },
     manifest: "/manifest.webmanifest",
-    ...(seo.gscVerification ? { verification: { google: seo.gscVerification } } : {}),
+    ...(() => {
+      const google = normalizeGscVerification(seo.gscVerification);
+      return google ? { verification: { google } } : {};
+    })(),
     ...(seo.themeColor ? { other: { "theme-color": seo.themeColor } } : {}),
   };
 }
