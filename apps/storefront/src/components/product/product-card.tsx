@@ -139,6 +139,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               alt={displayImage.alt}
               fill
               sizes="(max-width: 640px) 50vw, 25vw"
+              quality={90}
               className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
           )}

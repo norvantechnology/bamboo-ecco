@@ -87,9 +87,37 @@ export class StorefrontService {
       sections.lifestyle.enabled
         ? this.productModel
             .find({ tenantId: tid, ...catalogStatusFilter(), 'images.type': 'lifestyle' })
-            .limit(sections.lifestyle.limit ?? 6)
             .lean()
             .exec()
+            .then((products) => {
+              const MIN_EDGE = 1600;
+              const scored = products
+                .map((p) => {
+                  const lifestyle = (p.images ?? []).filter((img) => img.type === 'lifestyle');
+                  const best = [...lifestyle].sort((a, b) => {
+                    const areaA = (a.width ?? 0) * (a.height ?? 0);
+                    const areaB = (b.width ?? 0) * (b.height ?? 0);
+                    return areaB - areaA;
+                  })[0];
+                  const edge = Math.max(best?.width ?? 0, best?.height ?? 0);
+                  const area = (best?.width ?? 0) * (best?.height ?? 0);
+                  return { product: p, best, edge, area };
+                })
+                .filter((row) => row.best && row.edge >= MIN_EDGE)
+                .sort((a, b) => b.area - a.area)
+                .slice(0, sections.lifestyle.limit ?? 6)
+                .map((row) => {
+                  // Put best lifestyle image first so thumbnails use it
+                  const other = (row.product.images ?? []).filter(
+                    (img) => img.url !== row.best!.url,
+                  );
+                  return {
+                    ...row.product,
+                    images: [row.best!, ...other],
+                  };
+                });
+              return scored;
+            })
         : Promise.resolve([]),
       sections.newArrivals.enabled
         ? this.productModel

@@ -3,7 +3,24 @@
  * Falls back to Unsplash/legacy URLs during migration.
  */
 
-const TRANSFORM = "f_auto,q_auto:good,dpr_auto,fl_progressive";
+const TRANSFORM_BASE = "f_auto,dpr_auto,fl_progressive";
+
+function qualityForWidth(width: number): string {
+  // Sharper delivery for large section thumbnails
+  if (width >= 900) return "q_auto:best";
+  if (width >= 600) return "q_auto:good";
+  return "q_auto";
+}
+
+/** Return public_id path after /upload/, stripping any prior transform segment. */
+function cloudinaryAssetPath(afterUpload: string): string {
+  const parts = afterUpload.split("/");
+  // Transform segment contains commas and is not a version folder
+  if (parts[0] && parts[0].includes(",") && !parts[0].startsWith("v")) {
+    return parts.slice(1).join("/");
+  }
+  return afterUpload;
+}
 
 function injectTransforms(url: string, width: number): string {
   const marker = "/upload/";
@@ -11,22 +28,16 @@ function injectTransforms(url: string, width: number): string {
   if (idx === -1) return url;
 
   const prefix = url.slice(0, idx + marker.length);
-  const rest = url.slice(idx + marker.length);
-
-  // Already has transformation segment (not version v123/)
-  if (rest.includes(",") && !rest.startsWith("v")) {
-    return url;
-  }
-
-  const transforms = `${TRANSFORM},w_${width}`;
-  return `${prefix}${transforms}/${rest}`;
+  const assetPath = cloudinaryAssetPath(url.slice(idx + marker.length));
+  const transforms = `${TRANSFORM_BASE},${qualityForWidth(width)},w_${width},c_limit`;
+  return `${prefix}${transforms}/${assetPath}`;
 }
 
 function optimizeUnsplash(url: string, width: number): string {
   try {
     const parsed = new URL(url);
     parsed.searchParams.set("w", String(width));
-    parsed.searchParams.set("q", "80");
+    parsed.searchParams.set("q", "85");
     parsed.searchParams.set("auto", "format");
     parsed.searchParams.set("fit", "crop");
     return parsed.toString();
@@ -35,10 +46,6 @@ function optimizeUnsplash(url: string, width: number): string {
   }
 }
 
-/**
- * Generic width handling for external CDNs (e.g. Shopify `?width=`).
- * Ensures the loader varies output by width so Next.js doesn't warn.
- */
 function applyGenericWidth(url: string, width: number): string {
   try {
     const parsed = new URL(url);
@@ -70,14 +77,14 @@ export default function cloudinaryLoader({
     return injectTransforms(src, width);
   }
 
-  // Local public assets (/brand/*, etc.) — never rewrite to Cloudinary
   if (src.startsWith("/") || src.startsWith("data:")) {
     return src;
   }
 
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   if (cloudName && !src.startsWith("http")) {
-    return `https://res.cloudinary.com/${cloudName}/image/upload/${TRANSFORM},w_${width}/${src}`;
+    const transforms = `${TRANSFORM_BASE},${qualityForWidth(width)},w_${width},c_limit`;
+    return `https://res.cloudinary.com/${cloudName}/image/upload/${transforms}/${src}`;
   }
 
   if (src.includes("images.unsplash.com") || src.includes("unsplash.com")) {

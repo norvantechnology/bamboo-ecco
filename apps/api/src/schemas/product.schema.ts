@@ -37,6 +37,15 @@ export class ProductImage {
 
   @Prop({ default: 'product', enum: ['product', 'lifestyle'] })
   type: string;
+
+  @Prop()
+  width?: number;
+
+  @Prop()
+  height?: number;
+
+  @Prop()
+  bytes?: number;
 }
 
 @Schema({ _id: false })

@@ -26,6 +26,7 @@ export function CollectionCard3D({ category, index = 0 }: CollectionCard3DProps)
                 alt={category.name}
                 fill
                 sizes="(max-width: 640px) 50vw, 25vw"
+                quality={90}
                 className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
               />
             ) : (

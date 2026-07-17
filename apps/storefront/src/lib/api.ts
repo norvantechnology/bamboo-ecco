@@ -68,6 +68,9 @@ export interface ProductImage {
   alt: string;
   sortOrder?: number;
   type?: string;
+  width?: number;
+  height?: number;
+  bytes?: number;
 }
 
 export interface ProductSpecs {

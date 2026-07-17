@@ -1,4 +1,13 @@
-const TRANSFORM = "f_auto,q_auto:good,dpr_auto,fl_progressive";
+const TRANSFORM = "f_auto,q_auto:best,dpr_auto,fl_progressive";
+
+/** Strip prior Cloudinary transform segment; keep version + public_id path. */
+function cloudinaryAssetPath(afterUpload: string): string {
+  const parts = afterUpload.split("/");
+  if (parts[0] && parts[0].includes(",") && !parts[0].startsWith("v")) {
+    return parts.slice(1).join("/");
+  }
+  return afterUpload;
+}
 
 /** Build an optimized Cloudinary delivery URL for OG images, JSON-LD, etc. */
 export function optimizeImageUrl(
@@ -10,14 +19,12 @@ export function optimizeImageUrl(
   const w = options.width ?? 1200;
   const parts = [TRANSFORM, `w_${w}`];
   if (options.height) parts.push(`h_${options.height}`);
-  if (options.crop) parts.push(`c_${options.crop}`);
+  parts.push(`c_${options.crop ?? "limit"}`);
   const transform = parts.join(",");
 
   if (src.includes("res.cloudinary.com") && src.includes("/upload/")) {
     const [before, after] = src.split("/upload/");
-    const rest = after.replace(/^[^/]+\//, ""); // strip existing transforms if any
-    const versionMatch = after.match(/^(v\d+\/)/);
-    const path = versionMatch ? after : rest;
+    const path = cloudinaryAssetPath(after);
     return `${before}/upload/${transform}/${path}`;
   }
 

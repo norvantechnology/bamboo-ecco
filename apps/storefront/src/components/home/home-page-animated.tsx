@@ -10,6 +10,7 @@ import { CollectionCard3D } from "@/components/home/collection-card-3d";
 import { HomeMotionRoot } from "@/components/home/home-motion";
 import type { getHomepage } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { pickBestImage } from "@/lib/pick-best-image";
 
 type HomeData = Awaited<ReturnType<typeof getHomepage>>;
 
@@ -80,7 +81,10 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
           />
           <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {lifestyleProducts.map((product) => {
-              const lifestyle = product.images.find((img) => img.type === "lifestyle") ?? product.images[0];
+              const lifestyle =
+                pickBestImage(product.images, "lifestyle") ??
+                pickBestImage(product.images) ??
+                product.images[0];
               return (
                 <div key={product._id} data-lifestyle-card className="perspective-distant">
                   <Link
@@ -91,9 +95,10 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                       <div data-lifestyle-img className="absolute inset-0 will-change-transform">
                         <Image
                           src={lifestyle.url}
-                          alt={lifestyle.alt}
+                          alt={lifestyle.alt || product.title}
                           fill
-                          sizes="33vw"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          quality={90}
                           className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
                         />
                       </div>
