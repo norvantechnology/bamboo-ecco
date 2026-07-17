@@ -16,6 +16,32 @@ declare global {
   }
 }
 
+/** Unique per full page load / refresh; stays the same during client-side navigations. */
+function getDocumentNavId(): string {
+  if (typeof performance !== "undefined" && typeof performance.timeOrigin === "number") {
+    return String(performance.timeOrigin);
+  }
+  return "nav";
+}
+
+const SHOWN_KEY = "bamboo-welcome-popup-shown-nav";
+
+function alreadyShownThisPageLoad(): boolean {
+  try {
+    return sessionStorage.getItem(SHOWN_KEY) === getDocumentNavId();
+  } catch {
+    return false;
+  }
+}
+
+function markShownThisPageLoad(): void {
+  try {
+    sessionStorage.setItem(SHOWN_KEY, getDocumentNavId());
+  } catch {
+    /* private mode / blocked storage */
+  }
+}
+
 export function WelcomePopup({ config }: WelcomePopupProps) {
   const [open, setOpen] = useState(false);
   const htmlRef = useRef<HTMLDivElement>(null);
@@ -24,10 +50,17 @@ export function WelcomePopup({ config }: WelcomePopupProps) {
 
   useEffect(() => {
     if (!config.enabled) return;
+
     const hasContent =
       (config.mode === "html" && config.html.trim()) ||
       (config.mode === "image" && config.imageUrl.trim());
-    if (hasContent) setOpen(true);
+    if (!hasContent) return;
+
+    // Only on real open / refresh — not when soft-navigating back to home
+    if (alreadyShownThisPageLoad()) return;
+
+    markShownThisPageLoad();
+    setOpen(true);
   }, [config]);
 
   useEffect(() => {
