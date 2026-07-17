@@ -197,7 +197,7 @@ export class CmsService {
     return {
       name: tenant.name,
       tagline: tenant.tagline,
-      hero: this.normalizeHero(tenant.hero),
+      hero: this.normalizeHero(tenant.hero as unknown),
       brandPillars: tenant.brandPillars,
       whyChooseUs: tenant.whyChooseUs,
       theme: tenant.theme,
@@ -210,8 +210,10 @@ export class CmsService {
   }
 
   /** Keep legacy single URLs in sync with multi-image arrays. */
-  private normalizeHero(hero: Record<string, unknown> | null | undefined) {
-    const h = { ...(hero ?? {}) } as {
+  private normalizeHero(hero: unknown) {
+    const base =
+      hero && typeof hero === 'object' ? (hero as Record<string, unknown>) : {};
+    const h = { ...base } as {
       headline?: string;
       subheading?: string;
       imageUrl?: string;
@@ -266,7 +268,10 @@ export class CmsService {
     const $set: Record<string, unknown> = { ...data };
 
     if (data.hero && typeof data.hero === 'object') {
-      const prev = (existing.hero ?? {}) as Record<string, unknown>;
+      const prev =
+        existing.hero && typeof existing.hero === 'object'
+          ? (existing.hero as unknown as Record<string, unknown>)
+          : {};
       const incoming = data.hero as Record<string, unknown>;
       // Merge so partial/legacy saves never wipe banner arrays.
       const normalized = this.normalizeHero({
@@ -326,7 +331,7 @@ export class CmsService {
     return {
       name: tenant.name,
       tagline: tenant.tagline,
-      hero: this.normalizeHero(tenant.hero as unknown as Record<string, unknown>),
+      hero: this.normalizeHero(tenant.hero as unknown),
       brandPillars: tenant.brandPillars,
       whyChooseUs: tenant.whyChooseUs,
       theme: tenant.theme,

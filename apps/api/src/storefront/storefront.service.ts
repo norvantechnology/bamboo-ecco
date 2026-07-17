@@ -463,8 +463,10 @@ export class StorefrontService {
     return [...ids].map((id) => new Types.ObjectId(id));
   }
 
-  private normalizeHeroBanner(hero: Record<string, unknown> | null | undefined) {
-    const h = { ...(hero ?? {}) } as {
+  private normalizeHeroBanner(hero: unknown) {
+    const base =
+      hero && typeof hero === 'object' ? (hero as Record<string, unknown>) : {};
+    const h = { ...base } as {
       headline?: string;
       subheading?: string;
       imageUrl?: string;
