@@ -260,10 +260,33 @@ export class CmsService {
       paymentEnabled: boolean;
     }>,
   ) {
+    const existing = await this.tenantModel.findById(this.tid(tenantId)).lean().exec();
+    if (!existing) throw new NotFoundException('Tenant not found');
+
     const $set: Record<string, unknown> = { ...data };
 
     if (data.hero && typeof data.hero === 'object') {
-      $set.hero = this.normalizeHero(data.hero as Record<string, unknown>);
+      const prev = (existing.hero ?? {}) as Record<string, unknown>;
+      const incoming = data.hero as Record<string, unknown>;
+      // Merge so partial/legacy saves never wipe banner arrays.
+      $set.hero = this.normalizeHero({
+        ...prev,
+        ...incoming,
+        imageUrls: Array.isArray(incoming.imageUrls)
+          ? incoming.imageUrls
+          : prev.imageUrls,
+        mobileImageUrls: Array.isArray(incoming.mobileImageUrls)
+          ? incoming.mobileImageUrls
+          : prev.mobileImageUrls,
+        imageUrl:
+          typeof incoming.imageUrl === 'string'
+            ? incoming.imageUrl
+            : prev.imageUrl,
+        mobileImageUrl:
+          typeof incoming.mobileImageUrl === 'string'
+            ? incoming.mobileImageUrl
+            : prev.mobileImageUrl,
+      });
     }
 
     // Keep theme colors in sync when SEO chrome colors are saved

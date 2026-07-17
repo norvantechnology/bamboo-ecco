@@ -451,6 +451,24 @@ export function HomepagePage() {
     }
   }
 
+  /** Persist hero banners immediately so refresh / focus does not lose uploads. */
+  async function persistHero(next: HeroSettings) {
+    const normalized = normalizeHero(next);
+    setHero(normalized);
+    markDirty();
+    setSaving(true);
+    setError("");
+    try {
+      const updated = await updateAdminSettings({ hero: normalized });
+      setHero(normalizeHero(updated.hero ?? normalized));
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save banners");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function addPhoto(e: React.FormEvent) {
     e.preventDefault();
     try {
@@ -529,16 +547,13 @@ export function HomepagePage() {
               multiple
               onPickStart={markDirty}
               onUploadedMany={(results) => {
-                setHero((prev) => {
-                  const current = normalizeHero(prev);
-                  const next = [...(current.imageUrls ?? []), ...results.map((r) => r.url)];
-                  return {
-                    ...current,
-                    imageUrls: next,
-                    imageUrl: next[0] || "",
-                  };
+                const current = normalizeHero(hero);
+                const next = [...(current.imageUrls ?? []), ...results.map((r) => r.url)];
+                void persistHero({
+                  ...current,
+                  imageUrls: next,
+                  imageUrl: next[0] || "",
                 });
-                markDirty();
               }}
             />
             {(hero.imageUrls ?? []).length > 0 ? (
@@ -569,12 +584,13 @@ export function HomepagePage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setHero((prev) => {
-                            const current = normalizeHero(prev);
-                            const next = (current.imageUrls ?? []).filter((_, i) => i !== index);
-                            return { ...current, imageUrls: next, imageUrl: next[0] || "" };
+                          const current = normalizeHero(hero);
+                          const next = (current.imageUrls ?? []).filter((_, i) => i !== index);
+                          void persistHero({
+                            ...current,
+                            imageUrls: next,
+                            imageUrl: next[0] || "",
                           });
-                          markDirty();
                         }}
                         className="text-xs font-medium text-red-600 hover:underline"
                       >
@@ -602,16 +618,13 @@ export function HomepagePage() {
               multiple
               onPickStart={markDirty}
               onUploadedMany={(results) => {
-                setHero((prev) => {
-                  const current = normalizeHero(prev);
-                  const next = [...(current.mobileImageUrls ?? []), ...results.map((r) => r.url)];
-                  return {
-                    ...current,
-                    mobileImageUrls: next,
-                    mobileImageUrl: next[0] || "",
-                  };
+                const current = normalizeHero(hero);
+                const next = [...(current.mobileImageUrls ?? []), ...results.map((r) => r.url)];
+                void persistHero({
+                  ...current,
+                  mobileImageUrls: next,
+                  mobileImageUrl: next[0] || "",
                 });
-                markDirty();
               }}
             />
             {(hero.mobileImageUrls ?? []).length > 0 ? (
@@ -646,16 +659,13 @@ export function HomepagePage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setHero((prev) => {
-                            const current = normalizeHero(prev);
-                            const next = (current.mobileImageUrls ?? []).filter((_, i) => i !== index);
-                            return {
-                              ...current,
-                              mobileImageUrls: next,
-                              mobileImageUrl: next[0] || "",
-                            };
+                          const current = normalizeHero(hero);
+                          const next = (current.mobileImageUrls ?? []).filter((_, i) => i !== index);
+                          void persistHero({
+                            ...current,
+                            mobileImageUrls: next,
+                            mobileImageUrl: next[0] || "",
                           });
-                          markDirty();
                         }}
                         className="text-xs font-medium text-red-600 hover:underline"
                       >

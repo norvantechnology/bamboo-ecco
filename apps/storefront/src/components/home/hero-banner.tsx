@@ -50,13 +50,13 @@ function HeroSlides({
       setIndex((i) => (i + 1) % images.length);
     }, 5000);
     return () => window.clearInterval(id);
-  }, [images.length]);
+  }, [images]);
 
   if (!images.length) return null;
 
   return (
     <div
-      className={`absolute inset-0 ${className.includes("sm:static") ? "" : ""}`}
+      className="absolute inset-0"
       onTouchStart={(e) => {
         touchStartX.current = e.changedTouches[0]?.clientX ?? null;
       }}
@@ -74,7 +74,7 @@ function HeroSlides({
     >
       {images.map((src, i) => (
         <Image
-          key={src}
+          key={`${src}-${i}`}
           src={src}
           alt={alt}
           width={width}
