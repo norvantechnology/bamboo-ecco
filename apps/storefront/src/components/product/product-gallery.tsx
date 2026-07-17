@@ -46,9 +46,9 @@ export function ProductGallery({ images, title, model3d }: Props) {
   }, [active]);
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 w-full max-w-full space-y-3 overflow-hidden">
       {has3d && (
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setMode("photos")}
@@ -77,16 +77,27 @@ export function ProductGallery({ images, title, model3d }: Props) {
       )}
 
       {mode === "3d" && has3d ? (
-        <ProductModelViewer
-          model3d={model3d!}
-          alt={title}
-          fallbackImage={mainImage?.url}
-          showToggle={false}
-        />
+        <div className="min-w-0 overflow-hidden">
+          <ProductModelViewer
+            model3d={model3d!}
+            alt={title}
+            fallbackImage={mainImage?.url}
+            showToggle={false}
+          />
+        </div>
       ) : (
         <>
+          {/*
+            Fixed square stage + max-height keeps any aspect ratio / huge source
+            images from blowing out the mobile layout. object-contain shows the
+            full product without cropping.
+          */}
           <div
-            className="image-frame relative aspect-square overflow-hidden rounded-lg touch-pan-y"
+            className="relative mx-auto w-full max-w-full overflow-hidden rounded-xl bg-[#f0ebe3] touch-pan-y"
+            style={{
+              width: "min(100%, 70vh, 560px)",
+              aspectRatio: "1 / 1",
+            }}
             onTouchStart={(e) => {
               touchStartX.current = e.changedTouches[0]?.clientX ?? null;
             }}
@@ -100,16 +111,21 @@ export function ProductGallery({ images, title, model3d }: Props) {
               go(active + (dx < 0 ? 1 : -1));
             }}
           >
-            {mainImage && (
+            {mainImage ? (
               <Image
                 key={mainImage.url}
                 src={mainImage.url}
                 alt={mainImage.alt || title}
                 fill
                 priority={active === 0}
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="image-fit-contain p-2"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px"
+                quality={90}
+                className="object-contain object-center p-3 sm:p-5"
               />
+            ) : (
+              <div className="flex h-full min-h-[200px] items-center justify-center text-sm text-muted">
+                No image
+              </div>
             )}
 
             {count > 1 && (
@@ -118,7 +134,7 @@ export function ProductGallery({ images, title, model3d }: Props) {
                   type="button"
                   aria-label="Previous image"
                   onClick={() => go(active - 1)}
-                  className="absolute left-2 top-1/2 z-[2] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/80 bg-surface/90 text-foreground shadow-warm backdrop-blur-sm transition hover:bg-surface"
+                  className="absolute left-2 top-1/2 z-[2] flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-border/80 bg-surface/95 text-foreground shadow-warm backdrop-blur-sm transition hover:bg-surface sm:h-10 sm:w-10"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
@@ -126,7 +142,7 @@ export function ProductGallery({ images, title, model3d }: Props) {
                   type="button"
                   aria-label="Next image"
                   onClick={() => go(active + 1)}
-                  className="absolute right-2 top-1/2 z-[2] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/80 bg-surface/90 text-foreground shadow-warm backdrop-blur-sm transition hover:bg-surface"
+                  className="absolute right-2 top-1/2 z-[2] flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-border/80 bg-surface/95 text-foreground shadow-warm backdrop-blur-sm transition hover:bg-surface sm:h-10 sm:w-10"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
@@ -140,7 +156,7 @@ export function ProductGallery({ images, title, model3d }: Props) {
           {count > 1 && (
             <div
               ref={thumbRef}
-              className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="flex max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               role="list"
               aria-label="Product images"
             >
@@ -154,7 +170,7 @@ export function ProductGallery({ images, title, model3d }: Props) {
                   aria-current={index === active}
                   onClick={() => setActive(index)}
                   className={cn(
-                    "image-frame relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-md border-2 transition sm:h-20 sm:w-20",
+                    "relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[#f0ebe3] transition sm:h-[4.5rem] sm:w-[4.5rem]",
                     index === active
                       ? "border-secondary shadow-warm"
                       : "border-border opacity-80 hover:opacity-100",
@@ -162,10 +178,10 @@ export function ProductGallery({ images, title, model3d }: Props) {
                 >
                   <Image
                     src={img.url}
-                    alt={img.alt || `${title} ${index + 1}`}
+                    alt=""
                     fill
-                    sizes="80px"
-                    className="image-fit-contain p-1"
+                    sizes="72px"
+                    className="object-contain object-center p-1"
                   />
                 </button>
               ))}
@@ -173,10 +189,20 @@ export function ProductGallery({ images, title, model3d }: Props) {
           )}
 
           {lifestyleImages.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 pt-4">
+            <div className="grid grid-cols-2 gap-2 pt-2 sm:gap-3 sm:pt-4">
               {lifestyleImages.map((img, i) => (
-                <div key={`${img.url}-life-${i}`} className="image-frame relative aspect-[4/3] overflow-hidden rounded-md">
-                  <Image src={img.url} alt={img.alt} fill sizes="25vw" className="image-fit-contain p-1" />
+                <div
+                  key={`${img.url}-life-${i}`}
+                  className="relative aspect-[3/4] min-w-0 overflow-hidden rounded-lg bg-[#f0ebe3]"
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.alt || `${title} lifestyle`}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 25vw"
+                    quality={85}
+                    className="object-contain object-center p-1.5 sm:p-2"
+                  />
                 </div>
               ))}
             </div>

@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: Props) {
   ];
 
   return (
-    <div className="container-page py-4 sm:py-10">
+    <div className="container-page min-w-0 overflow-x-hidden py-4 sm:py-10">
       <ProductJsonLd
         name={product.title}
         description={product.description}
@@ -103,14 +103,16 @@ export default async function ProductPage({ params }: Props) {
           </>
         )}
         <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
-        <span className="line-clamp-1 px-1 py-1 text-foreground">{product.title}</span>
+        <span className="line-clamp-1 min-w-0 px-1 py-1 text-foreground">{product.title}</span>
       </nav>
 
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-        <ProductGallery images={product.images} title={product.title} model3d={product.model3d} />
+      <div className="grid min-w-0 gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-14">
+        <div className="min-w-0">
+          <ProductGallery images={product.images} title={product.title} model3d={product.model3d} />
+        </div>
 
-        <div className="lg:sticky lg:top-20 lg:self-start">
-          <h1 className="font-display text-2xl sm:text-4xl">{product.title}</h1>
+        <div className="min-w-0 lg:sticky lg:top-20 lg:self-start">
+          <h1 className="break-words font-display text-2xl sm:text-4xl">{product.title}</h1>
 
           {product.ratingSummary.count > 0 && (
             <div className="mt-3 flex items-center gap-2">
