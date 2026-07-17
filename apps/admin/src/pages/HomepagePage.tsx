@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Trash2, ExternalLink } from "lucide-react";
 import {
@@ -73,6 +73,26 @@ function normalizeHero(hero: HeroSettings | null | undefined): HeroSettings {
     imageUrl: imageUrls[0] || "",
     mobileImageUrl: mobileImageUrls[0] || "",
   };
+}
+
+/** Prefer non-empty banner lists from either side so a stale API response cannot wipe uploads. */
+function preferHeroImages(local: HeroSettings, remote: HeroSettings): HeroSettings {
+  const l = normalizeHero(local);
+  const r = normalizeHero(remote);
+  const imageUrls = r.imageUrls?.length ? r.imageUrls! : l.imageUrls ?? [];
+  const mobileImageUrls = r.mobileImageUrls?.length ? r.mobileImageUrls! : l.mobileImageUrls ?? [];
+  return normalizeHero({
+    ...r,
+    ...l,
+    headline: r.headline || l.headline,
+    subheading: r.subheading || l.subheading,
+    primaryCta: r.primaryCta || l.primaryCta,
+    secondaryCta: r.secondaryCta || l.secondaryCta,
+    imageUrls,
+    mobileImageUrls,
+    imageUrl: imageUrls[0] || "",
+    mobileImageUrl: mobileImageUrls[0] || "",
+  });
 }
 
 const ICON_OPTIONS = ["leaf", "sparkles", "home", "sprout", "hand", "truck", "recycle", "shield", "users", "package"];
@@ -339,8 +359,18 @@ export function HomepagePage() {
     published: true,
   });
 
+  /** Sync lock — file picker focus must not refetch and wipe in-flight banner uploads. */
+  const suppressFocusRefetchRef = useRef(false);
+  const heroRef = useRef<HeroSettings | null>(null);
+  heroRef.current = hero;
+
   function markDirty() {
     setSaved(false);
+  }
+
+  function beginHeroUpload() {
+    suppressFocusRefetchRef.current = true;
+    markDirty();
   }
 
   function loadCounts() {
@@ -403,6 +433,7 @@ export function HomepagePage() {
     () => {
       getAdminSettings()
         .then((s) => {
+          if (suppressFocusRefetchRef.current) return;
           setSections(s.homepageSections ?? null);
           setHero(normalizeHero(s.hero));
           setTagline(s.tagline);
@@ -412,8 +443,10 @@ export function HomepagePage() {
         .catch(() => {});
       loadCounts();
     },
-    // Don't overwrite in-progress edits when returning from Preview / file picker
-    { enabled: saved },
+    {
+      enabled: saved && !saving,
+      isLocked: () => suppressFocusRefetchRef.current,
+    },
   );
 
   function updateSection(key: SectionKey, patch: Partial<HomepageSection>) {
@@ -424,6 +457,7 @@ export function HomepagePage() {
 
   async function saveAll() {
     if (!sections || !hero) return;
+    suppressFocusRefetchRef.current = true;
     setSaving(true);
     setError("");
     try {
@@ -435,7 +469,7 @@ export function HomepagePage() {
         homepageSections: sections,
       });
       setSections(updated.homepageSections ?? sections);
-      setHero(normalizeHero(updated.hero ?? hero));
+      setHero(preferHeroImages(hero, updated.hero ?? hero));
       setBrandPillars(updated.brandPillars ?? brandPillars);
       setWhyChooseUs(updated.whyChooseUs ?? whyChooseUs);
       setCounts((c) => ({
@@ -448,24 +482,37 @@ export function HomepagePage() {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
       setSaving(false);
+      window.setTimeout(() => {
+        suppressFocusRefetchRef.current = false;
+      }, 800);
     }
   }
 
   /** Persist hero banners immediately so refresh / focus does not lose uploads. */
   async function persistHero(next: HeroSettings) {
     const normalized = normalizeHero(next);
+    suppressFocusRefetchRef.current = true;
     setHero(normalized);
+    heroRef.current = normalized;
     markDirty();
     setSaving(true);
     setError("");
     try {
       const updated = await updateAdminSettings({ hero: normalized });
-      setHero(normalizeHero(updated.hero ?? normalized));
+      const merged = preferHeroImages(normalized, updated.hero ?? normalized);
+      setHero(merged);
+      heroRef.current = merged;
       setSaved(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save banners");
+      setError(err instanceof Error ? err.message : "Failed to save banners — click Save homepage");
+      // Keep local banners visible even if API save failed.
+      setHero(normalized);
+      heroRef.current = normalized;
     } finally {
       setSaving(false);
+      window.setTimeout(() => {
+        suppressFocusRefetchRef.current = false;
+      }, 800);
     }
   }
 
@@ -542,12 +589,11 @@ export function HomepagePage() {
             <ImageUpload
               folder="hero"
               alt={hero.headline || "Hero banner"}
-              slug="desktop"
               label="Upload desktop banners"
               multiple
-              onPickStart={markDirty}
+              onPickStart={beginHeroUpload}
               onUploadedMany={(results) => {
-                const current = normalizeHero(hero);
+                const current = normalizeHero(heroRef.current ?? hero);
                 const next = [...(current.imageUrls ?? []), ...results.map((r) => r.url)];
                 void persistHero({
                   ...current,
@@ -584,7 +630,7 @@ export function HomepagePage() {
                       <button
                         type="button"
                         onClick={() => {
-                          const current = normalizeHero(hero);
+                          const current = normalizeHero(heroRef.current ?? hero);
                           const next = (current.imageUrls ?? []).filter((_, i) => i !== index);
                           void persistHero({
                             ...current,
@@ -613,12 +659,11 @@ export function HomepagePage() {
             <ImageUpload
               folder="hero"
               alt={hero.headline || "Hero banner mobile"}
-              slug="mobile"
               label="Upload mobile banners"
               multiple
-              onPickStart={markDirty}
+              onPickStart={beginHeroUpload}
               onUploadedMany={(results) => {
-                const current = normalizeHero(hero);
+                const current = normalizeHero(heroRef.current ?? hero);
                 const next = [...(current.mobileImageUrls ?? []), ...results.map((r) => r.url)];
                 void persistHero({
                   ...current,
@@ -659,7 +704,7 @@ export function HomepagePage() {
                       <button
                         type="button"
                         onClick={() => {
-                          const current = normalizeHero(hero);
+                          const current = normalizeHero(heroRef.current ?? hero);
                           const next = (current.mobileImageUrls ?? []).filter((_, i) => i !== index);
                           void persistHero({
                             ...current,

@@ -269,7 +269,7 @@ export class CmsService {
       const prev = (existing.hero ?? {}) as Record<string, unknown>;
       const incoming = data.hero as Record<string, unknown>;
       // Merge so partial/legacy saves never wipe banner arrays.
-      $set.hero = this.normalizeHero({
+      const normalized = this.normalizeHero({
         ...prev,
         ...incoming,
         imageUrls: Array.isArray(incoming.imageUrls)
@@ -287,6 +287,20 @@ export class CmsService {
             ? incoming.mobileImageUrl
             : prev.mobileImageUrl,
       });
+
+      // Set nested paths so arrays always persist even if a full hero replace fails.
+      delete $set.hero;
+      $set['hero.headline'] = normalized.headline ?? '';
+      $set['hero.subheading'] = normalized.subheading ?? '';
+      $set['hero.primaryCta'] = normalized.primaryCta ?? '';
+      $set['hero.secondaryCta'] = normalized.secondaryCta ?? '';
+      $set['hero.imageUrl'] = normalized.imageUrl ?? '';
+      $set['hero.mobileImageUrl'] = normalized.mobileImageUrl ?? '';
+      $set['hero.imageUrls'] = normalized.imageUrls ?? [];
+      $set['hero.mobileImageUrls'] = normalized.mobileImageUrls ?? [];
+      if (normalized.videoUrl !== undefined) {
+        $set['hero.videoUrl'] = normalized.videoUrl ?? '';
+      }
     }
 
     // Keep theme colors in sync when SEO chrome colors are saved
