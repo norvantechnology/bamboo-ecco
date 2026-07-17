@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Box, ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
 import { ProductModelViewer } from "./product-model-viewer";
@@ -15,22 +15,43 @@ interface Props {
 
 export function ProductGallery({ images, title, model3d }: Props) {
   const [mode, setMode] = useState<"photos" | "3d">("photos");
-  const productImages = images
-    .filter((i) => i.type !== "lifestyle")
-    .slice()
-    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-  const lifestyleImages = images.filter((i) => i.type === "lifestyle");
   const [active, setActive] = useState(0);
   const thumbRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
 
-  const count = productImages.length;
-  const mainImage = productImages[Math.min(active, Math.max(0, count - 1))];
+  // All images in one gallery so any tap updates the main banner
+  const galleryImages = useMemo(() => {
+    return images
+      .slice()
+      .sort((a, b) => {
+        const typeRank = (t?: string) => (t === "lifestyle" ? 1 : 0);
+        const byType = typeRank(a.type) - typeRank(b.type);
+        if (byType !== 0) return byType;
+        return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+      });
+  }, [images]);
+
+  const imageKey = useMemo(
+    () => galleryImages.map((img) => img.url).join("|"),
+    [galleryImages],
+  );
+
+  const count = galleryImages.length;
+  const mainImage = galleryImages[Math.min(active, Math.max(0, count - 1))];
   const has3d = Boolean(model3d?.glbUrl);
 
   useEffect(() => {
     setActive(0);
-  }, [images]);
+  }, [imageKey]);
+
+  const selectImage = useCallback(
+    (index: number) => {
+      if (count <= 0) return;
+      setMode("photos");
+      setActive(((index % count) + count) % count);
+    },
+    [count],
+  );
 
   const go = useCallback(
     (next: number) => {
@@ -87,11 +108,6 @@ export function ProductGallery({ images, title, model3d }: Props) {
         </div>
       ) : (
         <>
-          {/*
-            Fixed square stage + max-height keeps any aspect ratio / huge source
-            images from blowing out the mobile layout. object-contain shows the
-            full product without cropping.
-          */}
           <div
             className="relative mx-auto w-full max-w-full overflow-hidden rounded-xl bg-[#f0ebe3] touch-pan-y"
             style={{
@@ -160,7 +176,7 @@ export function ProductGallery({ images, title, model3d }: Props) {
               role="list"
               aria-label="Product images"
             >
-              {productImages.map((img, index) => (
+              {galleryImages.map((img, index) => (
                 <button
                   key={`${img.url}-${index}`}
                   type="button"
@@ -168,11 +184,11 @@ export function ProductGallery({ images, title, model3d }: Props) {
                   role="listitem"
                   aria-label={`Show image ${index + 1}`}
                   aria-current={index === active}
-                  onClick={() => setActive(index)}
+                  onClick={() => selectImage(index)}
                   className={cn(
-                    "relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[#f0ebe3] transition sm:h-[4.5rem] sm:w-[4.5rem]",
+                    "relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[#f0ebe3] transition active:scale-95 sm:h-[4.5rem] sm:w-[4.5rem]",
                     index === active
-                      ? "border-secondary shadow-warm"
+                      ? "border-secondary shadow-warm ring-2 ring-secondary/30"
                       : "border-border opacity-80 hover:opacity-100",
                   )}
                 >
@@ -181,29 +197,9 @@ export function ProductGallery({ images, title, model3d }: Props) {
                     alt=""
                     fill
                     sizes="72px"
-                    className="object-contain object-center p-1"
+                    className="pointer-events-none object-contain object-center p-1"
                   />
                 </button>
-              ))}
-            </div>
-          )}
-
-          {lifestyleImages.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 pt-2 sm:gap-3 sm:pt-4">
-              {lifestyleImages.map((img, i) => (
-                <div
-                  key={`${img.url}-life-${i}`}
-                  className="relative aspect-[3/4] min-w-0 overflow-hidden rounded-lg bg-[#f0ebe3]"
-                >
-                  <Image
-                    src={img.url}
-                    alt={img.alt || `${title} lifestyle`}
-                    fill
-                    sizes="(max-width: 640px) 50vw, 25vw"
-                    quality={85}
-                    className="object-contain object-center p-1.5 sm:p-2"
-                  />
-                </div>
               ))}
             </div>
           )}
