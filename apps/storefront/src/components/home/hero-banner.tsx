@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MOTION_EASE, prefersReducedMotion } from "@/lib/motion";
 
 interface HeroBannerProps {
   imageUrl?: string;
-  /** Optional mobile banner; falls back to imageUrl when empty. */
   mobileImageUrl?: string;
+  imageUrls?: string[];
+  mobileImageUrls?: string[];
   headline: string;
   tagline: string;
   subheading: string;
@@ -16,9 +17,100 @@ interface HeroBannerProps {
   secondaryCta: string;
 }
 
+function resolveList(primary?: string[], legacy?: string): string[] {
+  const fromArr = (primary ?? []).map((u) => u.trim()).filter(Boolean);
+  if (fromArr.length) return fromArr;
+  const single = legacy?.trim();
+  return single ? [single] : [];
+}
+
+function HeroSlides({
+  images,
+  alt,
+  className,
+  width,
+  height,
+}: {
+  images: string[];
+  alt: string;
+  className: string;
+  width: number;
+  height: number;
+}) {
+  const [index, setIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [images.join("|")]);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % images.length);
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, [images.length]);
+
+  if (!images.length) return null;
+
+  return (
+    <div
+      className={`absolute inset-0 ${className.includes("sm:static") ? "" : ""}`}
+      onTouchStart={(e) => {
+        touchStartX.current = e.changedTouches[0]?.clientX ?? null;
+      }}
+      onTouchEnd={(e) => {
+        const start = touchStartX.current;
+        const end = e.changedTouches[0]?.clientX;
+        touchStartX.current = null;
+        if (start == null || end == null || images.length <= 1) return;
+        const dx = end - start;
+        if (Math.abs(dx) < 40) return;
+        setIndex((i) =>
+          dx < 0 ? (i + 1) % images.length : (i - 1 + images.length) % images.length,
+        );
+      }}
+    >
+      {images.map((src, i) => (
+        <Image
+          key={src}
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          priority={i === 0}
+          sizes="100vw"
+          className={`${className} transition-opacity duration-700 ease-out ${
+            i === index ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+        />
+      ))}
+      {images.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 z-[2] flex -translate-x-1/2 gap-1.5 sm:bottom-5">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Show banner ${i + 1}`}
+              aria-current={i === index}
+              onClick={() => setIndex(i)}
+              className={`h-1.5 rounded-full transition-all ${
+                i === index ? "w-5 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function HeroBanner({
   imageUrl,
   mobileImageUrl,
+  imageUrls,
+  mobileImageUrls,
   headline,
   tagline,
   subheading,
@@ -29,8 +121,14 @@ export function HeroBanner({
   const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const desktopSrc = imageUrl?.trim() || mobileImageUrl?.trim() || "";
-  const mobileSrc = mobileImageUrl?.trim() || imageUrl?.trim() || "";
+  const desktopImages = useMemo(
+    () => resolveList(imageUrls, imageUrl),
+    [imageUrls, imageUrl],
+  );
+  const mobileImages = useMemo(() => {
+    const mobile = resolveList(mobileImageUrls, mobileImageUrl);
+    return mobile.length ? mobile : desktopImages;
+  }, [mobileImageUrls, mobileImageUrl, desktopImages]);
 
   useEffect(() => {
     if (prefersReducedMotion() || !sectionRef.current) return;
@@ -94,48 +192,42 @@ export function HeroBanner({
     };
   }, []);
 
+  const hasImages = desktopImages.length > 0 || mobileImages.length > 0;
+
   return (
     <section
       ref={sectionRef}
       className="image-frame-dark relative w-full overflow-hidden
-        /* Mobile: fit first screen without cutting CTAs under cart bar */
         h-[min(62dvh,24rem)] min-h-[18rem]
         sm:h-auto sm:min-h-0"
     >
       <div ref={imageRef} className="absolute inset-0 will-change-transform sm:relative sm:inset-auto">
-        {mobileSrc || desktopSrc ? (
+        {hasImages ? (
           <>
-            {/* Mobile banner (falls back to desktop when mobileImageUrl is empty) */}
-            {mobileSrc ? (
-              <Image
-                src={mobileSrc}
+            <div className="absolute inset-0 sm:hidden">
+              <HeroSlides
+                images={mobileImages}
                 alt={headline}
                 width={1080}
                 height={1350}
-                priority
-                className="hero-ken-burns absolute inset-0 h-full w-full object-cover object-[center_35%] sm:hidden"
-                sizes="100vw"
+                className="hero-ken-burns absolute inset-0 h-full w-full object-cover object-[center_35%]"
               />
-            ) : null}
-            {/* Desktop / web banner */}
-            {desktopSrc ? (
-              <Image
-                src={desktopSrc}
+            </div>
+            <div className="relative hidden w-full sm:block sm:aspect-[2.2/1] sm:min-h-[42vh]">
+              <HeroSlides
+                images={desktopImages.length ? desktopImages : mobileImages}
                 alt={headline}
                 width={1920}
                 height={900}
-                priority
-                className="hero-ken-burns hidden sm:static sm:block sm:h-auto sm:w-full sm:object-cover sm:object-center"
-                sizes="100vw"
+                className="hero-ken-burns absolute inset-0 h-full w-full object-cover object-center"
               />
-            ) : null}
+            </div>
           </>
         ) : (
           <div className="hero-banner-fallback absolute inset-0 h-full w-full sm:static sm:min-h-[42vh] sm:h-auto" />
         )}
       </div>
 
-      {/* Stronger bottom gradient on mobile for text + CTA readability */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1a1410] via-[#1a1410]/55 to-[#1a1410]/25 sm:via-[#1a1410]/20 sm:to-transparent" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#1a1816]/90 via-[#1a1816]/45 to-transparent sm:via-[#1a1816]/55" />
       <div className="hero-vignette-top pointer-events-none absolute inset-x-0 top-0 h-16 sm:h-36" aria-hidden />

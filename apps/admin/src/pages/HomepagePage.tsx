@@ -477,110 +477,134 @@ export function HomepagePage() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <p className="text-sm font-medium">Desktop / web banner</p>
-            <p className="text-xs text-muted">Shown on tablet and desktop (sm and up).</p>
+            <p className="text-sm font-medium">Desktop / laptop banners</p>
+            <p className="text-xs text-muted">
+              Upload one or more images from your PC (Cloudinary). Shown on tablet/desktop. Multiple images rotate as a carousel.
+            </p>
             <ImageUpload
               folder="hero"
               alt={hero.headline || "Hero banner"}
               slug="desktop"
-              label="Upload desktop banner"
-              onUploaded={(r) => {
-                setHero({ ...hero, imageUrl: r.url });
+              label="Upload desktop banners"
+              multiple
+              onUploadedMany={(results) => {
+                const next = [...(hero.imageUrls ?? []), ...results.map((r) => r.url)];
+                setHero({
+                  ...hero,
+                  imageUrls: next,
+                  imageUrl: next[0] || "",
+                });
                 markDirty();
               }}
             />
-            {hero.imageUrl ? (
-              <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
-                <img
-                  src={hero.imageUrl}
-                  alt="Desktop hero"
-                  className="h-20 w-32 shrink-0 rounded-md object-cover"
-                />
-                <div className="min-w-0 flex-1 space-y-2">
-                  <TextInput
-                    value={hero.imageUrl}
-                    onChange={(e) => {
-                      setHero({ ...hero, imageUrl: e.target.value });
-                      markDirty();
-                    }}
-                    aria-label="Desktop banner URL"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setHero({ ...hero, imageUrl: "" });
-                      markDirty();
-                    }}
-                    className="text-xs font-medium text-red-600 hover:underline"
+            {(hero.imageUrls ?? []).length > 0 ? (
+              <div className="space-y-2">
+                {(hero.imageUrls ?? []).map((url, index) => (
+                  <div
+                    key={`desk-${url}-${index}`}
+                    className="flex items-start gap-3 rounded-lg border border-border bg-background p-3"
                   >
-                    Remove desktop banner
-                  </button>
-                </div>
+                    <img src={url} alt={`Desktop ${index + 1}`} className="h-16 w-28 shrink-0 rounded-md object-cover" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <p className="text-xs text-muted">Slide {index + 1}</p>
+                      <TextInput
+                        value={url}
+                        onChange={(e) => {
+                          const next = [...(hero.imageUrls ?? [])];
+                          next[index] = e.target.value;
+                          const cleaned = next.map((u) => u.trim()).filter(Boolean);
+                          setHero({ ...hero, imageUrls: cleaned, imageUrl: cleaned[0] || "" });
+                          markDirty();
+                        }}
+                        aria-label={`Desktop banner URL ${index + 1}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = (hero.imageUrls ?? []).filter((_, i) => i !== index);
+                          setHero({ ...hero, imageUrls: next, imageUrl: next[0] || "" });
+                          markDirty();
+                        }}
+                        className="text-xs font-medium text-red-600 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
-              <TextInput
-                placeholder="Or paste desktop image URL"
-                value={hero.imageUrl ?? ""}
-                onChange={(e) => {
-                  setHero({ ...hero, imageUrl: e.target.value });
-                  markDirty();
-                }}
-              />
+              <p className="text-xs text-muted">No desktop banners yet — upload from your PC above.</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">Mobile banner</p>
+            <p className="text-sm font-medium">Mobile banners</p>
             <p className="text-xs text-muted">
-              Optional. If empty, the storefront uses the desktop banner on mobile.
+              Optional. Upload portrait images (1080×1350). If empty, mobile uses desktop banners.
             </p>
             <ImageUpload
               folder="hero"
               alt={hero.headline || "Hero banner mobile"}
               slug="mobile"
-              label="Upload mobile banner"
-              onUploaded={(r) => {
-                setHero({ ...hero, mobileImageUrl: r.url });
+              label="Upload mobile banners"
+              multiple
+              onUploadedMany={(results) => {
+                const next = [...(hero.mobileImageUrls ?? []), ...results.map((r) => r.url)];
+                setHero({
+                  ...hero,
+                  mobileImageUrls: next,
+                  mobileImageUrl: next[0] || "",
+                });
                 markDirty();
               }}
             />
-            {hero.mobileImageUrl ? (
-              <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
-                <img
-                  src={hero.mobileImageUrl}
-                  alt="Mobile hero"
-                  className="h-28 w-20 shrink-0 rounded-md object-cover"
-                />
-                <div className="min-w-0 flex-1 space-y-2">
-                  <TextInput
-                    value={hero.mobileImageUrl}
-                    onChange={(e) => {
-                      setHero({ ...hero, mobileImageUrl: e.target.value });
-                      markDirty();
-                    }}
-                    aria-label="Mobile banner URL"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setHero({ ...hero, mobileImageUrl: "" });
-                      markDirty();
-                    }}
-                    className="text-xs font-medium text-red-600 hover:underline"
+            {(hero.mobileImageUrls ?? []).length > 0 ? (
+              <div className="space-y-2">
+                {(hero.mobileImageUrls ?? []).map((url, index) => (
+                  <div
+                    key={`mob-${url}-${index}`}
+                    className="flex items-start gap-3 rounded-lg border border-border bg-background p-3"
                   >
-                    Remove mobile banner
-                  </button>
-                </div>
+                    <img src={url} alt={`Mobile ${index + 1}`} className="h-24 w-16 shrink-0 rounded-md object-cover" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <p className="text-xs text-muted">Slide {index + 1}</p>
+                      <TextInput
+                        value={url}
+                        onChange={(e) => {
+                          const next = [...(hero.mobileImageUrls ?? [])];
+                          next[index] = e.target.value;
+                          const cleaned = next.map((u) => u.trim()).filter(Boolean);
+                          setHero({
+                            ...hero,
+                            mobileImageUrls: cleaned,
+                            mobileImageUrl: cleaned[0] || "",
+                          });
+                          markDirty();
+                        }}
+                        aria-label={`Mobile banner URL ${index + 1}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = (hero.mobileImageUrls ?? []).filter((_, i) => i !== index);
+                          setHero({
+                            ...hero,
+                            mobileImageUrls: next,
+                            mobileImageUrl: next[0] || "",
+                          });
+                          markDirty();
+                        }}
+                        className="text-xs font-medium text-red-600 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
-              <TextInput
-                placeholder="Or paste mobile image URL (optional)"
-                value={hero.mobileImageUrl ?? ""}
-                onChange={(e) => {
-                  setHero({ ...hero, mobileImageUrl: e.target.value });
-                  markDirty();
-                }}
-              />
+              <p className="text-xs text-muted">No mobile banners — storefront will use desktop images on phones.</p>
             )}
           </div>
         </div>

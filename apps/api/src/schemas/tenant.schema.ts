@@ -14,12 +14,21 @@ export class HeroContent {
   })
   subheading: string;
 
+  /** Legacy single desktop image (kept in sync with imageUrls[0]). */
   @Prop()
   imageUrl?: string;
 
-  /** Optional mobile-only hero image; storefront falls back to imageUrl when empty. */
+  /** Desktop / laptop hero images (carousel). */
+  @Prop({ type: [String], default: [] })
+  imageUrls?: string[];
+
+  /** Legacy single mobile image (kept in sync with mobileImageUrls[0]). */
   @Prop()
   mobileImageUrl?: string;
+
+  /** Mobile hero images (carousel). Falls back to imageUrls when empty. */
+  @Prop({ type: [String], default: [] })
+  mobileImageUrls?: string[];
 
   @Prop()
   videoUrl?: string;

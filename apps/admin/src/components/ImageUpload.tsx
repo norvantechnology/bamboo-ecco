@@ -45,7 +45,7 @@ export function ImageUpload({
       if (multiple) {
         onUploadedMany?.(results);
       } else if (results[0]) {
-        onUploaded(results[0]);
+        onUploaded?.(results[0]);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");

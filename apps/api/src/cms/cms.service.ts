@@ -197,7 +197,7 @@ export class CmsService {
     return {
       name: tenant.name,
       tagline: tenant.tagline,
-      hero: tenant.hero,
+      hero: this.normalizeHero(tenant.hero),
       brandPillars: tenant.brandPillars,
       whyChooseUs: tenant.whyChooseUs,
       theme: tenant.theme,
@@ -207,6 +207,37 @@ export class CmsService {
       announcementBar: resolveAnnouncementBar(tenant.announcementBar),
       paymentEnabled: tenant.paymentEnabled !== false,
     };
+  }
+
+  /** Keep legacy single URLs in sync with multi-image arrays. */
+  private normalizeHero(hero: Record<string, unknown> | null | undefined) {
+    const h = { ...(hero ?? {}) } as {
+      headline?: string;
+      subheading?: string;
+      imageUrl?: string;
+      mobileImageUrl?: string;
+      imageUrls?: string[];
+      mobileImageUrls?: string[];
+      videoUrl?: string;
+      primaryCta?: string;
+      secondaryCta?: string;
+    };
+
+    const desktop = Array.isArray(h.imageUrls)
+      ? h.imageUrls.map((u) => String(u || '').trim()).filter(Boolean)
+      : [];
+    const mobile = Array.isArray(h.mobileImageUrls)
+      ? h.mobileImageUrls.map((u) => String(u || '').trim()).filter(Boolean)
+      : [];
+
+    if (!desktop.length && h.imageUrl?.trim()) desktop.push(h.imageUrl.trim());
+    if (!mobile.length && h.mobileImageUrl?.trim()) mobile.push(h.mobileImageUrl.trim());
+
+    h.imageUrls = desktop;
+    h.mobileImageUrls = mobile;
+    h.imageUrl = desktop[0] || '';
+    h.mobileImageUrl = mobile[0] || '';
+    return h;
   }
 
   getHomepageSectionDefaults() {
@@ -231,6 +262,10 @@ export class CmsService {
   ) {
     const $set: Record<string, unknown> = { ...data };
 
+    if (data.hero && typeof data.hero === 'object') {
+      $set.hero = this.normalizeHero(data.hero as Record<string, unknown>);
+    }
+
     // Keep theme colors in sync when SEO chrome colors are saved
     if (data.seo && typeof data.seo === 'object') {
       const seo = data.seo as Record<string, unknown>;
@@ -250,7 +285,7 @@ export class CmsService {
     return {
       name: tenant.name,
       tagline: tenant.tagline,
-      hero: tenant.hero,
+      hero: this.normalizeHero(tenant.hero as unknown as Record<string, unknown>),
       brandPillars: tenant.brandPillars,
       whyChooseUs: tenant.whyChooseUs,
       theme: tenant.theme,

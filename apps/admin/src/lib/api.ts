@@ -584,6 +584,8 @@ export interface TenantSettings {
     subheading: string;
     imageUrl?: string;
     mobileImageUrl?: string;
+    imageUrls?: string[];
+    mobileImageUrls?: string[];
     primaryCta: string;
     secondaryCta: string;
   };

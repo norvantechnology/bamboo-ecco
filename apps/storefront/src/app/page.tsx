@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: brand?.name || seo.name || "Home",
     description: brand?.tagline ?? brand?.hero?.subheading ?? seo.description,
     path: "/",
-    image: brand?.hero?.imageUrl,
+    image: brand?.hero?.imageUrls?.[0] || brand?.hero?.imageUrl,
     imageAlt: brand?.hero?.headline,
   });
 }
@@ -38,6 +38,8 @@ export default async function HomePage() {
       <HeroBanner
         imageUrl={brand.hero.imageUrl}
         mobileImageUrl={brand.hero.mobileImageUrl}
+        imageUrls={brand.hero.imageUrls}
+        mobileImageUrls={brand.hero.mobileImageUrls}
         headline={brand.hero.headline}
         tagline={brand.tagline}
         subheading={brand.hero.subheading}

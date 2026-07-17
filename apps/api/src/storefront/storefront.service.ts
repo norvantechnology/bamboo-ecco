@@ -173,7 +173,7 @@ export class StorefrontService {
         name: tenant?.name,
         tagline: tenant?.tagline,
         theme: tenant?.theme,
-        hero: tenant?.hero,
+        hero: this.normalizeHeroBanner(tenant?.hero),
         brandPillars: tenant?.brandPillars ?? [],
         whyChooseUs: tenant?.whyChooseUs ?? [],
       },
@@ -461,5 +461,34 @@ export class StorefrontService {
     }
 
     return [...ids].map((id) => new Types.ObjectId(id));
+  }
+
+  private normalizeHeroBanner(hero: Record<string, unknown> | null | undefined) {
+    const h = { ...(hero ?? {}) } as {
+      headline?: string;
+      subheading?: string;
+      imageUrl?: string;
+      mobileImageUrl?: string;
+      imageUrls?: string[];
+      mobileImageUrls?: string[];
+      videoUrl?: string;
+      primaryCta?: string;
+      secondaryCta?: string;
+    };
+    const desktop = Array.isArray(h.imageUrls)
+      ? h.imageUrls.map((u) => String(u || '').trim()).filter(Boolean)
+      : [];
+    const mobile = Array.isArray(h.mobileImageUrls)
+      ? h.mobileImageUrls.map((u) => String(u || '').trim()).filter(Boolean)
+      : [];
+    if (!desktop.length && h.imageUrl?.trim()) desktop.push(h.imageUrl.trim());
+    if (!mobile.length && h.mobileImageUrl?.trim()) mobile.push(h.mobileImageUrl.trim());
+    return {
+      ...h,
+      imageUrls: desktop,
+      mobileImageUrls: mobile,
+      imageUrl: desktop[0] || '',
+      mobileImageUrl: mobile[0] || '',
+    };
   }
 }
