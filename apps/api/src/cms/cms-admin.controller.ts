@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentTenantId } from '../common/decorators/tenant.decorator';
 import { CmsService } from './cms.service';
@@ -134,23 +135,11 @@ export class CmsAdminController {
   }
 
   @Put('settings')
-  updateSettings(
-    @CurrentTenantId() tenantId: string,
-    @Body()
-    body: Partial<{
-      name: string;
-      tagline: string;
-      hero: Record<string, unknown>;
-      brandPillars: unknown[];
-      whyChooseUs: unknown[];
-      theme: Record<string, unknown>;
-      seo: Record<string, unknown>;
-      homepageSections: Record<string, unknown>;
-      welcomePopup: Record<string, unknown>;
-      announcementBar: Record<string, unknown>;
-      paymentEnabled: boolean;
-    }>,
-  ) {
-    return this.cmsService.updateTenantSettings(tenantId, body);
+  updateSettings(@CurrentTenantId() tenantId: string, @Req() req: Request) {
+    // Read raw body so global ValidationPipe cannot strip hero image array fields.
+    return this.cmsService.updateTenantSettings(
+      tenantId,
+      (req.body ?? {}) as Record<string, unknown>,
+    );
   }
 }

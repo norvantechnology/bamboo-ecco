@@ -22,7 +22,6 @@ import {
 import { ImageUpload } from "../components/ImageUpload";
 import { PageLoader } from "../components/Loading";
 import { PageHeader } from "../components/PageHeader";
-import { useRefetchOnFocus } from "../lib/useRefetchOnFocus";
 import {
   Field,
   FieldRow,
@@ -75,12 +74,18 @@ function normalizeHero(hero: HeroSettings | null | undefined): HeroSettings {
   };
 }
 
-/** Prefer non-empty banner lists from either side so a stale API response cannot wipe uploads. */
+/** Keep the longer banner list so a stale/partial API response cannot drop a just-uploaded slide. */
 function preferHeroImages(local: HeroSettings, remote: HeroSettings): HeroSettings {
   const l = normalizeHero(local);
   const r = normalizeHero(remote);
-  const imageUrls = r.imageUrls?.length ? r.imageUrls! : l.imageUrls ?? [];
-  const mobileImageUrls = r.mobileImageUrls?.length ? r.mobileImageUrls! : l.mobileImageUrls ?? [];
+  const imageUrls =
+    (l.imageUrls?.length ?? 0) >= (r.imageUrls?.length ?? 0)
+      ? l.imageUrls ?? []
+      : r.imageUrls ?? [];
+  const mobileImageUrls =
+    (l.mobileImageUrls?.length ?? 0) >= (r.mobileImageUrls?.length ?? 0)
+      ? l.mobileImageUrls ?? []
+      : r.mobileImageUrls ?? [];
   return normalizeHero({
     ...r,
     ...l,
@@ -429,26 +434,6 @@ export function HomepagePage() {
       .catch(() => setCloudinaryReady(false));
   }, []);
 
-  useRefetchOnFocus(
-    () => {
-      getAdminSettings()
-        .then((s) => {
-          if (suppressFocusRefetchRef.current) return;
-          setSections(s.homepageSections ?? null);
-          setHero(normalizeHero(s.hero));
-          setTagline(s.tagline);
-          setBrandPillars(s.brandPillars ?? []);
-          setWhyChooseUs(s.whyChooseUs ?? []);
-        })
-        .catch(() => {});
-      loadCounts();
-    },
-    {
-      enabled: saved && !saving,
-      isLocked: () => suppressFocusRefetchRef.current,
-    },
-  );
-
   function updateSection(key: SectionKey, patch: Partial<HomepageSection>) {
     if (!sections) return;
     setSections({ ...sections, [key]: { ...sections[key], ...patch } });
@@ -488,7 +473,7 @@ export function HomepagePage() {
     }
   }
 
-  /** Persist hero banners immediately so refresh / focus does not lose uploads. */
+  /** Persist hero banners immediately so refresh does not lose uploads. */
   async function persistHero(next: HeroSettings) {
     const normalized = normalizeHero(next);
     suppressFocusRefetchRef.current = true;
@@ -499,20 +484,27 @@ export function HomepagePage() {
     setError("");
     try {
       const updated = await updateAdminSettings({ hero: normalized });
+      // Always keep the longer local list if the API echoes a shorter/stale hero.
       const merged = preferHeroImages(normalized, updated.hero ?? normalized);
       setHero(merged);
       heroRef.current = merged;
       setSaved(true);
+      // Re-fetch once to confirm DB write; only apply if it has at least as many slides.
+      const confirmed = await getAdminSettings().catch(() => null);
+      if (confirmed?.hero) {
+        const fromDb = preferHeroImages(merged, confirmed.hero);
+        setHero(fromDb);
+        heroRef.current = fromDb;
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save banners — click Save homepage");
-      // Keep local banners visible even if API save failed.
       setHero(normalized);
       heroRef.current = normalized;
     } finally {
       setSaving(false);
       window.setTimeout(() => {
         suppressFocusRefetchRef.current = false;
-      }, 800);
+      }, 1500);
     }
   }
 

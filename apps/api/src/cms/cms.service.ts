@@ -314,10 +314,14 @@ export class CmsService {
       }
     }
 
-    const tenant = await this.tenantModel
-      .findByIdAndUpdate(this.tid(tenantId), { $set }, { new: true })
-      .lean()
-      .exec();
+    // Native collection update bypasses Mongoose strict-schema stripping of hero arrays.
+    const result = await this.tenantModel.collection.updateOne(
+      { _id: this.tid(tenantId) },
+      { $set },
+    );
+    if (!result.matchedCount) throw new NotFoundException('Tenant not found');
+
+    const tenant = await this.tenantModel.findById(this.tid(tenantId)).lean().exec();
     if (!tenant) throw new NotFoundException('Tenant not found');
     return {
       name: tenant.name,
