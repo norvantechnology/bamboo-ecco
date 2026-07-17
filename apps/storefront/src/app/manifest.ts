@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { BRAND_ASSETS } from "@/lib/brand";
-import { getSiteUrl, resolveSiteSeo } from "@/lib/site";
+import { resolveSiteSeo } from "@/lib/site";
 
 /** App Router manifest — brand fields from tenant SEO (Admin). */
 export default async function manifest(): Promise<MetadataRoute.Manifest> {

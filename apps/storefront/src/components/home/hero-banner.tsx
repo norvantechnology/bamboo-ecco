@@ -39,10 +39,11 @@ function HeroSlides({
 }) {
   const [index, setIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
+  const imagesKey = images.join("|");
 
   useEffect(() => {
     setIndex(0);
-  }, [images.join("|")]);
+  }, [imagesKey]);
 
   useEffect(() => {
     if (images.length <= 1) return;
