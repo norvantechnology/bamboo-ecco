@@ -473,16 +473,117 @@ export function HomepagePage() {
               }}
             />
           </Field>
-          <Field label="Hero image URL">
-            <TextInput
-              value={hero.imageUrl ?? ""}
-              onChange={(e) => {
-                setHero({ ...hero, imageUrl: e.target.value });
+        </FieldRow>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Desktop / web banner</p>
+            <p className="text-xs text-muted">Shown on tablet and desktop (sm and up).</p>
+            <ImageUpload
+              folder="hero"
+              alt={hero.headline || "Hero banner"}
+              slug="desktop"
+              label="Upload desktop banner"
+              onUploaded={(r) => {
+                setHero({ ...hero, imageUrl: r.url });
                 markDirty();
               }}
             />
-          </Field>
-        </FieldRow>
+            {hero.imageUrl ? (
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+                <img
+                  src={hero.imageUrl}
+                  alt="Desktop hero"
+                  className="h-20 w-32 shrink-0 rounded-md object-cover"
+                />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <TextInput
+                    value={hero.imageUrl}
+                    onChange={(e) => {
+                      setHero({ ...hero, imageUrl: e.target.value });
+                      markDirty();
+                    }}
+                    aria-label="Desktop banner URL"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHero({ ...hero, imageUrl: "" });
+                      markDirty();
+                    }}
+                    className="text-xs font-medium text-red-600 hover:underline"
+                  >
+                    Remove desktop banner
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <TextInput
+                placeholder="Or paste desktop image URL"
+                value={hero.imageUrl ?? ""}
+                onChange={(e) => {
+                  setHero({ ...hero, imageUrl: e.target.value });
+                  markDirty();
+                }}
+              />
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Mobile banner</p>
+            <p className="text-xs text-muted">
+              Optional. If empty, the storefront uses the desktop banner on mobile.
+            </p>
+            <ImageUpload
+              folder="hero"
+              alt={hero.headline || "Hero banner mobile"}
+              slug="mobile"
+              label="Upload mobile banner"
+              onUploaded={(r) => {
+                setHero({ ...hero, mobileImageUrl: r.url });
+                markDirty();
+              }}
+            />
+            {hero.mobileImageUrl ? (
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+                <img
+                  src={hero.mobileImageUrl}
+                  alt="Mobile hero"
+                  className="h-28 w-20 shrink-0 rounded-md object-cover"
+                />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <TextInput
+                    value={hero.mobileImageUrl}
+                    onChange={(e) => {
+                      setHero({ ...hero, mobileImageUrl: e.target.value });
+                      markDirty();
+                    }}
+                    aria-label="Mobile banner URL"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHero({ ...hero, mobileImageUrl: "" });
+                      markDirty();
+                    }}
+                    className="text-xs font-medium text-red-600 hover:underline"
+                  >
+                    Remove mobile banner
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <TextInput
+                placeholder="Or paste mobile image URL (optional)"
+                value={hero.mobileImageUrl ?? ""}
+                onChange={(e) => {
+                  setHero({ ...hero, mobileImageUrl: e.target.value });
+                  markDirty();
+                }}
+              />
+            )}
+          </div>
+        </div>
         <Field label="Subheading">
           <TextArea
             rows={2}

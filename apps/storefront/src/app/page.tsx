@@ -37,6 +37,7 @@ export default async function HomePage() {
     <>
       <HeroBanner
         imageUrl={brand.hero.imageUrl}
+        mobileImageUrl={brand.hero.mobileImageUrl}
         headline={brand.hero.headline}
         tagline={brand.tagline}
         subheading={brand.hero.subheading}

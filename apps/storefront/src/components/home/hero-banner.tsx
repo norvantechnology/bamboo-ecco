@@ -7,6 +7,8 @@ import { MOTION_EASE, prefersReducedMotion } from "@/lib/motion";
 
 interface HeroBannerProps {
   imageUrl?: string;
+  /** Optional mobile banner; falls back to imageUrl when empty. */
+  mobileImageUrl?: string;
   headline: string;
   tagline: string;
   subheading: string;
@@ -16,6 +18,7 @@ interface HeroBannerProps {
 
 export function HeroBanner({
   imageUrl,
+  mobileImageUrl,
   headline,
   tagline,
   subheading,
@@ -25,6 +28,9 @@ export function HeroBanner({
   const sectionRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const desktopSrc = imageUrl?.trim() || mobileImageUrl?.trim() || "";
+  const mobileSrc = mobileImageUrl?.trim() || imageUrl?.trim() || "";
 
   useEffect(() => {
     if (prefersReducedMotion() || !sectionRef.current) return;
@@ -97,16 +103,33 @@ export function HeroBanner({
         sm:h-auto sm:min-h-0"
     >
       <div ref={imageRef} className="absolute inset-0 will-change-transform sm:relative sm:inset-auto">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={headline}
-            width={1920}
-            height={900}
-            priority
-            className="hero-ken-burns absolute inset-0 h-full w-full object-cover object-[center_35%] sm:static sm:block sm:h-auto sm:w-full sm:object-center"
-            sizes="100vw"
-          />
+        {mobileSrc || desktopSrc ? (
+          <>
+            {/* Mobile banner (falls back to desktop when mobileImageUrl is empty) */}
+            {mobileSrc ? (
+              <Image
+                src={mobileSrc}
+                alt={headline}
+                width={1080}
+                height={1350}
+                priority
+                className="hero-ken-burns absolute inset-0 h-full w-full object-cover object-[center_35%] sm:hidden"
+                sizes="100vw"
+              />
+            ) : null}
+            {/* Desktop / web banner */}
+            {desktopSrc ? (
+              <Image
+                src={desktopSrc}
+                alt={headline}
+                width={1920}
+                height={900}
+                priority
+                className="hero-ken-burns hidden sm:static sm:block sm:h-auto sm:w-full sm:object-cover sm:object-center"
+                sizes="100vw"
+              />
+            ) : null}
+          </>
         ) : (
           <div className="hero-banner-fallback absolute inset-0 h-full w-full sm:static sm:min-h-[42vh] sm:h-auto" />
         )}
@@ -151,7 +174,6 @@ export function HeroBanner({
             </p>
           ) : null}
 
-          {/* Full-width stacked CTAs on mobile so labels aren't truncated */}
           <div className="mt-3.5 flex w-full flex-col gap-2 sm:mt-8 sm:max-w-none sm:flex-row sm:gap-3">
             <Link
               data-hero-cta

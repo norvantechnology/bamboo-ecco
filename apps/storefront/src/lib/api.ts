@@ -41,6 +41,8 @@ export interface HeroContent {
   headline: string;
   subheading: string;
   imageUrl?: string;
+  /** Mobile hero; falls back to imageUrl when empty. */
+  mobileImageUrl?: string;
   videoUrl?: string;
   primaryCta: string;
   secondaryCta: string;

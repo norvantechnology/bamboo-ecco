@@ -17,6 +17,10 @@ export class HeroContent {
   @Prop()
   imageUrl?: string;
 
+  /** Optional mobile-only hero image; storefront falls back to imageUrl when empty. */
+  @Prop()
+  mobileImageUrl?: string;
+
   @Prop()
   videoUrl?: string;
 
