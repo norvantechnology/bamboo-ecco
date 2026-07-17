@@ -12,6 +12,8 @@ interface Props {
   onUploaded?: (result: { url: string; publicId: string; alt?: string }) => void;
   /** Called once per file when multiple is enabled. */
   onUploadedMany?: (results: { url: string; publicId: string; alt?: string }[]) => void;
+  /** Fired when the file picker opens — mark form dirty so focus-refetch cannot wipe uploads. */
+  onPickStart?: () => void;
   label?: string;
   /** Allow selecting multiple files at once. */
   multiple?: boolean;
@@ -24,6 +26,7 @@ export function ImageUpload({
   slug,
   onUploaded,
   onUploadedMany,
+  onPickStart,
   label = "Upload image",
   multiple = false,
 }: Props) {
@@ -69,7 +72,10 @@ export function ImageUpload({
       />
       <button
         type="button"
-        onClick={() => inputRef.current?.click()}
+        onClick={() => {
+          onPickStart?.();
+          inputRef.current?.click();
+        }}
         disabled={loading}
         className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium hover:bg-background disabled:opacity-50"
       >

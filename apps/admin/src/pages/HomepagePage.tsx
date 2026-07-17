@@ -35,6 +35,45 @@ import {
 
 type SectionKey = keyof HomepageSections;
 type PillarItem = { icon: string; title: string; description: string };
+type HeroSettings = TenantSettings["hero"];
+
+/** Map legacy single URLs into arrays so admin always shows uploaded banners. */
+function normalizeHero(hero: HeroSettings | null | undefined): HeroSettings {
+  const h = hero ?? {
+    headline: "",
+    subheading: "",
+    imageUrl: "",
+    primaryCta: "",
+    secondaryCta: "",
+  };
+  const imageUrls = (
+    Array.isArray(h.imageUrls) && h.imageUrls.length
+      ? h.imageUrls
+      : h.imageUrl
+        ? [h.imageUrl]
+        : []
+  )
+    .map((u) => String(u || "").trim())
+    .filter(Boolean);
+
+  const mobileImageUrls = (
+    Array.isArray(h.mobileImageUrls) && h.mobileImageUrls.length
+      ? h.mobileImageUrls
+      : h.mobileImageUrl
+        ? [h.mobileImageUrl]
+        : []
+  )
+    .map((u) => String(u || "").trim())
+    .filter(Boolean);
+
+  return {
+    ...h,
+    imageUrls,
+    mobileImageUrls,
+    imageUrl: imageUrls[0] || "",
+    mobileImageUrl: mobileImageUrls[0] || "",
+  };
+}
 
 const ICON_OPTIONS = ["leaf", "sparkles", "home", "sprout", "hand", "truck", "recycle", "shield", "users", "package"];
 
@@ -272,7 +311,7 @@ function SectionFields({
 
 export function HomepagePage() {
   const [sections, setSections] = useState<HomepageSections | null>(null);
-  const [hero, setHero] = useState<TenantSettings["hero"] | null>(null);
+  const [hero, setHero] = useState<HeroSettings | null>(null);
   const [tagline, setTagline] = useState("");
   const [brandPillars, setBrandPillars] = useState<PillarItem[]>([]);
   const [whyChooseUs, setWhyChooseUs] = useState<PillarItem[]>([]);
@@ -343,7 +382,7 @@ export function HomepagePage() {
     getAdminSettings()
       .then((s) => {
         setSections(s.homepageSections ?? null);
-        setHero(s.hero);
+        setHero(normalizeHero(s.hero));
         setTagline(s.tagline);
         setBrandPillars(s.brandPillars ?? []);
         setWhyChooseUs(s.whyChooseUs ?? []);
@@ -365,7 +404,7 @@ export function HomepagePage() {
       getAdminSettings()
         .then((s) => {
           setSections(s.homepageSections ?? null);
-          setHero(s.hero);
+          setHero(normalizeHero(s.hero));
           setTagline(s.tagline);
           setBrandPillars(s.brandPillars ?? []);
           setWhyChooseUs(s.whyChooseUs ?? []);
@@ -390,12 +429,13 @@ export function HomepagePage() {
     try {
       const updated = await updateAdminSettings({
         tagline,
-        hero,
+        hero: normalizeHero(hero),
         brandPillars: brandPillars.filter((p) => p.title.trim()),
         whyChooseUs: whyChooseUs.filter((p) => p.title.trim()),
         homepageSections: sections,
       });
       setSections(updated.homepageSections ?? sections);
+      setHero(normalizeHero(updated.hero ?? hero));
       setBrandPillars(updated.brandPillars ?? brandPillars);
       setWhyChooseUs(updated.whyChooseUs ?? whyChooseUs);
       setCounts((c) => ({
@@ -487,12 +527,16 @@ export function HomepagePage() {
               slug="desktop"
               label="Upload desktop banners"
               multiple
+              onPickStart={markDirty}
               onUploadedMany={(results) => {
-                const next = [...(hero.imageUrls ?? []), ...results.map((r) => r.url)];
-                setHero({
-                  ...hero,
-                  imageUrls: next,
-                  imageUrl: next[0] || "",
+                setHero((prev) => {
+                  const current = normalizeHero(prev);
+                  const next = [...(current.imageUrls ?? []), ...results.map((r) => r.url)];
+                  return {
+                    ...current,
+                    imageUrls: next,
+                    imageUrl: next[0] || "",
+                  };
                 });
                 markDirty();
               }}
@@ -510,10 +554,14 @@ export function HomepagePage() {
                       <TextInput
                         value={url}
                         onChange={(e) => {
-                          const next = [...(hero.imageUrls ?? [])];
-                          next[index] = e.target.value;
-                          const cleaned = next.map((u) => u.trim()).filter(Boolean);
-                          setHero({ ...hero, imageUrls: cleaned, imageUrl: cleaned[0] || "" });
+                          const value = e.target.value;
+                          setHero((prev) => {
+                            const current = normalizeHero(prev);
+                            const next = [...(current.imageUrls ?? [])];
+                            next[index] = value;
+                            const cleaned = next.map((u) => u.trim()).filter(Boolean);
+                            return { ...current, imageUrls: cleaned, imageUrl: cleaned[0] || "" };
+                          });
                           markDirty();
                         }}
                         aria-label={`Desktop banner URL ${index + 1}`}
@@ -521,8 +569,11 @@ export function HomepagePage() {
                       <button
                         type="button"
                         onClick={() => {
-                          const next = (hero.imageUrls ?? []).filter((_, i) => i !== index);
-                          setHero({ ...hero, imageUrls: next, imageUrl: next[0] || "" });
+                          setHero((prev) => {
+                            const current = normalizeHero(prev);
+                            const next = (current.imageUrls ?? []).filter((_, i) => i !== index);
+                            return { ...current, imageUrls: next, imageUrl: next[0] || "" };
+                          });
                           markDirty();
                         }}
                         className="text-xs font-medium text-red-600 hover:underline"
@@ -549,12 +600,16 @@ export function HomepagePage() {
               slug="mobile"
               label="Upload mobile banners"
               multiple
+              onPickStart={markDirty}
               onUploadedMany={(results) => {
-                const next = [...(hero.mobileImageUrls ?? []), ...results.map((r) => r.url)];
-                setHero({
-                  ...hero,
-                  mobileImageUrls: next,
-                  mobileImageUrl: next[0] || "",
+                setHero((prev) => {
+                  const current = normalizeHero(prev);
+                  const next = [...(current.mobileImageUrls ?? []), ...results.map((r) => r.url)];
+                  return {
+                    ...current,
+                    mobileImageUrls: next,
+                    mobileImageUrl: next[0] || "",
+                  };
                 });
                 markDirty();
               }}
@@ -572,13 +627,17 @@ export function HomepagePage() {
                       <TextInput
                         value={url}
                         onChange={(e) => {
-                          const next = [...(hero.mobileImageUrls ?? [])];
-                          next[index] = e.target.value;
-                          const cleaned = next.map((u) => u.trim()).filter(Boolean);
-                          setHero({
-                            ...hero,
-                            mobileImageUrls: cleaned,
-                            mobileImageUrl: cleaned[0] || "",
+                          const value = e.target.value;
+                          setHero((prev) => {
+                            const current = normalizeHero(prev);
+                            const next = [...(current.mobileImageUrls ?? [])];
+                            next[index] = value;
+                            const cleaned = next.map((u) => u.trim()).filter(Boolean);
+                            return {
+                              ...current,
+                              mobileImageUrls: cleaned,
+                              mobileImageUrl: cleaned[0] || "",
+                            };
                           });
                           markDirty();
                         }}
@@ -587,11 +646,14 @@ export function HomepagePage() {
                       <button
                         type="button"
                         onClick={() => {
-                          const next = (hero.mobileImageUrls ?? []).filter((_, i) => i !== index);
-                          setHero({
-                            ...hero,
-                            mobileImageUrls: next,
-                            mobileImageUrl: next[0] || "",
+                          setHero((prev) => {
+                            const current = normalizeHero(prev);
+                            const next = (current.mobileImageUrls ?? []).filter((_, i) => i !== index);
+                            return {
+                              ...current,
+                              mobileImageUrls: next,
+                              mobileImageUrl: next[0] || "",
+                            };
                           });
                           markDirty();
                         }}
