@@ -40,6 +40,7 @@ export async function buildPageMetadata({
   imageAlt,
   noIndex,
   ogType = "website",
+  keywords,
 }: {
   title: string;
   description?: string;
@@ -48,18 +49,27 @@ export async function buildPageMetadata({
   imageAlt?: string;
   noIndex?: boolean;
   ogType?: "website" | "article";
+  keywords?: string;
 }): Promise<Metadata> {
   const seo = await resolveSiteSeo();
   const siteName = seo.name;
   const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
   const ogImage = image
-    ? [{ url: image, alt: imageAlt || title }]
+    ? [
+        {
+          url: image,
+          width: 1200,
+          height: 1200,
+          alt: imageAlt || title,
+        },
+      ]
     : defaultOgImages(imageAlt || siteName || title);
 
   return {
     title,
     description: desc || undefined,
+    keywords: keywords || undefined,
     alternates: canonical ? { canonical } : undefined,
     openGraph: {
       type: ogType,
@@ -67,6 +77,7 @@ export async function buildPageMetadata({
       title,
       description: desc || undefined,
       url: canonical,
+      locale: seo.locale || undefined,
       images: ogImage,
     },
     twitter: {
@@ -76,6 +87,97 @@ export async function buildPageMetadata({
       images: image ? [image] : [BRAND_ASSETS.icon],
     },
     ...(noIndex ? { robots: { index: false, follow: false } } : {}),
+  };
+}
+
+/** Product PDP / share metadata — dynamic from API product + tenant SEO. */
+export async function buildProductMetadata(product: {
+  title: string;
+  slug: string;
+  description?: string;
+  meta?: { title?: string; description?: string; keywords?: string; ogImage?: string };
+  images?: { url: string; alt?: string; type?: string; width?: number; height?: number }[];
+  variants?: { price?: number; currency?: string; sku?: string; stockQty?: number }[];
+  status?: string;
+  categoryName?: string;
+}): Promise<Metadata> {
+  const seo = await resolveSiteSeo();
+  const { optimizeImageUrl } = await import("./cloudinary");
+
+  const title = (product.meta?.title || product.title).trim();
+  const description = (
+    product.meta?.description ||
+    product.description ||
+    `Shop ${product.title} — handcrafted bamboo home decor online in India.`
+  )
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
+
+  const productImages = (product.images || []).filter((i) => i.type !== "lifestyle");
+  const pool = productImages.length ? productImages : product.images || [];
+  const scored = [...pool].sort((a, b) => {
+    const area = (img: { width?: number; height?: number; url: string }) =>
+      (img.width || 0) * (img.height || 0) -
+      (/compressed|gemini-generated|screenshot|scene-ad|meta-ad/i.test(img.url) ? 1e12 : 0);
+    return area(b) - area(a);
+  });
+  const primary =
+    (product.meta?.ogImage
+      ? pool.find((i) => i.url === product.meta?.ogImage) || { url: product.meta.ogImage, alt: product.title }
+      : null) || scored[0];
+
+  const ogSrc = primary?.url
+    ? optimizeImageUrl(primary.url, { width: 1200, height: 1200, crop: "limit" })
+    : undefined;
+  const imageAlt = primary && "alt" in primary && primary.alt ? primary.alt : product.title;
+
+  const variant = product.variants?.[0];
+  const inStock =
+    product.status !== "out_of_stock" && (variant?.stockQty == null || variant.stockQty > 0);
+  const keywords =
+    product.meta?.keywords ||
+    [product.title, product.categoryName, "bamboo", "eco friendly", "buy online India"]
+      .filter(Boolean)
+      .join(", ");
+
+  const base = await buildPageMetadata({
+    title,
+    description,
+    path: `/product/${product.slug}`,
+    image: ogSrc,
+    imageAlt,
+    keywords,
+  });
+
+  return {
+    ...base,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+    other: {
+      ...(seo.themeColor ? { "theme-color": seo.themeColor } : {}),
+      ...(variant?.price != null
+        ? {
+            "product:price:amount": String(variant.price),
+            "product:price:currency": variant.currency || "INR",
+            "product:availability": inStock
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            "product:brand": seo.name || "Bamboo Eco-Hub",
+            ...(variant.sku ? { "product:retailer_item_id": variant.sku } : {}),
+            ...(product.categoryName ? { "product:category": product.categoryName } : {}),
+          }
+        : {}),
+    },
   };
 }
 
@@ -251,14 +353,20 @@ export function productJsonLd(product: {
   inStock?: boolean;
   rating?: { avg: number; count: number };
   brandName?: string;
+  categoryName?: string;
+  material?: string;
 }) {
+  const images = productImageJsonLd(product.images);
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.description,
-    image: productImageJsonLd(product.images),
+    image: images.length === 1 ? images[0] : images,
     sku: product.sku,
+    mpn: product.sku,
+    category: product.categoryName,
+    material: product.material,
     brand: product.brandName
       ? { "@type": "Brand", name: product.brandName }
       : undefined,
@@ -267,11 +375,15 @@ export function productJsonLd(product: {
           "@type": "Offer",
           price: product.price,
           priceCurrency: product.currency ?? "INR",
+          priceValidUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180)
+            .toISOString()
+            .slice(0, 10),
           availability:
             product.inStock === false
               ? "https://schema.org/OutOfStock"
               : "https://schema.org/InStock",
           url: product.url,
+          itemCondition: "https://schema.org/NewCondition",
         }
       : undefined,
     aggregateRating:

@@ -9,7 +9,7 @@ import { ProductPurchase } from "@/components/product/product-purchase";
 import { ProductCard } from "@/components/product/product-card";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
-import { absoluteUrl, buildPageMetadata, noIndexMetadata } from "@/lib/seo";
+import { absoluteUrl, buildProductMetadata, noIndexMetadata } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -21,15 +21,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) {
     return { ...noIndexMetadata, title: "Product not found" };
   }
-  const image = product.images.find((i) => i.type !== "lifestyle") ?? product.images[0];
-  const { optimizeImageUrl } = await import("@/lib/cloudinary");
-  const ogImage = image ? optimizeImageUrl(image.url, { width: 1200 }) : undefined;
-  return buildPageMetadata({
-    title: product.meta?.title ?? product.title,
-    description: product.meta?.description ?? product.description?.slice(0, 160),
-    path: `/product/${slug}`,
-    image: ogImage,
-    imageAlt: image?.alt || product.title,
+  const category = getProductCategory(product);
+  return buildProductMetadata({
+    title: product.title,
+    slug: product.slug,
+    description: product.description,
+    meta: product.meta,
+    images: product.images,
+    variants: product.variants,
+    status: product.status,
+    categoryName: category?.name,
   });
 }
 
@@ -67,8 +68,8 @@ export default async function ProductPage({ params }: Props) {
   return (
     <div className="container-page min-w-0 overflow-x-hidden py-4 sm:py-10">
       <ProductJsonLd
-        name={product.title}
-        description={product.description}
+        name={product.meta?.title || product.title}
+        description={product.meta?.description || product.description}
         images={product.images.map((i) => ({ url: i.url, alt: i.alt }))}
         sku={product.variants[0]?.sku}
         price={product.variants[0]?.price}
@@ -79,6 +80,8 @@ export default async function ProductPage({ params }: Props) {
         rating={product.ratingSummary}
         url={productUrl}
         brandName={seo.name || undefined}
+        categoryName={category?.name}
+        material={product.specs?.material}
       />
       <BreadcrumbJsonLd items={crumbItems} />
 

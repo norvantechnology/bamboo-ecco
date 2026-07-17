@@ -68,6 +68,14 @@ export class ProductMetaDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  keywords?: string;
+
+  @IsOptional()
+  @IsString()
+  ogImage?: string;
 }
 
 export class CreateProductDto {

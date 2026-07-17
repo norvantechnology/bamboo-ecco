@@ -96,7 +96,7 @@ export interface Product {
   description: string;
   status?: string;
   categoryId?: string | ProductCategoryRef;
-  meta?: { title?: string; description?: string };
+  meta?: { title?: string; description?: string; keywords?: string; ogImage?: string };
   images: ProductImage[];
   variants: {
     sku: string;

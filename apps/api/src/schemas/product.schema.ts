@@ -104,8 +104,21 @@ export class Product {
   @Prop({ default: 'draft', enum: ['draft', 'active', 'out_of_stock', 'hidden', 'archived'] })
   status: string;
 
-  @Prop({ type: { title: String, description: String }, default: {} })
-  meta: { title?: string; description?: string };
+  @Prop({
+    type: {
+      title: String,
+      description: String,
+      keywords: String,
+      ogImage: String,
+    },
+    default: {},
+  })
+  meta: {
+    title?: string;
+    description?: string;
+    keywords?: string;
+    ogImage?: string;
+  };
 
   @Prop({ type: ProductModel3d })
   model3d?: ProductModel3d;

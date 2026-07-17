@@ -12,6 +12,8 @@ type Props = {
   inStock?: boolean;
   rating?: { avg: number; count: number };
   brandName?: string;
+  categoryName?: string;
+  material?: string;
 };
 
 export function ProductJsonLd(props: Props) {
