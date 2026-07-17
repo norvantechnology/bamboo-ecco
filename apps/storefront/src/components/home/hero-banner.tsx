@@ -197,7 +197,7 @@ export function HeroBanner({
   return (
     <section
       ref={sectionRef}
-      className="image-frame-dark relative w-full overflow-hidden
+      className="relative w-full overflow-hidden
         h-[min(62dvh,24rem)] min-h-[18rem]
         sm:h-auto sm:min-h-0"
     >
@@ -210,7 +210,7 @@ export function HeroBanner({
                 alt={headline}
                 width={1080}
                 height={1350}
-                className="hero-ken-burns absolute inset-0 h-full w-full object-cover object-[center_35%]"
+                className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
               />
             </div>
             <div className="relative hidden w-full sm:block sm:aspect-[2.2/1] sm:min-h-[42vh]">
@@ -219,7 +219,7 @@ export function HeroBanner({
                 alt={headline}
                 width={1920}
                 height={900}
-                className="hero-ken-burns absolute inset-0 h-full w-full object-cover object-center"
+                className="absolute inset-0 h-full w-full object-cover object-center"
               />
             </div>
           </>
@@ -227,12 +227,6 @@ export function HeroBanner({
           <div className="hero-banner-fallback absolute inset-0 h-full w-full sm:static sm:min-h-[42vh] sm:h-auto" />
         )}
       </div>
-
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1a1410] via-[#1a1410]/55 to-[#1a1410]/25 sm:via-[#1a1410]/20 sm:to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#1a1816]/90 via-[#1a1816]/45 to-transparent sm:via-[#1a1816]/55" />
-      <div className="hero-vignette-top pointer-events-none absolute inset-x-0 top-0 h-16 sm:h-36" aria-hidden />
-      <div className="hero-ambient-glow pointer-events-none absolute inset-0 hidden sm:block" aria-hidden />
-      <div className="hero-banner-shimmer pointer-events-none absolute inset-0 opacity-25 sm:opacity-35" aria-hidden />
 
       <div
         ref={contentRef}
@@ -244,7 +238,7 @@ export function HeroBanner({
           {tagline ? (
             <p
               data-hero-tagline
-              className="mb-1.5 line-clamp-2 max-w-[20rem] text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-gold/90 sm:mb-4 sm:max-w-xl sm:text-sm sm:font-bold sm:tracking-[0.2em]"
+              className="mb-1.5 line-clamp-2 max-w-[20rem] text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-gold drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)] sm:mb-4 sm:max-w-xl sm:text-sm sm:font-bold sm:tracking-[0.2em]"
             >
               {tagline}
             </p>
@@ -252,7 +246,7 @@ export function HeroBanner({
 
           <h1
             data-hero-headline
-            className="max-w-[16rem] break-words font-display text-[1.5rem] font-semibold leading-[1.12] text-white sm:max-w-2xl sm:text-4xl sm:leading-[1.12] lg:text-5xl"
+            className="max-w-[16rem] break-words font-display text-[1.5rem] font-semibold leading-[1.12] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.55)] sm:max-w-2xl sm:text-4xl sm:leading-[1.12] lg:text-5xl"
           >
             {headline}
           </h1>
@@ -260,7 +254,7 @@ export function HeroBanner({
           {subheading ? (
             <p
               data-hero-sub
-              className="mt-2 line-clamp-2 max-w-[18rem] break-words text-[13px] font-medium leading-snug text-white/88 sm:mt-4 sm:max-w-lg sm:text-lg sm:leading-relaxed"
+              className="mt-2 line-clamp-2 max-w-[18rem] break-words text-[13px] font-medium leading-snug text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:mt-4 sm:max-w-lg sm:text-lg sm:leading-relaxed"
             >
               {subheading}
             </p>
