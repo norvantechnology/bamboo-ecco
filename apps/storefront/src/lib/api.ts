@@ -282,8 +282,13 @@ export function getProduct(slug: string) {
   return fetchApi<Product>(`/products/${slug}`);
 }
 
-export function getShopProducts() {
-  return fetchApi<Product[]>("/products/shop");
+export function getShopProducts(
+  page = 1,
+  sort: "newest" | "price-asc" | "price-desc" | "rating" = "newest",
+) {
+  return fetchApi<PaginatedProducts>(
+    `/products/shop?page=${page}&sort=${sort}`,
+  );
 }
 
 export function getProductReviews(slug: string) {

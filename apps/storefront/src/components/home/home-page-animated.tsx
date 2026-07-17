@@ -56,7 +56,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
         <section className="texture-surface relative py-6 sm:py-14">
           <div className="container-page">
             <SectionHeader
-              label={sections.collections.label}
               title={sections.collections.title}
               description={sections.collections.description}
             />
@@ -76,7 +75,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {sections.lifestyle.enabled && lifestyleProducts.length > 0 && (
         <section className="container-page py-6 sm:py-14">
           <SectionHeader
-            label={sections.lifestyle.label}
             title={sections.lifestyle.title}
             description={sections.lifestyle.description}
           />
@@ -107,7 +105,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                       <p className="line-clamp-2 break-words font-display text-sm font-semibold leading-snug text-white sm:text-lg">
                         {product.title}
                       </p>
-                      <span className="lifestyle-cta mt-1 inline-block text-[10px] font-medium uppercase tracking-wider text-gold sm:mt-1.5 sm:text-xs">
+                      <span className="lifestyle-cta mt-1 inline-block text-xs font-medium text-white/90 sm:mt-1.5">
                         View product →
                       </span>
                     </div>
@@ -123,7 +121,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {sections.newArrivals.enabled && newArrivals.length > 0 && (
         <section className="container-page py-6 sm:py-14">
           <SectionHeader
-            label={sections.newArrivals.label}
             title={sections.newArrivals.title}
             description={sections.newArrivals.description}
             href={sections.newArrivals.href}
@@ -141,7 +138,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
         <section className="texture-cream relative py-6 sm:py-14">
           <div className="container-page">
             <SectionHeader
-              label={sections.bestSellers.label}
               title={sections.bestSellers.title}
               description={sections.bestSellers.description}
               href={sections.bestSellers.href}
@@ -160,7 +156,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
         <section className="texture-bamboo border-y border-border py-6 sm:py-14">
           <div className="container-page">
             <SectionHeader
-              label={sections.whyChooseUs.label}
               title={sections.whyChooseUs.title}
               centered
               className="!flex-col !items-center !text-center"
@@ -193,7 +188,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {sections.customerHomes.enabled && customerHomes.length > 0 && (
         <section className="container-page py-6 sm:py-14">
           <SectionHeader
-            label={sections.customerHomes.label}
             title={sections.customerHomes.title}
             description={sections.customerHomes.description}
           />
@@ -226,7 +220,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {sections.reviews.enabled && reviews.length > 0 && (
         <section className="texture-surface py-6 sm:py-14">
           <div className="container-page">
-            <SectionHeader label={sections.reviews.label} title={sections.reviews.title} />
+            <SectionHeader title={sections.reviews.title} />
             <div
               data-reviews-grid
               className={
@@ -264,7 +258,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {sections.journal.enabled && blogPosts.length > 0 && (
         <section className="container-page py-6 sm:py-14">
           <SectionHeader
-            label={sections.journal.label}
             title={sections.journal.title}
             description={sections.journal.description}
             href={sections.journal.href}
@@ -293,7 +286,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
         <section className="border-t border-border py-6 sm:py-14">
           <div className="container-page">
             <SectionHeader
-              label={sections.gallery.label}
               title={sections.gallery.title}
               centered
               className="!flex-col !items-center !text-center"

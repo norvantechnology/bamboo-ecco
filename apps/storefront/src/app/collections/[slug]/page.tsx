@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { ChevronRight } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
 import { CategoryToolbar } from "@/components/category/category-toolbar";
+import { Pagination } from "@/components/ui/pagination";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCategory, getProductsByCategorySlug } from "@/lib/api";
@@ -121,8 +122,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
       <div className="container-page py-6 sm:py-10">
         <div className="mb-5 sm:mb-8">
-          <p className="text-xs font-medium uppercase tracking-widest text-gold">Category</p>
-          <h1 className="mt-2 font-display text-2xl font-semibold sm:text-4xl lg:text-5xl">
+          <h1 className="font-display text-2xl font-semibold sm:text-4xl lg:text-5xl">
             {category.name}
           </h1>
           {intro ? (
@@ -157,7 +157,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         <Suspense
           fallback={<div className="mb-4 h-10 animate-pulse rounded-lg bg-border sm:mb-6 sm:h-12" />}
         >
-          <CategoryToolbar totalPages={totalPages} />
+          <CategoryToolbar />
         </Suspense>
 
         <div className="product-grid">
@@ -171,6 +171,10 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             No products in this category yet.
           </p>
         )}
+
+        <Suspense fallback={null}>
+          <Pagination totalPages={totalPages} preserveParams={["sort"]} />
+        </Suspense>
       </div>
     </>
   );

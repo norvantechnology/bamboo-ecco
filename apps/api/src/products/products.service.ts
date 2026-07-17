@@ -25,6 +25,39 @@ export class ProductsService {
       .exec();
   }
 
+  findShop(
+    tenantId: string,
+    page = 1,
+    limit = 12,
+    sort: 'newest' | 'price-asc' | 'price-desc' | 'rating' = 'newest',
+  ) {
+    const skip = (page - 1) * limit;
+    const filter = { tenantId: this.tid(tenantId), ...catalogStatusFilter() };
+    const sortMap: Record<string, Record<string, 1 | -1>> = {
+      newest: { createdAt: -1 },
+      'price-asc': { 'variants.0.price': 1 },
+      'price-desc': { 'variants.0.price': -1 },
+      rating: { 'ratingSummary.avg': -1 },
+    };
+
+    return Promise.all([
+      this.productModel
+        .find(filter)
+        .sort(sortMap[sort] ?? sortMap.newest)
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+      this.productModel.countDocuments(filter).exec(),
+    ]).then(([data, total]) => ({
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.max(1, Math.ceil(total / limit) || 1),
+    }));
+  }
+
   findReviews(tenantId: string, productId: string) {
     return this.reviewModel
       .find({ tenantId: this.tid(tenantId), productId, status: 'approved' })

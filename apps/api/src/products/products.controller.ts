@@ -26,8 +26,22 @@ export class ProductsController {
   }
 
   @Get('shop')
-  shop(@CurrentTenantId() tenantId: string) {
-    return this.productsService.findAllActive(tenantId);
+  shop(
+    @CurrentTenantId() tenantId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('sort') sort?: string,
+  ) {
+    const validSort = ['newest', 'price-asc', 'price-desc', 'rating'] as const;
+    const sortKey = validSort.includes(sort as (typeof validSort)[number])
+      ? (sort as (typeof validSort)[number])
+      : 'newest';
+    return this.productsService.findShop(
+      tenantId,
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 12,
+      sortKey,
+    );
   }
 
   @Get('new-arrivals')

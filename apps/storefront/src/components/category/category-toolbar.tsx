@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { ChevronRight, ArrowUpDown } from "lucide-react";
 
 const SORTS = [
   { value: "newest", label: "Newest" },
@@ -11,35 +11,29 @@ const SORTS = [
   { value: "rating", label: "Top Rated" },
 ] as const;
 
-interface Props {
-  totalPages: number;
-}
-
-export function CategoryToolbar({ totalPages }: Props) {
+export function CategoryToolbar() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentSort = searchParams.get("sort") ?? "newest";
-  const currentPage = Number(searchParams.get("page") ?? "1");
 
-  function href(page: number, sort?: string) {
+  function href(sort: string) {
     const params = new URLSearchParams();
-    if (page > 1) params.set("page", String(page));
-    params.set("sort", sort ?? currentSort);
+    params.set("sort", sort);
+    // Reset to page 1 when sort changes
     const q = params.toString();
-    return q ? `${pathname}?${q}` : pathname;
+    return `${pathname}?${q}`;
   }
 
   return (
     <div className="mb-5 rounded-xl border border-border bg-surface sm:mb-6">
       <div className="flex items-center justify-between gap-3 p-2.5 sm:p-4">
-        {/* Mobile: compact native dropdown */}
         <label className="relative flex min-w-0 flex-1 items-center gap-2 sm:hidden">
           <ArrowUpDown className="h-4 w-4 shrink-0 text-muted" />
           <span className="sr-only">Sort products</span>
           <select
             value={currentSort}
-            onChange={(e) => router.push(href(1, e.target.value))}
+            onChange={(e) => router.push(href(e.target.value))}
             className="min-w-0 flex-1 appearance-none rounded-lg border border-border bg-background py-2 pl-3 pr-8 text-sm font-medium text-foreground outline-none focus:border-secondary"
           >
             {SORTS.map((s) => (
@@ -51,13 +45,12 @@ export function CategoryToolbar({ totalPages }: Props) {
           <ChevronRight className="pointer-events-none absolute right-3 h-4 w-4 rotate-90 text-muted" />
         </label>
 
-        {/* Desktop: pill buttons */}
         <div className="hidden flex-wrap items-center gap-2 sm:flex">
           <span className="text-sm text-muted">Sort:</span>
           {SORTS.map((s) => (
             <Link
               key={s.value}
-              href={href(1, s.value)}
+              href={href(s.value)}
               className={`rounded-full px-3 py-1 text-sm transition-colors ${
                 currentSort === s.value
                   ? "border-secondary bg-secondary text-white shadow-warm"
@@ -68,34 +61,6 @@ export function CategoryToolbar({ totalPages }: Props) {
             </Link>
           ))}
         </div>
-
-        {totalPages > 1 && (
-          <div className="flex shrink-0 items-center gap-1.5 text-sm sm:gap-2">
-            {currentPage > 1 && (
-              <Link
-                href={href(currentPage - 1)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:bg-background sm:h-auto sm:w-auto sm:px-3 sm:py-1"
-                aria-label="Previous page"
-              >
-                <ChevronLeft className="h-4 w-4 sm:hidden" />
-                <span className="hidden sm:inline">Previous</span>
-              </Link>
-            )}
-            <span className="whitespace-nowrap text-xs text-muted sm:text-sm">
-              {currentPage} / {totalPages}
-            </span>
-            {currentPage < totalPages && (
-              <Link
-                href={href(currentPage + 1)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:bg-background sm:h-auto sm:w-auto sm:px-3 sm:py-1"
-                aria-label="Next page"
-              >
-                <ChevronRight className="h-4 w-4 sm:hidden" />
-                <span className="hidden sm:inline">Next</span>
-              </Link>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
