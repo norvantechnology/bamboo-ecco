@@ -39,6 +39,7 @@ export async function buildPageMetadata({
   image,
   imageAlt,
   noIndex,
+  ogType = "website",
 }: {
   title: string;
   description?: string;
@@ -46,6 +47,7 @@ export async function buildPageMetadata({
   image?: string;
   imageAlt?: string;
   noIndex?: boolean;
+  ogType?: "website" | "article";
 }): Promise<Metadata> {
   const seo = await resolveSiteSeo();
   const siteName = seo.name;
@@ -60,7 +62,7 @@ export async function buildPageMetadata({
     description: desc || undefined,
     alternates: canonical ? { canonical } : undefined,
     openGraph: {
-      type: "website",
+      type: ogType,
       siteName: siteName || undefined,
       title,
       description: desc || undefined,

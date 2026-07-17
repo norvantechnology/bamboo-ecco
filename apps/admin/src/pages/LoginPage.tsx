@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login, setStoredAuth } from "../lib/api";
+import { clearStoredAuth, isAdminAuthenticated, isAdminRole, login, setStoredAuth } from "../lib/api";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -9,12 +9,23 @@ export function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (isAdminAuthenticated()) {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
       const data = await login(email, password);
+      if (!isAdminRole(data.user.role)) {
+        clearStoredAuth();
+        setError("You are not authorized to access the admin panel.");
+        return;
+      }
       setStoredAuth(data);
       navigate("/");
     } catch (err) {

@@ -21,9 +21,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   ]);
   if (!category) return { title: "Brand" };
   return buildPageMetadata({
-    title: seo.name ? `${category.name} — ${seo.name}` : category.name,
-    description: `Shop handcrafted ${category.name.toLowerCase()} made from sustainable bamboo. Premium quality, eco-friendly home decor.`,
+    title: category.meta?.title || (seo.name ? `${category.name} — ${seo.name}` : category.name),
+    description:
+      category.meta?.description ||
+      `Shop handcrafted ${category.name.toLowerCase()} made from sustainable bamboo. Premium eco-friendly lighting and home decor.`,
     path: `/brand/${slug}`,
+    image: category.imageUrl,
+    imageAlt: category.name,
   });
 }
 
@@ -39,6 +43,9 @@ export default async function BrandPage({ params }: Props) {
 
   const pageUrl = absoluteUrl(`/brand/${slug}`);
   const siteName = seo.name;
+  const intro =
+    category.meta?.description?.trim() ||
+    `Discover our curated ${category.name.toLowerCase()} collection — handcrafted from sustainably sourced bamboo, designed for calm, modern living spaces across India.`;
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -47,7 +54,7 @@ export default async function BrandPage({ params }: Props) {
           "@context": "https://schema.org",
           "@type": "Brand",
           name: siteName ? `${siteName} ${category.name}` : category.name,
-          description: `Sustainable bamboo ${category.name.toLowerCase()} for modern homes`,
+          description: intro,
           url: pageUrl,
         }}
       />
@@ -73,8 +80,7 @@ export default async function BrandPage({ params }: Props) {
           ) : null}
           <h1 className="mt-2 font-display text-4xl text-primary sm:text-5xl">{category.name}</h1>
           <p className="mt-4 text-muted leading-relaxed">
-            Discover our curated {category.name.toLowerCase()} collection — handcrafted from sustainably sourced bamboo,
-            designed for calm, modern living spaces across India.
+            {intro}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href={`/collections/${slug}`} className="inline-flex h-11 items-center rounded-sm bg-primary px-6 text-sm font-medium text-surface">

@@ -34,14 +34,14 @@ export function SectionHeader({
         {label && <p className={cn("section-label", centered && "section-label--center")}>{label}</p>}
         <h2
           className={cn(
-            "break-words font-display text-2xl font-semibold leading-tight sm:text-4xl lg:text-5xl",
+            "break-words font-display text-xl font-semibold leading-tight sm:text-3xl lg:text-4xl",
             label && "mt-1.5 sm:mt-2",
           )}
         >
           {title}
         </h2>
         {description && (
-          <p className="mt-2 max-w-lg break-words text-sm font-medium leading-snug text-muted sm:mt-3 sm:text-lg sm:leading-normal">
+          <p className="mt-1.5 max-w-lg break-words text-sm font-medium leading-snug text-muted sm:mt-2 sm:text-base sm:leading-normal">
             {description}
           </p>
         )}
@@ -55,7 +55,7 @@ export function SectionHeader({
         )}
       </div>
       {href && (
-        <Link href={href} className="link-premium hidden shrink-0 text-base font-semibold sm:block">
+        <Link href={href} className="link-premium hidden shrink-0 text-sm font-semibold sm:block">
           {linkText} →
         </Link>
       )}

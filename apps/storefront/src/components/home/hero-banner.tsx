@@ -93,7 +93,7 @@ export function HeroBanner({
       ref={sectionRef}
       className="image-frame-dark relative w-full overflow-hidden
         /* Mobile: fit first screen without cutting CTAs under cart bar */
-        h-[min(70dvh,28rem)] min-h-[22rem]
+        h-[min(62dvh,24rem)] min-h-[18rem]
         sm:h-auto sm:min-h-0"
     >
       <div ref={imageRef} className="absolute inset-0 will-change-transform sm:relative sm:inset-auto">
@@ -108,7 +108,7 @@ export function HeroBanner({
             sizes="100vw"
           />
         ) : (
-          <div className="hero-banner-fallback absolute inset-0 h-full w-full sm:static sm:min-h-[50vh] sm:h-auto" />
+          <div className="hero-banner-fallback absolute inset-0 h-full w-full sm:static sm:min-h-[42vh] sm:h-auto" />
         )}
       </div>
 
@@ -137,7 +137,7 @@ export function HeroBanner({
 
           <h1
             data-hero-headline
-            className="max-w-[16rem] break-words font-display text-[1.65rem] font-semibold leading-[1.12] text-white sm:max-w-2xl sm:text-5xl sm:leading-[1.12] lg:text-6xl"
+            className="max-w-[16rem] break-words font-display text-[1.5rem] font-semibold leading-[1.12] text-white sm:max-w-2xl sm:text-4xl sm:leading-[1.12] lg:text-5xl"
           >
             {headline}
           </h1>
@@ -145,7 +145,7 @@ export function HeroBanner({
           {subheading ? (
             <p
               data-hero-sub
-              className="mt-2 line-clamp-2 max-w-[18rem] break-words text-[13px] font-medium leading-snug text-white/88 sm:mt-5 sm:max-w-lg sm:text-xl sm:leading-relaxed"
+              className="mt-2 line-clamp-2 max-w-[18rem] break-words text-[13px] font-medium leading-snug text-white/88 sm:mt-4 sm:max-w-lg sm:text-lg sm:leading-relaxed"
             >
               {subheading}
             </p>

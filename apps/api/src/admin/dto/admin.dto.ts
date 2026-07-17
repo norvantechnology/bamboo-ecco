@@ -60,6 +60,16 @@ export class ProductSpecsDto {
   @IsOptional() @IsString() warranty?: string;
 }
 
+export class ProductMetaDto {
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+}
+
 export class CreateProductDto {
   @IsString()
   categoryId: string;
@@ -77,6 +87,11 @@ export class CreateProductDto {
   @IsOptional()
   @IsEnum(['draft', 'active', 'out_of_stock', 'hidden', 'archived'])
   status?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ProductMetaDto)
+  meta?: ProductMetaDto;
 
   @IsOptional()
   @IsArray()

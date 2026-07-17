@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildPageMetadata({
     title: category.meta?.title || category.name,
     description:
-      category.meta?.description || `Shop ${category.name} — handcrafted bamboo home decor`,
+      category.meta?.description ||
+      `Shop ${category.name} — handcrafted bamboo lamps, lights & home decor online in India`,
     path: `/collections/${slug}`,
     image: category.imageUrl,
     imageAlt: category.name,

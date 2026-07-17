@@ -79,13 +79,20 @@ export interface ProductSpecs {
   warranty?: string;
 }
 
+export interface ProductCategoryRef {
+  _id: string;
+  slug: string;
+  name: string;
+  parentId?: { _id: string; slug: string; name: string } | string | null;
+}
+
 export interface Product {
   _id: string;
   slug: string;
   title: string;
   description: string;
   status?: string;
-  categoryId?: string;
+  categoryId?: string | ProductCategoryRef;
   meta?: { title?: string; description?: string };
   images: ProductImage[];
   variants: {
@@ -100,6 +107,13 @@ export interface Product {
   videoUrl?: string;
   model3d?: { glbUrl?: string; usdzUrl?: string; posterUrl?: string };
   ratingSummary: { avg: number; count: number };
+}
+
+export function getProductCategory(product: Product): ProductCategoryRef | null {
+  if (product.categoryId && typeof product.categoryId === "object" && "slug" in product.categoryId) {
+    return product.categoryId;
+  }
+  return null;
 }
 
 /** True when customers can add the product to cart / checkout. */

@@ -1,5 +1,89 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
+const ADMIN_ROLES = new Set(["owner", "manager", "support", "read-only"]);
+
+export function isAdminRole(role?: string | null) {
+  return Boolean(role && ADMIN_ROLES.has(role));
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: { id: string; email: string; role: string; firstName?: string };
+}
+
+let refreshPromise: Promise<string | null> | null = null;
+
+function redirectToLogin() {
+  clearStoredAuth();
+  if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+    window.location.assign("/login");
+  }
+}
+
+async function refreshAccessToken(): Promise<string | null> {
+  const refresh = localStorage.getItem("ecoo_refresh");
+  if (!refresh) return null;
+
+  try {
+    const res = await fetch(`${API_URL}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-tenant-domain": "localhost",
+      },
+      body: JSON.stringify({ refreshToken: refresh }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as AuthResponse;
+    if (!isAdminRole(data.user.role)) {
+      clearStoredAuth();
+      return null;
+    }
+    setStoredAuth(data);
+    return data.accessToken;
+  } catch {
+    return null;
+  }
+}
+
+async function authFetch(
+  path: string,
+  options?: RequestInit & { token?: string; _retry?: boolean },
+): Promise<Response> {
+  const { token: tokenOverride, _retry, ...rest } = options ?? {};
+  const token = tokenOverride ?? getStoredToken();
+  const isFormData = typeof FormData !== "undefined" && rest.body instanceof FormData;
+
+  const res = await fetch(`${API_URL}${path}`, {
+    cache: "no-store",
+    ...rest,
+    headers: {
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      "x-tenant-domain": "localhost",
+      Pragma: "no-cache",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...rest.headers,
+    },
+  });
+
+  if (res.status === 401 && !_retry) {
+    if (!refreshPromise) {
+      refreshPromise = refreshAccessToken().finally(() => {
+        refreshPromise = null;
+      });
+    }
+    const newToken = await refreshPromise;
+    if (newToken) {
+      return authFetch(path, { ...options, token: newToken, _retry: true });
+    }
+    redirectToLogin();
+    throw new Error("Session expired. Please sign in again.");
+  }
+
+  return res;
+}
+
 export async function api<T>(
   path: string,
   options?: RequestInit & { token?: string },
@@ -19,16 +103,10 @@ export async function api<T>(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Request failed: ${res.status}`);
+    throw new Error((err as { message?: string }).message || `Request failed: ${res.status}`);
   }
 
   return res.json();
-}
-
-export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: { id: string; email: string; role: string; firstName?: string };
 }
 
 export interface DashboardStats {
@@ -99,6 +177,10 @@ export function getStoredToken() {
   return localStorage.getItem("ecoo_token");
 }
 
+export function getStoredRefreshToken() {
+  return localStorage.getItem("ecoo_refresh");
+}
+
 export function setStoredAuth(data: AuthResponse) {
   localStorage.setItem("ecoo_token", data.accessToken);
   localStorage.setItem("ecoo_refresh", data.refreshToken);
@@ -111,15 +193,31 @@ export function clearStoredAuth() {
   localStorage.removeItem("ecoo_user");
 }
 
-export function getStoredUser() {
+export function getStoredUser(): AuthResponse["user"] | null {
   const raw = localStorage.getItem("ecoo_user");
   return raw ? JSON.parse(raw) : null;
 }
 
-function authApi<T>(path: string, options?: Omit<RequestInit, "headers"> & { token?: string }) {
-  const token = getStoredToken();
-  if (!token) throw new Error("Not authenticated");
-  return api<T>(path, { ...options, token });
+export function isAdminAuthenticated() {
+  const user = getStoredUser();
+  return Boolean((getStoredToken() || getStoredRefreshToken()) && user && isAdminRole(user.role));
+}
+
+async function authApi<T>(path: string, options?: Omit<RequestInit, "headers"> & { token?: string }) {
+  if (!isAdminAuthenticated()) {
+    redirectToLogin();
+    throw new Error("Not authenticated");
+  }
+
+  const res = await authFetch(path, options);
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      redirectToLogin();
+    }
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { message?: string }).message || `Request failed: ${res.status}`);
+  }
+  return res.json() as Promise<T>;
 }
 
 export function getDashboardStats() {
@@ -158,15 +256,13 @@ export function getAdminOrder(id: string) {
 }
 
 export async function downloadAdminOrderInvoice(orderId: string) {
-  const token = getStoredToken();
-  const res = await fetch(`${API_URL}/admin/orders/${orderId}/invoice`, {
-    cache: "no-store",
-    headers: {
-      "x-tenant-domain": "localhost",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
+  if (!isAdminAuthenticated()) {
+    redirectToLogin();
+    throw new Error("Not authenticated");
+  }
+  const res = await authFetch(`/admin/orders/${orderId}/invoice`);
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) redirectToLogin();
     const err = await res.json().catch(() => ({}));
     throw new Error((err as { message?: string }).message || "Failed to download invoice");
   }
@@ -445,8 +541,10 @@ export async function uploadMedia(
   file: File,
   options?: { folder?: string; alt?: string; caption?: string; slug?: string },
 ): Promise<UploadMediaResult> {
-  const token = getStoredToken();
-  if (!token) throw new Error("Not authenticated");
+  if (!isAdminAuthenticated()) {
+    redirectToLogin();
+    throw new Error("Not authenticated");
+  }
 
   const form = new FormData();
   form.append("file", file);
@@ -455,17 +553,14 @@ export async function uploadMedia(
   if (options?.caption) form.append("caption", options.caption);
   if (options?.slug) form.append("slug", options.slug);
 
-  const res = await fetch(`${API_URL}/admin/media/upload`, {
+  const res = await authFetch("/admin/media/upload", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "x-tenant-domain": "localhost",
-    },
     body: form,
   });
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) redirectToLogin();
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Upload failed (${res.status})`);
+    throw new Error((err as { message?: string }).message || `Upload failed (${res.status})`);
   }
   return res.json();
 }

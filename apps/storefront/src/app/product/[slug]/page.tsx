@@ -3,13 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { StarRating } from "@/components/ui/star-rating";
-import { getProduct, getRelatedProducts, getProductReviews } from "@/lib/api";
+import { getProduct, getProductCategory, getRelatedProducts, getProductReviews } from "@/lib/api";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductPurchase } from "@/components/product/product-purchase";
 import { ProductCard } from "@/components/product/product-card";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
-import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata, noIndexMetadata } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -18,15 +18,18 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProduct(slug).catch(() => null);
-  const image = product?.images.find((i) => i.type !== "lifestyle") ?? product?.images[0];
+  if (!product) {
+    return { ...noIndexMetadata, title: "Product not found" };
+  }
+  const image = product.images.find((i) => i.type !== "lifestyle") ?? product.images[0];
   const { optimizeImageUrl } = await import("@/lib/cloudinary");
   const ogImage = image ? optimizeImageUrl(image.url, { width: 1200 }) : undefined;
   return buildPageMetadata({
-    title: product?.meta?.title ?? product?.title ?? "Product",
-    description: product?.meta?.description ?? product?.description?.slice(0, 160),
+    title: product.meta?.title ?? product.title,
+    description: product.meta?.description ?? product.description?.slice(0, 160),
     path: `/product/${slug}`,
     image: ogImage,
-    imageAlt: image?.alt || product?.title,
+    imageAlt: image?.alt || product.title,
   });
 }
 
@@ -43,8 +46,23 @@ export default async function ProductPage({ params }: Props) {
   const productImages = product.images.filter((i) => i.type !== "lifestyle");
   const image = productImages[0];
   const productUrl = absoluteUrl(`/product/${slug}`);
+  const category = getProductCategory(product);
+  const parent =
+    category?.parentId && typeof category.parentId === "object" ? category.parentId : null;
   const { resolveSiteSeo } = await import("@/lib/site");
   const seo = await resolveSiteSeo();
+
+  const crumbItems = [
+    { name: "Home", url: absoluteUrl("/") },
+    { name: "Shop", url: absoluteUrl("/shop") },
+    ...(parent
+      ? [{ name: parent.name, url: absoluteUrl(`/collections/${parent.slug}`) }]
+      : []),
+    ...(category
+      ? [{ name: category.name, url: absoluteUrl(`/collections/${category.slug}`) }]
+      : []),
+    { name: product.title, url: productUrl },
+  ];
 
   return (
     <div className="container-page py-4 sm:py-10">
@@ -62,18 +80,28 @@ export default async function ProductPage({ params }: Props) {
         url={productUrl}
         brandName={seo.name || undefined}
       />
-      <BreadcrumbJsonLd
-        items={[
-          { name: "Home", url: absoluteUrl("/") },
-          { name: "Shop", url: absoluteUrl("/shop") },
-          { name: product.title, url: productUrl },
-        ]}
-      />
+      <BreadcrumbJsonLd items={crumbItems} />
 
       <nav className="mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[13px] text-muted sm:mb-6 sm:gap-x-2 sm:text-sm">
         <Link href="/" className="-mx-1 rounded px-1 py-1 hover:text-foreground active:text-foreground">Home</Link>
         <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
         <Link href="/shop" className="rounded px-1 py-1 hover:text-foreground active:text-foreground">Shop</Link>
+        {parent && (
+          <>
+            <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
+            <Link href={`/collections/${parent.slug}`} className="rounded px-1 py-1 hover:text-foreground active:text-foreground">
+              {parent.name}
+            </Link>
+          </>
+        )}
+        {category && (
+          <>
+            <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
+            <Link href={`/collections/${category.slug}`} className="rounded px-1 py-1 hover:text-foreground active:text-foreground">
+              {category.name}
+            </Link>
+          </>
+        )}
         <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
         <span className="line-clamp-1 px-1 py-1 text-foreground">{product.title}</span>
       </nav>

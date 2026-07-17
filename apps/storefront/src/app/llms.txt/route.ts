@@ -12,15 +12,16 @@ export async function GET() {
 > ${seo.description}
 
 ## About
-${seo.name} is an Indian ecommerce store for sustainable bamboo furniture and eco-friendly home decor.
-We sell handcrafted bamboo furniture online across India — living room decor, storage, and natural accents for modern homes.
+${seo.name} is an Indian ecommerce store for sustainable bamboo home decor, handcrafted bamboo lamps & lights, and eco-friendly furniture.
+We sell handwoven bamboo pendant lights, floor lamps, table lamps, string lights, and natural home accents online across India.
 
 ## Primary topics
-- Bamboo furniture online India
-- Eco-friendly home decor
-- Sustainable furniture India
-- Handcrafted bamboo decor
-- Space-saving furniture for apartments
+- Bamboo lamps and lights online India
+- Handwoven bamboo pendant lights
+- Eco-friendly floor lamps and table lamps
+- Sustainable bamboo home decor
+- Handcrafted rattan lighting India
+- Bamboo furniture and natural accents
 
 ## Canonical site
 ${siteUrl}

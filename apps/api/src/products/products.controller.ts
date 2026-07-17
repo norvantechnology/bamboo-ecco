@@ -96,11 +96,16 @@ export class ProductsController {
   ) {
     const product = await this.productsService.findBySlug(tenantId, slug);
     if (!product) throw new NotFoundException();
-    return this.productsService.findRelated(
-      tenantId,
-      product.categoryId.toString(),
-      slug,
-    );
+    const categoryRef = product.categoryId as unknown;
+    let categoryId = '';
+    if (typeof categoryRef === 'string') {
+      categoryId = categoryRef;
+    } else if (categoryRef && typeof categoryRef === 'object') {
+      const raw = (categoryRef as { _id?: { toString(): string } | string })._id;
+      categoryId = raw == null ? '' : typeof raw === 'string' ? raw : raw.toString();
+    }
+    if (!categoryId) throw new NotFoundException();
+    return this.productsService.findRelated(tenantId, categoryId, slug);
   }
 
   @Get(':slug')

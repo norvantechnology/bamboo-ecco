@@ -131,7 +131,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         <Link
           href={`/product/${product.slug}`}
-          className="relative aspect-[4/5] overflow-hidden bg-[#f0ebe3]"
+          className="relative aspect-[3/4] overflow-hidden bg-[#f0ebe3]"
         >
           {displayImage && (
             <Image
@@ -142,7 +142,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
               className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
           )}
-          <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#2a2622]/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 lg:group-hover:opacity-100" />
 
           {outOfStock && (
             <span className="absolute left-2 top-2 z-[2] rounded-full bg-background/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted backdrop-blur-sm sm:left-3 sm:top-3 sm:px-3 sm:text-xs">

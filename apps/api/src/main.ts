@@ -15,10 +15,17 @@ async function bootstrap() {
   );
 
   const config = app.get(ConfigService);
-  const origins = config.get('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5173').split(',');
+  const configured = config
+    .get('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5173')
+    .split(',')
+    .map((o: string) => o.trim())
+    .filter(Boolean);
+  // Always allow local frontends during development (avoids Railway-only CORS lists blocking login).
+  const localDevOrigins = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'];
+  const origins = [...new Set([...configured, ...localDevOrigins])];
 
   app.enableCors({
-    origin: origins.map((o) => o.trim()),
+    origin: origins,
     credentials: true,
   });
 

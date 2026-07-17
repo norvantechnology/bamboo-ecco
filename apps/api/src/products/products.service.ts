@@ -63,7 +63,7 @@ export class ProductsService {
     return this.productModel
       .find({
         tenantId: this.tid(tenantId),
-        categoryId,
+        categoryId: new Types.ObjectId(categoryId),
         ...catalogStatusFilter(),
         slug: { $ne: excludeSlug },
       })
@@ -127,6 +127,11 @@ export class ProductsService {
   findBySlug(tenantId: string, slug: string) {
     return this.productModel
       .findOne({ tenantId: this.tid(tenantId), slug, ...catalogStatusFilter() })
+      .populate({
+        path: 'categoryId',
+        select: 'slug name parentId',
+        populate: { path: 'parentId', select: 'slug name' },
+      })
       .lean()
       .exec();
   }
