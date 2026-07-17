@@ -3,8 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
-import { ProductCard } from "@/components/product/product-card";
-import { Pagination } from "@/components/ui/pagination";
+import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import { searchProducts } from "@/lib/auth";
 import { ProductGridSkeleton, PageLoader, Spinner } from "@/components/ui/loading";
 import type { Product } from "@/lib/api";
@@ -45,7 +44,6 @@ function SearchResults() {
   const router = useRouter();
   const params = useSearchParams();
   const q = params.get("q") ?? "";
-  const page = Math.max(1, Number(params.get("page") ?? "1"));
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -63,7 +61,7 @@ function SearchResults() {
       return;
     }
     setLoading(true);
-    searchProducts(q, page)
+    searchProducts(q, 1)
       .then((res) => {
         setProducts(res.data);
         setTotal(res.total);
@@ -75,7 +73,7 @@ function SearchResults() {
         setTotalPages(1);
       })
       .finally(() => setLoading(false));
-  }, [q, page]);
+  }, [q]);
 
   return (
     <>
@@ -103,27 +101,15 @@ function SearchResults() {
         </div>
       )}
 
-      {!loading && products.length > 0 && (
-        <>
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {products.map((p) => (
-              <ProductCard key={p._id} product={p} />
-            ))}
-          </div>
-          <Pagination totalPages={totalPages} preserveParams={["q"]} />
-        </>
-      )}
-
-      {!loading && q && products.length === 0 && (
-        <div className="mt-16 text-center">
-          <p className="text-muted">No products found for &ldquo;{q}&rdquo;</p>
-          <button
-            type="button"
-            onClick={() => runSearch("bamboo")}
-            className="mt-4 text-sm font-medium text-secondary hover:underline"
-          >
-            Browse all bamboo products →
-          </button>
+      {!loading && q && (
+        <div className="mt-8">
+          <InfiniteProductGrid
+            key={q}
+            initialProducts={products}
+            totalPages={totalPages}
+            source={{ type: "search", q }}
+            emptyMessage={`No products found for “${q}”`}
+          />
         </div>
       )}
     </>

@@ -4,9 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ChevronRight } from "lucide-react";
-import { ProductCard } from "@/components/product/product-card";
 import { CategoryToolbar } from "@/components/category/category-toolbar";
-import { Pagination } from "@/components/ui/pagination";
+import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCategory, getProductsByCategorySlug } from "@/lib/api";
@@ -14,7 +13,7 @@ import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ page?: string; sort?: string }>;
+  searchParams: Promise<{ sort?: string }>;
 }
 
 const VALID_SORTS = ["newest", "price-asc", "price-desc", "rating"] as const;
@@ -37,7 +36,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const sp = await searchParams;
-  const page = Math.max(1, Number(sp.page ?? "1"));
   const sortParam = sp.sort ?? "newest";
   const sort = VALID_SORTS.includes(sortParam as (typeof VALID_SORTS)[number])
     ? (sortParam as (typeof VALID_SORTS)[number])
@@ -45,7 +43,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   const [category, result] = await Promise.all([
     getCategory(slug).catch(() => null),
-    getProductsByCategorySlug(slug, page, sort).catch(() => null),
+    getProductsByCategorySlug(slug, 1, sort).catch(() => null),
   ]);
 
   if (!category) notFound();
@@ -160,21 +158,13 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           <CategoryToolbar />
         </Suspense>
 
-        <div className="product-grid">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-
-        {products.length === 0 && (
-          <p className="py-10 text-center text-sm text-muted sm:py-16">
-            No products in this category yet.
-          </p>
-        )}
-
-        <Suspense fallback={null}>
-          <Pagination totalPages={totalPages} preserveParams={["sort"]} />
-        </Suspense>
+        <InfiniteProductGrid
+          key={`${slug}-${sort}`}
+          initialProducts={products}
+          totalPages={totalPages}
+          source={{ type: "category", slug, sort }}
+          emptyMessage="No products in this category yet."
+        />
       </div>
     </>
   );

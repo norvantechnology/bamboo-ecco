@@ -89,31 +89,28 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                 <div key={product._id} data-lifestyle-card className="perspective-distant">
                   <Link
                     href={`/product/${product.slug}`}
-                    className="group relative block aspect-[3/4] overflow-hidden rounded-xl bg-[#e8e2d8] shadow-warm transition-shadow duration-500 ease-out hover:shadow-warm-lg sm:rounded-2xl"
+                    aria-label={product.title}
+                    className="group flex flex-col overflow-hidden rounded-xl bg-surface shadow-warm transition-shadow duration-500 ease-out hover:shadow-warm-lg sm:rounded-2xl"
                   >
-                    {lifestyle ? (
-                      <div data-lifestyle-img className="absolute inset-0 will-change-transform">
-                        <Image
-                          src={lifestyle.url}
-                          alt={lifestyle.alt || product.title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          quality={90}
-                          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-                        />
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#d4c9b8] to-[#b8a88e]" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-                      <p className="line-clamp-2 break-words font-display text-sm font-semibold leading-snug text-white sm:text-lg">
-                        {product.title}
-                      </p>
-                      <span className="lifestyle-cta mt-1 inline-block text-xs font-medium text-white/90 sm:mt-1.5">
-                        View product →
-                      </span>
+                    <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e2d8]">
+                      {lifestyle ? (
+                        <div data-lifestyle-img className="absolute inset-0 will-change-transform">
+                          <Image
+                            src={lifestyle.url}
+                            alt=""
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            quality={90}
+                            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                          />
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#d4c9b8] to-[#b8a88e]" />
+                      )}
                     </div>
+                    <p className="line-clamp-2 p-3 font-display text-sm font-semibold leading-snug text-foreground sm:p-4 sm:text-base">
+                      {product.title}
+                    </p>
                   </Link>
                 </div>
               );
@@ -198,23 +195,23 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
           />
           <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
             {customerHomes.map((photo) => (
-              <figure key={photo._id} data-lifestyle-card className="group">
-                <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-[#e8e2d8] shadow-warm transition-shadow duration-500 group-hover:shadow-warm-lg sm:rounded-2xl">
+              <figure key={photo._id} data-lifestyle-card className="group overflow-hidden rounded-xl bg-surface shadow-warm sm:rounded-2xl">
+                <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e2d8]">
                   <Image
                     src={photo.imageUrl}
-                    alt={photo.caption || photo.customerName}
+                    alt=""
                     fill
-                    sizes="25vw"
+                    sizes="(max-width: 640px) 50vw, 25vw"
+                    quality={90}
                     className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                  <figcaption className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-                    <span className="block text-sm font-semibold text-white">{photo.customerName}</span>
-                    {photo.caption && (
-                      <span className="mt-0.5 block text-xs text-white/80 line-clamp-2">{photo.caption}</span>
-                    )}
-                  </figcaption>
                 </div>
+                <figcaption className="p-3 sm:p-4">
+                  <span className="block text-sm font-semibold text-foreground">{photo.customerName}</span>
+                  {photo.caption && (
+                    <span className="mt-0.5 block text-xs text-muted line-clamp-2">{photo.caption}</span>
+                  )}
+                </figcaption>
               </figure>
             ))}
           </div>

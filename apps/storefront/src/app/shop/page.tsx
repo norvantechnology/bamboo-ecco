@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ProductCard } from "@/components/product/product-card";
 import { CategoryToolbar } from "@/components/category/category-toolbar";
-import { Pagination } from "@/components/ui/pagination";
+import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import { getShopProducts } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -18,18 +17,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 interface Props {
-  searchParams: Promise<{ page?: string; sort?: string }>;
+  searchParams: Promise<{ sort?: string }>;
 }
 
 export default async function ShopPage({ searchParams }: Props) {
   const sp = await searchParams;
-  const page = Math.max(1, Number(sp.page ?? "1"));
   const sortParam = sp.sort ?? "newest";
   const sort = VALID_SORTS.includes(sortParam as (typeof VALID_SORTS)[number])
     ? (sortParam as (typeof VALID_SORTS)[number])
     : "newest";
 
-  const result = await getShopProducts(page, sort).catch(() => null);
+  const result = await getShopProducts(1, sort).catch(() => null);
   const products = result?.data ?? [];
   const total = result?.total ?? 0;
   const totalPages = result?.totalPages ?? 1;
@@ -51,21 +49,13 @@ export default async function ShopPage({ searchParams }: Props) {
         </Suspense>
       </div>
 
-      <div className="product-grid">
-        {products.map((p) => (
-          <ProductCard key={p._id} product={p} />
-        ))}
-      </div>
-
-      {products.length === 0 && (
-        <p className="py-10 text-center text-sm text-muted sm:py-16">
-          No products available yet.
-        </p>
-      )}
-
-      <Suspense fallback={null}>
-        <Pagination totalPages={totalPages} preserveParams={["sort"]} />
-      </Suspense>
+      <InfiniteProductGrid
+        key={`shop-${sort}`}
+        initialProducts={products}
+        totalPages={totalPages}
+        source={{ type: "shop", sort }}
+        emptyMessage="No products available yet."
+      />
     </div>
   );
 }

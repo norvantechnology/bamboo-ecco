@@ -7,6 +7,7 @@ import { Heart, Star, ShoppingBag, Check } from "lucide-react";
 import { loadGsap } from "@/lib/gsap";
 import { formatPrice, cn, getProductCardSubtitle } from "@/lib/utils";
 import type { Product } from "@/lib/api";
+import { pickBestImage, pickThumbnailImage } from "@/lib/pick-best-image";
 import { useCart } from "@/components/cart/cart-context";
 import { useWishlist } from "@/components/wishlist/wishlist-context";
 import { WoodFrame } from "@/components/animation/wood-grain";
@@ -26,15 +27,19 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const cardRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
 
-  const productImages = product.images.filter((i) => i.type !== "lifestyle");
-  const hoverImage = product.images.find((i) => i.type === "lifestyle") ?? productImages[1];
-  const image = productImages[0];
+  const image = pickThumbnailImage(product.images);
+  const hoverImage =
+    pickBestImage(product.images, "lifestyle") ??
+    pickBestImage(
+      product.images?.filter((i) => i.url !== image?.url),
+      "product",
+    );
   const variant = product.variants[0];
   const outOfStock =
     product.status === "out_of_stock" || !variant || variant.stockQty === 0;
   const subtitle = getProductCardSubtitle(product);
 
-  const displayImage = hovered && hoverImage ? hoverImage : image;
+  const displayImage = hovered && hoverImage && hoverImage.url !== image?.url ? hoverImage : image;
 
   useEffect(() => {
     const inner = innerRef.current;
