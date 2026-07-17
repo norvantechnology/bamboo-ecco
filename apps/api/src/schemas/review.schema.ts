@@ -32,4 +32,5 @@ export class Review {
 
 export const ReviewSchema = SchemaFactory.createForClass(Review);
 ReviewSchema.index({ productId: 1, status: 1 });
-ReviewSchema.index({ tenantId: 1, status: 1 });
+ReviewSchema.index({ tenantId: 1, status: 1, createdAt: -1 });
+ReviewSchema.index({ tenantId: 1, productId: 1, status: 1, createdAt: -1 });

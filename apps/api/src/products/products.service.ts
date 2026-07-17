@@ -244,21 +244,52 @@ export class ProductsService {
   async search(tenantId: string, query: string, page = 1, limit = 12) {
     const tid = this.tid(tenantId);
     const q = query.trim();
-    const filter: Record<string, unknown> = { tenantId: tid, ...catalogStatusFilter() };
-    if (q) {
-      const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = { $regex: safe, $options: 'i' };
-      filter.$or = [
-        { title: regex },
-        { description: regex },
-        { 'variants.sku': regex },
-      ];
-    }
     const skip = (page - 1) * limit;
-    const [data, total] = await Promise.all([
-      this.productModel.find(filter).sort({ title: 1 }).skip(skip).limit(limit).lean().exec(),
-      this.productModel.countDocuments(filter).exec(),
-    ]);
-    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+    const base = { tenantId: tid, ...catalogStatusFilter() };
+
+    if (!q) {
+      const [data, total] = await Promise.all([
+        this.productModel.find(base).sort({ title: 1 }).skip(skip).limit(limit).lean().exec(),
+        this.productModel.countDocuments(base).exec(),
+      ]);
+      return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+    }
+
+    const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = { $regex: safe, $options: 'i' };
+
+    // Prefer Mongo text index (title/description); always include SKU regex matches.
+    try {
+      const skuIds = await this.productModel
+        .find({ ...base, 'variants.sku': regex })
+        .select('_id')
+        .lean()
+        .exec();
+      const filter: Record<string, unknown> = {
+        ...base,
+        $or: [{ $text: { $search: q } }, { _id: { $in: skuIds.map((p) => p._id) } }],
+      };
+      const [data, total] = await Promise.all([
+        this.productModel
+          .find(filter, { score: { $meta: 'textScore' } })
+          .sort({ score: { $meta: 'textScore' }, title: 1 })
+          .skip(skip)
+          .limit(limit)
+          .lean()
+          .exec(),
+        this.productModel.countDocuments(filter).exec(),
+      ]);
+      return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+    } catch {
+      const filter = {
+        ...base,
+        $or: [{ title: regex }, { description: regex }, { 'variants.sku': regex }],
+      };
+      const [data, total] = await Promise.all([
+        this.productModel.find(filter).sort({ title: 1 }).skip(skip).limit(limit).lean().exec(),
+        this.productModel.countDocuments(filter).exec(),
+      ]);
+      return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+    }
   }
 }

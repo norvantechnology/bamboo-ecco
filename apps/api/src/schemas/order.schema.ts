@@ -88,3 +88,6 @@ export class Order {
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
 OrderSchema.index({ tenantId: 1, status: 1, createdAt: -1 });
+OrderSchema.index({ tenantId: 1, createdAt: -1 });
+OrderSchema.index({ tenantId: 1, userId: 1, createdAt: -1 });
+OrderSchema.index({ tenantId: 1, customerEmail: 1, createdAt: -1 });

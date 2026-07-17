@@ -38,3 +38,6 @@ export class ContentPage {
 
 export const ContentPageSchema = SchemaFactory.createForClass(ContentPage);
 ContentPageSchema.index({ tenantId: 1, slug: 1 }, { unique: true });
+ContentPageSchema.index({ tenantId: 1, type: 1, publishedAt: -1 });
+ContentPageSchema.index({ tenantId: 1, type: 1, footerGroup: 1, footerOrder: 1 });
+ContentPageSchema.index({ tenantId: 1, updatedAt: -1 });

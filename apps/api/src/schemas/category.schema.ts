@@ -59,4 +59,4 @@ export class Category {
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
 CategorySchema.index({ tenantId: 1, slug: 1 }, { unique: true });
-CategorySchema.index({ tenantId: 1, parentId: 1 });
+CategorySchema.index({ tenantId: 1, parentId: 1, name: 1 });

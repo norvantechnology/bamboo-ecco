@@ -28,3 +28,4 @@ export class CustomerPhoto {
 }
 
 export const CustomerPhotoSchema = SchemaFactory.createForClass(CustomerPhoto);
+CustomerPhotoSchema.index({ tenantId: 1, published: 1, sortOrder: 1, createdAt: -1 });

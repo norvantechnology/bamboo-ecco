@@ -249,3 +249,4 @@ export class Tenant {
 }
 
 export const TenantSchema = SchemaFactory.createForClass(Tenant);
+TenantSchema.index({ domains: 1 });

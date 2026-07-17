@@ -16,6 +16,7 @@ import { CmsModule } from './cms/cms.module';
 import { MediaModule } from './media/media.module';
 import { Tenant, TenantSchema } from './schemas/tenant.schema';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
+import { DatabaseIndexesService } from './common/database-indexes.service';
 import { AppController } from './app.controller';
 
 @Module({
@@ -49,6 +50,7 @@ import { AppController } from './app.controller';
     MediaModule,
   ],
   controllers: [AppController],
+  providers: [DatabaseIndexesService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

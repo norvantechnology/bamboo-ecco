@@ -40,7 +40,7 @@ export class ReviewsService {
 
     const pid = this.productIdFromReview(review);
     if (pid && (status === 'approved' || status === 'rejected')) {
-      await this.recalculateProductRating(pid);
+      await this.recalculateProductRating(tenantId, pid);
     }
     return review;
   }
@@ -74,7 +74,7 @@ export class ReviewsService {
     });
 
     if (review.status === 'approved') {
-      await this.recalculateProductRating(product._id);
+      await this.recalculateProductRating(tenantId, product._id);
     }
 
     return this.reviewModel
@@ -122,9 +122,9 @@ export class ReviewsService {
 
     const oldPid = existing.productId as Types.ObjectId;
     const newPid = this.productIdFromReview(review) ?? oldPid;
-    await this.recalculateProductRating(oldPid);
+    await this.recalculateProductRating(tenantId, oldPid);
     if (!newPid.equals(oldPid)) {
-      await this.recalculateProductRating(newPid);
+      await this.recalculateProductRating(tenantId, newPid);
     }
 
     return review;
@@ -139,7 +139,7 @@ export class ReviewsService {
 
     const pid = review.productId as Types.ObjectId;
     if (review.status === 'approved') {
-      await this.recalculateProductRating(pid);
+      await this.recalculateProductRating(tenantId, pid);
     }
     return { deleted: true };
   }
@@ -151,9 +151,10 @@ export class ReviewsService {
     return raw as Types.ObjectId;
   }
 
-  private async recalculateProductRating(productId: Types.ObjectId) {
+  private async recalculateProductRating(tenantId: string, productId: Types.ObjectId) {
+    const tid = this.tid(tenantId);
     const approved = await this.reviewModel
-      .find({ productId, status: 'approved' })
+      .find({ tenantId: tid, productId, status: 'approved' })
       .select('rating')
       .lean()
       .exec();
@@ -162,7 +163,7 @@ export class ReviewsService {
       ? approved.reduce((sum, r) => sum + r.rating, 0) / count
       : 0;
     await this.productModel.updateOne(
-      { _id: productId },
+      { _id: productId, tenantId: tid },
       { $set: { ratingSummary: { avg: Math.round(avg * 10) / 10, count } } },
     );
   }

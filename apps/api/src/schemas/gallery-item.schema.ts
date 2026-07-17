@@ -22,3 +22,4 @@ export class GalleryItem {
 }
 
 export const GalleryItemSchema = SchemaFactory.createForClass(GalleryItem);
+GalleryItemSchema.index({ tenantId: 1, sortOrder: 1 });
