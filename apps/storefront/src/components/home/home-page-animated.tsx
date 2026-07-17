@@ -30,28 +30,6 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
   return (
     <HomeMotionRoot>
-      {/* Brand pillars */}
-      {brand.brandPillars.length > 0 && (
-        <section className="texture-bamboo relative overflow-hidden py-6 sm:py-14">
-          <div className="container-page">
-            <div data-pillars-grid className="grid gap-5 sm:grid-cols-3 sm:gap-8">
-              {brand.brandPillars.map((pillar, i) => (
-                <div key={pillar.title} data-pillar-card className="pillar-card min-w-0 text-center sm:text-left">
-                  <div className="pillar-icon-circle inline-flex h-10 w-10 items-center justify-center rounded-full sm:h-12 sm:w-12">
-                    <BrandIcon
-                      name={pillar.icon}
-                      className={cn(i % 2 === 0 ? "text-wood" : "text-gold")}
-                    />
-                  </div>
-                  <h3 className="mt-2.5 break-words font-display text-base sm:mt-4 sm:text-lg">{pillar.title}</h3>
-                  <p className="mt-1 break-words text-sm leading-relaxed text-muted">{pillar.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Featured Collections */}
       {sections.collections.enabled && collections.length > 0 && (
         <section className="texture-surface relative py-6 sm:py-14">
@@ -179,6 +157,28 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                     {item.title}
                   </h3>
                   <p className="mt-1 text-xs font-medium leading-relaxed text-muted sm:text-sm">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Brand pillars — lower on page so collections/products appear sooner */}
+      {brand.brandPillars.length > 0 && (
+        <section className="texture-bamboo relative overflow-hidden py-6 sm:py-14">
+          <div className="container-page">
+            <div data-pillars-grid className="grid gap-5 sm:grid-cols-3 sm:gap-8">
+              {brand.brandPillars.map((pillar, i) => (
+                <div key={pillar.title} data-pillar-card className="pillar-card min-w-0 text-center sm:text-left">
+                  <div className="pillar-icon-circle inline-flex h-10 w-10 items-center justify-center rounded-full sm:h-12 sm:w-12">
+                    <BrandIcon
+                      name={pillar.icon}
+                      className={cn(i % 2 === 0 ? "text-wood" : "text-gold")}
+                    />
+                  </div>
+                  <h3 className="mt-2.5 break-words font-display text-base sm:mt-4 sm:text-lg">{pillar.title}</h3>
+                  <p className="mt-1 break-words text-sm leading-relaxed text-muted">{pillar.description}</p>
                 </div>
               ))}
             </div>
