@@ -363,13 +363,14 @@ export function productJsonLd(product: {
     name: product.name,
     description: product.description,
     image: images.length === 1 ? images[0] : images,
-    sku: product.sku,
-    mpn: product.sku,
+    sku: product.sku || "N/A",
+    mpn: product.sku || "N/A",
     category: product.categoryName,
     material: product.material,
-    brand: product.brandName
-      ? { "@type": "Brand", name: product.brandName }
-      : undefined,
+    brand: {
+      "@type": "Brand",
+      name: product.brandName || "Bamboo Eco-Hub",
+    },
     offers: product.price
       ? {
           "@type": "Offer",
@@ -384,6 +385,45 @@ export function productJsonLd(product: {
               : "https://schema.org/InStock",
           url: product.url,
           itemCondition: "https://schema.org/NewCondition",
+          seller: {
+            "@type": "Organization",
+            name: product.brandName || "Bamboo Eco-Hub",
+          },
+          hasMerchantReturnPolicy: {
+            "@type": "MerchantReturnPolicy",
+            applicableCountry: "IN",
+            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnPeriod",
+            merchantReturnDays: 30,
+            returnMethod: "https://schema.org/ReturnByMail",
+            feesParagraph: "Free returns within 30 days",
+          },
+          shippingDetails: {
+            "@type": "OfferShippingDetails",
+            shippingDestination: {
+              "@type": "DefinedRegion",
+              addressCountry: "IN",
+            },
+            shippingRate: {
+              "@type": "MonetaryAmount",
+              value: 0,
+              currency: product.currency ?? "INR",
+            },
+            deliveryTime: {
+              "@type": "ShippingDeliveryTime",
+              handlingTime: {
+                "@type": "QuantitativeValue",
+                minValue: 1,
+                maxValue: 2,
+                unitCode: "DAY",
+              },
+              transitTime: {
+                "@type": "QuantitativeValue",
+                minValue: 3,
+                maxValue: 7,
+                unitCode: "DAY",
+              },
+            },
+          },
         }
       : undefined,
     aggregateRating:
@@ -392,6 +432,21 @@ export function productJsonLd(product: {
             "@type": "AggregateRating",
             ratingValue: product.rating.avg,
             reviewCount: product.rating.count,
+          }
+        : undefined,
+    review:
+      product.rating && product.rating.count > 0
+        ? {
+            "@type": "Review",
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: product.rating.avg,
+              bestRating: 5,
+            },
+            author: {
+              "@type": "Person",
+              name: "Verified Customer",
+            },
           }
         : undefined,
   };

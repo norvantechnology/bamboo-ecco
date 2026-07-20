@@ -57,7 +57,7 @@ export function AnnouncementBar({ config }: AnnouncementBarProps) {
     >
       {/* Mobile: always a small single-line scrolling marquee */}
       <div
-        className={`announcement-marquee container-page flex min-h-7 items-center py-1 sm:hidden ${
+        className={`announcement-marquee container-page flex min-h-[32px] items-center py-1.5 sm:hidden ${
           config.dismissible ? "pr-8" : ""
         }`}
       >

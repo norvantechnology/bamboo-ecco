@@ -85,6 +85,16 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           name: category.name,
           description: intro || undefined,
           url,
+          mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: products.length,
+            itemListElement: products.map((product, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              url: absoluteUrl(`/product/${product.slug}`),
+              name: product.title,
+            })),
+          },
         }}
       />
       <BreadcrumbJsonLd items={crumbs} />

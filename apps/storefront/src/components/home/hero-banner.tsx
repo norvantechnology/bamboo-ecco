@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MOTION_EASE, prefersReducedMotion } from "@/lib/motion";
+import { motion, AnimatePresence } from "framer-motion";
+
 
 interface HeroBannerProps {
   imageUrl?: string;
@@ -38,6 +39,7 @@ function HeroSlides({
   height: number;
 }) {
   const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const imagesKey = images.join("|");
 
@@ -46,22 +48,26 @@ function HeroSlides({
   }, [imagesKey]);
 
   useEffect(() => {
-    if (images.length <= 1) return;
+    if (images.length <= 1 || isPaused) return;
     const id = window.setInterval(() => {
       setIndex((i) => (i + 1) % images.length);
     }, 5000);
     return () => window.clearInterval(id);
-  }, [images]);
+  }, [images, isPaused]);
 
   if (!images.length) return null;
 
   return (
     <div
       className="absolute inset-0"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
       onTouchStart={(e) => {
+        setIsPaused(true);
         touchStartX.current = e.changedTouches[0]?.clientX ?? null;
       }}
       onTouchEnd={(e) => {
+        setIsPaused(false);
         const start = touchStartX.current;
         const end = e.changedTouches[0]?.clientX;
         touchStartX.current = null;
@@ -73,29 +79,29 @@ function HeroSlides({
         );
       }}
     >
-      {images.map((src, i) => {
-        const isActive = i === index;
-        const isNext = i === (index + 1) % images.length;
-        // Only render active slide and next slide to pre-load it. Skip others to save CPU & memory
-        if (!isActive && !isNext) return null;
-
-        return (
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={index}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="absolute inset-0"
+        >
           <Image
-            key={`${src}-${i}`}
-            src={src}
+            src={images[index]}
             alt={alt}
             width={width}
             height={height}
-            priority={isActive}
+            priority
             sizes="100vw"
-            className={`${className} transition-opacity duration-700 ease-out ${
-              isActive ? "opacity-100 animate-hero-zoom" : "pointer-events-none opacity-0"
-            }`}
+            className={`${className} animate-hero-zoom`}
           />
-        );
-      })}
+        </motion.div>
+      </AnimatePresence>
+
       {images.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 z-[2] flex -translate-x-1/2 gap-1.5 sm:bottom-5">
+        <div className="absolute bottom-4 left-1/2 z-[3] flex -translate-x-1/2 gap-2 sm:bottom-6">
           {images.map((_, i) => (
             <button
               key={i}
@@ -103,8 +109,8 @@ function HeroSlides({
               aria-label={`Show banner ${i + 1}`}
               aria-current={i === index}
               onClick={() => setIndex(i)}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? "w-5 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80"
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === index ? "w-6 bg-[#C9A24B] shadow-sm" : "w-2 bg-white/50 hover:bg-white"
               }`}
             />
           ))}
@@ -113,6 +119,28 @@ function HeroSlides({
     </div>
   );
 }
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
 
 export function HeroBanner({
   imageUrl,
@@ -125,10 +153,6 @@ export function HeroBanner({
   primaryCta,
   secondaryCta,
 }: HeroBannerProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
   const desktopImages = useMemo(
     () => resolveList(imageUrls, imageUrl),
     [imageUrls, imageUrl],
@@ -138,78 +162,15 @@ export function HeroBanner({
     return mobile.length ? mobile : desktopImages;
   }, [mobileImageUrls, mobileImageUrl, desktopImages]);
 
-  useEffect(() => {
-    if (prefersReducedMotion() || !sectionRef.current) return;
-
-    let ctx: { revert: () => void } | undefined;
-    let cancelled = false;
-
-    Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(([gsapMod, stMod]) => {
-      if (cancelled || !sectionRef.current) return;
-
-      const gsap = gsapMod.default;
-      gsap.registerPlugin(stMod.ScrollTrigger);
-      const isMobile = window.matchMedia("(max-width: 640px)").matches;
-
-      ctx = gsap.context(() => {
-        const tl = gsap.timeline({ defaults: { ease: MOTION_EASE.smooth } });
-
-        if (imageRef.current) {
-          gsap.set(imageRef.current, { opacity: 0 });
-          tl.to(imageRef.current, { opacity: 1, duration: 0.9, ease: "power2.out" }, 0);
-
-          if (!isMobile) {
-            gsap.to(imageRef.current, {
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "bottom top",
-                scrub: 1.2,
-              },
-              y: 60,
-              ease: "none",
-            });
-          }
-        }
-
-        if (!isMobile) {
-          tl.from("[data-hero-tagline]", { y: 16, opacity: 0, duration: 0.6 }, 0.25)
-            .from("[data-hero-headline]", { y: 20, opacity: 0, duration: 0.65 }, 0.4)
-            .from("[data-hero-sub]", { y: 16, opacity: 0, duration: 0.6 }, 0.5)
-            .from("[data-hero-cta]", { y: 12, opacity: 0, stagger: 0.1, duration: 0.55 }, 0.6);
-
-          if (contentRef.current) {
-            gsap.to(contentRef.current, {
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top top",
-                end: "bottom top",
-                scrub: 1.8,
-              },
-              y: 48,
-              ease: "none",
-            });
-          }
-        }
-      }, sectionRef);
-    });
-
-    return () => {
-      cancelled = true;
-      ctx?.revert();
-    };
-  }, []);
-
   const hasImages = desktopImages.length > 0 || mobileImages.length > 0;
 
   return (
     <section
-      ref={sectionRef}
       className="relative w-full overflow-hidden
-        h-[min(62dvh,24rem)] min-h-[18rem]
-        sm:h-auto sm:min-h-0"
+        h-[70dvh] min-h-[26rem]
+        sm:h-auto sm:aspect-[2.2/1] sm:min-h-[42vh]"
     >
-      <div ref={imageRef} className="absolute inset-0 will-change-transform sm:relative sm:inset-auto">
+      <div className="absolute inset-0">
         {hasImages ? (
           <>
             <div className="absolute inset-0 sm:hidden">
@@ -236,62 +197,62 @@ export function HeroBanner({
         )}
       </div>
 
-      <div
-        ref={contentRef}
-        className="absolute inset-0 z-[1] flex flex-col justify-end
-          pb-9 pt-10
-          sm:justify-center sm:pb-16 sm:pt-16 lg:py-20"
+      {/* Dark gradient overlay for text readability */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/85 via-black/40 to-transparent sm:bg-gradient-to-tr sm:from-black/80 sm:via-black/30 sm:to-transparent" />
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="absolute inset-0 z-[2] flex flex-col justify-end
+          px-5 pb-10 pt-10
+          sm:justify-center sm:px-8 sm:pb-16 sm:pt-16 lg:py-20"
       >
         <div className="container-page w-full min-w-0">
           {tagline ? (
-            <p
-              data-hero-tagline
-              className="animate-hero-text mb-1.5 line-clamp-2 max-w-[20rem] text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-gold drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)] sm:mb-4 sm:max-w-xl sm:text-sm sm:font-bold sm:tracking-[0.2em]"
-              style={{ animationDelay: "150ms" }}
+            <motion.p
+              variants={itemVariants}
+              className="mb-3 inline-block w-fit rounded-full border border-gold/45 bg-[#c9a24b]/15 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-[#faf8f5] backdrop-blur-sm sm:mb-4 sm:text-xs"
             >
               {tagline}
-            </p>
+            </motion.p>
           ) : null}
 
-          <h1
-            data-hero-headline
-            className="animate-hero-text max-w-[16rem] break-words font-display text-[1.5rem] font-semibold leading-[1.12] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.55)] sm:max-w-2xl sm:text-4xl sm:leading-[1.12] lg:text-5xl"
-            style={{ animationDelay: "300ms" }}
+          <motion.h1
+            variants={itemVariants}
+            className="mb-3 max-w-[20rem] font-display text-3xl font-semibold leading-[1.12] text-white drop-shadow-md sm:mb-4 sm:max-w-2xl sm:text-5xl lg:text-6xl"
           >
             {headline}
-          </h1>
+          </motion.h1>
 
           {subheading ? (
-            <p
-              data-hero-sub
-              className="animate-hero-text mt-2 line-clamp-2 max-w-[18rem] break-words text-[13px] font-medium leading-snug text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:mt-4 sm:max-w-lg sm:text-lg sm:leading-relaxed"
-              style={{ animationDelay: "450ms" }}
+            <motion.p
+              variants={itemVariants}
+              className="mb-6 max-w-[20rem] text-sm font-medium leading-relaxed text-white/95 drop-shadow-sm sm:max-w-xl sm:text-base lg:text-lg"
             >
               {subheading}
-            </p>
+            </motion.p>
           ) : null}
 
-          <div
-            className="animate-hero-text mt-3.5 flex w-full flex-col gap-2 sm:mt-8 sm:max-w-none sm:flex-row sm:gap-3"
-            style={{ animationDelay: "600ms" }}
+          <motion.div
+            variants={itemVariants}
+            className="flex w-full flex-col gap-3 sm:max-w-none sm:flex-row sm:gap-4"
           >
             <Link
-              data-hero-cta
               href="/shop"
-              className="hero-cta-primary inline-flex h-10 w-full items-center justify-center rounded-lg bg-background px-4 text-[13px] font-semibold text-foreground shadow-warm sm:h-14 sm:w-auto sm:px-9 sm:text-base"
+              className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[#4A5D3E] px-6 text-sm font-semibold text-white shadow-warm transition-all duration-200 hover:bg-[#3D4D33] active:scale-[0.96] sm:h-14 sm:w-auto sm:px-9 sm:text-base"
             >
               {primaryCta}
             </Link>
             <Link
-              data-hero-cta
               href="/pages/about"
-              className="hero-cta-secondary inline-flex h-10 w-full items-center justify-center rounded-lg border border-foreground/20 bg-background/20 px-4 text-[13px] font-semibold text-foreground backdrop-blur-md hover:bg-background/40 active:scale-[0.98] sm:h-14 sm:w-auto sm:px-9 sm:text-base"
+              className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-white/35 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 active:scale-[0.96] sm:h-14 sm:w-auto sm:px-9 sm:text-base"
             >
               {secondaryCta}
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

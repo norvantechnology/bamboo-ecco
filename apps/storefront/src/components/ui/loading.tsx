@@ -17,11 +17,17 @@ export function Spinner({ className, size = "md" }: { className?: string; size?:
 
 export function PageLoader({ label = "Bamboo Eco-Hub" }: { label?: string }) {
   return (
-    <div className="bamboo-loader-container flex min-h-[50vh] w-full items-center justify-center py-12">
-      <div className="loader-wrap">
+    <div className="bamboo-loader-container flex h-[55vh] min-h-[55vh] max-h-[60vh] w-full max-w-xs sm:max-w-sm mx-auto items-center justify-center py-6 sm:py-8">
+      <div className="loader-wrap flex flex-col items-center w-full" style={{ gap: "18px" }}>
         <div className="glow" />
 
-        <svg className="stalks" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="stalks"
+          viewBox="0 0 150 150"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ width: "clamp(68px, 12vw, 96px)", height: "auto" }}
+        >
           <g className="stalk-left">
             <rect className="seg" x="30" y="96" width="10" height="26" rx="3" fill="#c9a24b" />
             <rect className="seg" x="30" y="70" width="10" height="24" rx="3" fill="#d2ac57" />
@@ -57,7 +63,7 @@ export function PageLoader({ label = "Bamboo Eco-Hub" }: { label?: string }) {
           <rect className="ground" x="20" y="128" width="110" height="2" rx="1" />
         </svg>
 
-        <p className="brand">{label}</p>
+        <p className="brand font-display text-base font-semibold tracking-wide text-foreground sm:text-lg">{label}</p>
 
         <div className="track">
           <div className="fill" />

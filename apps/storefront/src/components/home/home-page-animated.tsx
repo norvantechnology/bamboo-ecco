@@ -11,6 +11,30 @@ import { HomeMotionRoot } from "@/components/home/home-motion";
 import type { getHomepage } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { pickBestImage } from "@/lib/pick-best-image";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
+
+
 
 type HomeData = Awaited<ReturnType<typeof getHomepage>>;
 
@@ -133,33 +157,53 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* Why Choose Us */}
       {sections.whyChooseUs.enabled && brand.whyChooseUs.length > 0 && (
-        <section className="texture-bamboo border-y border-border py-6 sm:py-14">
+        <section className="texture-bamboo border-y border-border py-8 sm:py-16">
           <div className="container-page">
-            <SectionHeader
-              title={sections.whyChooseUs.title}
-              centered
-              className="!flex-col !items-center !text-center"
-            />
-            <div data-pillars-grid className="mt-8 grid grid-cols-2 gap-6 max-[480px]:gap-x-4 max-[480px]:gap-y-5 sm:grid-cols-3 lg:grid-cols-6">
-              {brand.whyChooseUs.map((item, i) => (
-                <div
+            <div className="flex flex-col items-center text-center mb-10 sm:mb-12">
+              <span className="section-label !mb-2">Our Promise</span>
+              <h2 className="font-display text-2xl font-semibold sm:text-3xl lg:text-4xl text-foreground relative pb-4">
+                Why Choose Bamboo Eco-Hub
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "80px" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] bg-gradient-to-r from-[#4A5D3E] to-[#C9A24B] rounded-full"
+                />
+              </h2>
+              <p className="mt-3.5 max-w-xl text-xs sm:text-sm text-muted">
+                Sustainably crafted home decor designed to bring natural warmth, elegance, and durability to your living space.
+              </p>
+            </div>
+
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {brand.whyChooseUs.map((item) => (
+                <motion.div
                   key={item.title}
-                  data-pillar-card
-                  className="pillar-card flex h-full flex-col items-center text-center"
+                  variants={cardVariants}
+                  className="group relative flex flex-col items-center text-center rounded-2xl border border-border/60 bg-[#FAF8F5]/85 p-6 sm:p-8 shadow-warm hover:shadow-warm-lg transition-all duration-300 hover:-translate-y-1.5"
                 >
-                  <div className="pillar-icon-circle inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4A5D3E] to-[#C9A24B] shadow-sm transition-transform duration-300 group-hover:scale-110">
                     <BrandIcon
                       name={item.icon}
-                      className={cn("h-4 w-4", i % 2 === 0 ? "text-wood" : "text-gold")}
+                      className="h-6 w-6 text-[#FAF8F5] transition-transform duration-300 group-hover:rotate-6"
                     />
                   </div>
-                  <h3 className="mt-3 flex min-h-[2.25rem] items-center justify-center text-sm font-semibold leading-tight sm:text-base">
+                  <h3 className="mt-4 text-base font-semibold text-foreground sm:text-lg">
                     {item.title}
                   </h3>
-                  <p className="hidden sm:block mt-1 text-xs font-medium leading-relaxed text-muted sm:text-sm">{item.description}</p>
-                </div>
+                  <p className="mt-2 text-xs leading-relaxed text-muted sm:text-sm">
+                    {item.description}
+                  </p>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
