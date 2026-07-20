@@ -1032,3 +1032,202 @@
     transform: none;
   }
 }
+
+/* ---------- BAMBOO LOADER STYLING ---------- */
+.bamboo-loader-container {
+  --bg: #1b120d;
+  --brand-text: #f3ead9;
+  --gold: #c9a24b;
+  --gold-soft: #a9863c;
+  --amber: #f0a83e;
+  --node: #8a6a2c;
+  --ground: #3a2a1c;
+  --track-bg: rgba(201, 162, 75, 0.18);
+  --glow-op: 0.35;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  transition: background .3s ease;
+  background-color: var(--bg);
+}
+
+/* Light theme values */
+.light .bamboo-loader-container,
+[data-theme="light"] .bamboo-loader-container {
+  --bg: #f8f3e8;
+  --brand-text: #2a1c12;
+  --gold: #a9863c;
+  --gold-soft: #8a6a2c;
+  --amber: #e2934f;
+  --node: #8a6a2c;
+  --ground: #d9c9a8;
+  --track-bg: rgba(169, 134, 60, 0.16);
+  --glow-op: 0.22;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme="dark"]) .bamboo-loader-container {
+    --bg: #f8f3e8;
+    --brand-text: #2a1c12;
+    --gold: #a9863c;
+    --gold-soft: #8a6a2c;
+    --amber: #e2934f;
+    --node: #8a6a2c;
+    --ground: #d9c9a8;
+    --track-bg: rgba(169, 134, 60, 0.16);
+    --glow-op: 0.22;
+  }
+}
+
+.bamboo-loader-container .loader-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 3vw, 22px);
+  width: min(80vw, 220px);
+}
+
+.bamboo-loader-container .glow {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(140px, 45vw, 220px);
+  height: clamp(140px, 45vw, 220px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 168, 62, var(--glow-op)) 0%, rgba(240, 168, 62, calc(var(--glow-op) * 0.25)) 45%, rgba(240, 168, 62, 0) 70%);
+  filter: blur(2px);
+  animation: pulseGlow 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: .55; transform: translate(-50%, -50%) scale(0.92); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.bamboo-loader-container .stalks {
+  position: relative;
+  z-index: 1;
+  width: clamp(96px, 34vw, 150px);
+  height: auto;
+  display: block;
+}
+
+.bamboo-loader-container .seg {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  transform: scaleY(0);
+  animation: grow 2.4s cubic-bezier(.22, .68, .32, 1) infinite;
+}
+
+.bamboo-loader-container .node {
+  opacity: 0;
+  fill: var(--node);
+  animation: nodeFade 2.4s ease infinite;
+}
+
+.bamboo-loader-container .leaf {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: left bottom;
+  transform: scale(0.3) rotate(8deg);
+  animation: leafPop 2.4s ease infinite;
+}
+
+.bamboo-loader-container .ground { fill: var(--ground); }
+
+@keyframes grow {
+  0% { transform: scaleY(0); }
+  35% { transform: scaleY(1); }
+  80% { transform: scaleY(1); }
+  100% { transform: scaleY(0); }
+}
+
+@keyframes nodeFade {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes leafPop {
+  0%, 60% { opacity: 0; transform: scale(0.3) rotate(8deg); }
+  75% { opacity: 1; transform: scale(1) rotate(0deg); }
+  92% { opacity: 1; transform: scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: scale(0.3) rotate(8deg); }
+}
+
+.bamboo-loader-container .stalk-left .seg { animation-delay: .00s; }
+.bamboo-loader-container .stalk-left .seg:nth-child(2) { animation-delay: .12s; }
+.bamboo-loader-container .stalk-left .seg:nth-child(3) { animation-delay: .24s; }
+.bamboo-loader-container .stalk-left .seg:nth-child(4) { animation-delay: .36s; }
+.bamboo-loader-container .stalk-left .node { animation-delay: .10s; }
+.bamboo-loader-container .stalk-left .node:nth-child(6) { animation-delay: .22s; }
+.bamboo-loader-container .stalk-left .node:nth-child(7) { animation-delay: .34s; }
+
+.bamboo-loader-container .stalk-center .seg { animation-delay: .18s; }
+.bamboo-loader-container .stalk-center .seg:nth-child(2) { animation-delay: .30s; }
+.bamboo-loader-container .stalk-center .seg:nth-child(3) { animation-delay: .42s; }
+.bamboo-loader-container .stalk-center .seg:nth-child(4) { animation-delay: .54s; }
+.bamboo-loader-container .stalk-center .node { animation-delay: .28s; }
+.bamboo-loader-container .stalk-center .node:nth-child(6) { animation-delay: .40s; }
+.bamboo-loader-container .stalk-center .node:nth-child(7) { animation-delay: .52s; }
+.bamboo-loader-container .stalk-center .leaf { animation-delay: .54s; }
+.bamboo-loader-container .stalk-center .leaf:nth-of-type(2) { animation-delay: .62s; }
+
+.bamboo-loader-container .stalk-right .seg { animation-delay: .36s; }
+.bamboo-loader-container .stalk-right .seg:nth-child(2) { animation-delay: .48s; }
+.bamboo-loader-container .stalk-right .seg:nth-child(3) { animation-delay: .60s; }
+.bamboo-loader-container .stalk-right .seg:nth-child(4) { animation-delay: .72s; }
+.bamboo-loader-container .stalk-right .node { animation-delay: .46s; }
+.bamboo-loader-container .stalk-right .node:nth-child(6) { animation-delay: .58s; }
+.bamboo-loader-container .stalk-right .node:nth-child(7) { animation-delay: .70s; }
+
+.bamboo-loader-container .brand {
+  font-size: clamp(16px, 4.2vw, 22px);
+  letter-spacing: 0.04em;
+  color: var(--brand-text);
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.bamboo-loader-container .track {
+  width: clamp(100px, 40vw, 150px);
+  height: 3px;
+  border-radius: 2px;
+  background: var(--track-bg);
+  overflow: hidden;
+  position: relative;
+}
+.bamboo-loader-container .track .fill {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, var(--amber), var(--gold), transparent);
+  animation: weave 1.7s ease-in-out infinite;
+  border-radius: 2px;
+}
+@keyframes weave {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(340%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bamboo-loader-container .seg,
+  .bamboo-loader-container .node,
+  .bamboo-loader-container .leaf,
+  .bamboo-loader-container .glow,
+  .bamboo-loader-container .track .fill {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+

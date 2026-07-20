@@ -107,7 +107,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
           />
           <div data-product-grid className="product-grid mt-4 sm:mt-8">
             {newArrivals.map((product) => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard key={product._id} product={product} reveal />
             ))}
           </div>
         </section>
@@ -124,7 +124,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             />
             <div data-product-grid className="product-grid mt-4 sm:mt-8">
               {bestSellers.map((product) => (
-                <ProductCard key={product._id} product={product} />
+                <ProductCard key={product._id} product={product} reveal />
               ))}
             </div>
           </div>

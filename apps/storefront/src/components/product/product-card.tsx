@@ -16,9 +16,10 @@ import { prefersReducedMotion } from "@/lib/motion";
 interface ProductCardProps {
   product: Product;
   className?: string;
+  reveal?: boolean;
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ product, className, reveal = false }: ProductCardProps) {
   const { addItem } = useCart();
   const { toggle, isWishlisted } = useWishlist();
   const [hovered, setHovered] = useState(false);
@@ -124,8 +125,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
     <article
       ref={cardRef}
       data-product-card-3d
-      data-scroll-reveal="true"
-      className={cn("scroll-reveal group flex h-full flex-col", className)}
+      data-scroll-reveal={reveal ? "true" : undefined}
+      className={cn(reveal && "scroll-reveal", "group flex h-full flex-col", className)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
         setHovered(false);

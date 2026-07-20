@@ -15,11 +15,54 @@ export function Spinner({ className, size = "md" }: { className?: string; size?:
   );
 }
 
-export function PageLoader({ label = "Loading…" }: { label?: string }) {
+export function PageLoader({ label = "Bamboo Eco-Hub" }: { label?: string }) {
   return (
-    <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 py-16">
-      <Spinner size="lg" />
-      <p className="animate-pulse text-sm text-muted">{label}</p>
+    <div className="bamboo-loader-container flex min-h-[50vh] w-full items-center justify-center py-12">
+      <div className="loader-wrap">
+        <div className="glow" />
+
+        <svg className="stalks" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g className="stalk-left">
+            <rect className="seg" x="30" y="96" width="10" height="26" rx="3" fill="#c9a24b" />
+            <rect className="seg" x="30" y="70" width="10" height="24" rx="3" fill="#d2ac57" />
+            <rect className="seg" x="30" y="46" width="10" height="22" rx="3" fill="#dcb768" />
+            <rect className="seg" x="30" y="24" width="10" height="20" rx="3" fill="#e6c279" />
+            <ellipse className="node" cx="35" cy="94" rx="7" ry="2.4" />
+            <ellipse className="node" cx="35" cy="68" rx="7" ry="2.4" />
+            <ellipse className="node" cx="35" cy="44" rx="7" ry="2.4" />
+          </g>
+
+          <g className="stalk-center">
+            <rect className="seg" x="70" y="104" width="10" height="26" rx="3" fill="#c9a24b" />
+            <rect className="seg" x="70" y="78" width="10" height="24" rx="3" fill="#d2ac57" />
+            <rect className="seg" x="70" y="50" width="10" height="26" rx="3" fill="#dcb768" />
+            <rect className="seg" x="70" y="22" width="10" height="26" rx="3" fill="#e6c279" />
+            <ellipse className="node" cx="75" cy="102" rx="7" ry="2.4" />
+            <ellipse className="node" cx="75" cy="76" rx="7" ry="2.4" />
+            <ellipse className="node" cx="75" cy="48" rx="7" ry="2.4" />
+            <path className="leaf" d="M80 26 C 96 18, 106 24, 110 34 C 98 34, 88 32, 80 26 Z" fill="#9fb86a" />
+            <path className="leaf" d="M80 34 C 94 30, 100 38, 100 46 C 90 44, 83 40, 80 34 Z" fill="#87a355" />
+          </g>
+
+          <g className="stalk-right">
+            <rect className="seg" x="110" y="98" width="10" height="26" rx="3" fill="#c9a24b" />
+            <rect className="seg" x="110" y="72" width="10" height="24" rx="3" fill="#d2ac57" />
+            <rect className="seg" x="110" y="48" width="10" height="22" rx="3" fill="#dcb768" />
+            <rect className="seg" x="110" y="28" width="10" height="18" rx="3" fill="#e6c279" />
+            <ellipse className="node" cx="115" cy="96" rx="7" ry="2.4" />
+            <ellipse className="node" cx="115" cy="70" rx="7" ry="2.4" />
+            <ellipse className="node" cx="115" cy="46" rx="7" ry="2.4" />
+          </g>
+
+          <rect className="ground" x="20" y="128" width="110" height="2" rx="1" />
+        </svg>
+
+        <p className="brand">{label}</p>
+
+        <div className="track">
+          <div className="fill" />
+        </div>
+      </div>
     </div>
   );
 }
