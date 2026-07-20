@@ -6,7 +6,7 @@ import { ScrollRevealInit } from "@/components/ui/scroll-reveal-init";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="terra-theme">
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="terra-theme">
       <ScrollRevealInit />
       {children}
     </ThemeProvider>

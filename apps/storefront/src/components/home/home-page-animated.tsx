@@ -57,14 +57,14 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             title={sections.lifestyle.title}
             description={sections.lifestyle.description}
           />
-          <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+          <div className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-4 lg:grid-cols-3">
             {lifestyleProducts.map((product) => {
               const lifestyle =
                 pickBestImage(product.images, "lifestyle") ??
                 pickBestImage(product.images) ??
                 product.images[0];
               return (
-                <div key={product._id} data-lifestyle-card className="perspective-distant">
+                <div key={product._id} data-lifestyle-card data-scroll-reveal="true" className="scroll-reveal perspective-distant">
                   <Link
                     href={`/product/${product.slug}`}
                     aria-label={product.title}
@@ -78,7 +78,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                             alt=""
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            quality={90}
+                            quality={75}
                             className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
                           />
                         </div>
@@ -156,7 +156,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                   <h3 className="mt-3 flex min-h-[2.25rem] items-center justify-center text-sm font-semibold leading-tight sm:text-base">
                     {item.title}
                   </h3>
-                  <p className="mt-1 text-xs font-medium leading-relaxed text-muted sm:text-sm">{item.description}</p>
+                  <p className="hidden sm:block mt-1 text-xs font-medium leading-relaxed text-muted sm:text-sm">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -168,9 +168,9 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {brand.brandPillars.length > 0 && (
         <section className="texture-bamboo relative overflow-hidden py-6 sm:py-14">
           <div className="container-page">
-            <div data-pillars-grid className="grid gap-5 sm:grid-cols-3 sm:gap-8">
+            <div data-pillars-grid className="grid grid-cols-3 gap-3 sm:gap-8">
               {brand.brandPillars.map((pillar, i) => (
-                <div key={pillar.title} data-pillar-card className="pillar-card min-w-0 text-center sm:text-left">
+                <div key={pillar.title} data-pillar-card className="pillar-card min-w-0 text-center">
                   <div className="pillar-icon-circle inline-flex h-10 w-10 items-center justify-center rounded-full sm:h-12 sm:w-12">
                     <BrandIcon
                       name={pillar.icon}
@@ -178,7 +178,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                     />
                   </div>
                   <h3 className="mt-2.5 break-words font-display text-base sm:mt-4 sm:text-lg">{pillar.title}</h3>
-                  <p className="mt-1 break-words text-sm leading-relaxed text-muted">{pillar.description}</p>
+                  <p className="hidden sm:block mt-1 break-words text-sm leading-relaxed text-muted">{pillar.description}</p>
                 </div>
               ))}
             </div>
@@ -195,21 +195,21 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
           />
           <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
             {customerHomes.map((photo) => (
-              <figure key={photo._id} data-lifestyle-card className="group overflow-hidden rounded-xl bg-surface shadow-warm sm:rounded-2xl">
+              <figure key={photo._id} data-lifestyle-card data-scroll-reveal="true" className="scroll-reveal group overflow-hidden rounded-xl bg-surface shadow-warm sm:rounded-2xl">
                 <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e2d8]">
                   <Image
                     src={photo.imageUrl}
                     alt=""
                     fill
                     sizes="(max-width: 640px) 50vw, 25vw"
-                    quality={90}
+                    quality={75}
                     className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
                 <figcaption className="p-3 sm:p-4">
                   <span className="block text-sm font-semibold text-foreground">{photo.customerName}</span>
                   {photo.caption && (
-                    <span className="mt-0.5 block text-xs text-muted line-clamp-2">{photo.caption}</span>
+                    <span className="hidden sm:block mt-0.5 text-xs text-muted line-clamp-2">{photo.caption}</span>
                   )}
                 </figcaption>
               </figure>
@@ -235,12 +235,13 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                 <blockquote
                   key={review._id}
                   data-review-card
-                  className={`h-full rounded-xl border border-border bg-background p-6 shadow-warm ${
+                  data-scroll-reveal="true"
+                  className={`scroll-reveal h-full rounded-xl border border-border bg-background p-4 sm:p-6 shadow-warm ${
                     reviews.length === 1 ? "w-full max-w-xl" : ""
                   }`}
                 >
                   <StarRating rating={review.rating} />
-                  <p className="mt-4 text-base leading-relaxed">&ldquo;{review.body}&rdquo;</p>
+                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed sm:mt-4 sm:text-base">&ldquo;{review.body}&rdquo;</p>
                   <footer className="mt-5 flex items-center gap-3 border-t border-border pt-4">
                     {review.photos[0] && (
                       <div className="relative h-10 w-10 overflow-hidden rounded-full">
@@ -265,15 +266,16 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             href={sections.journal.href}
             linkText={sections.journal.linkText}
           />
-          <div className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-4 lg:grid-cols-4">
             {blogPosts.map((post) => (
               <Link
                 key={post._id}
                 href={`/journal/${post.slug}`}
-                className="group flex h-full flex-col rounded-xl border border-border bg-surface p-4 shadow-warm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-warm-lg sm:p-5"
+                data-scroll-reveal="true"
+                className="scroll-reveal group flex h-full flex-col rounded-xl border border-border bg-surface p-4 shadow-warm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-warm-lg sm:p-5"
               >
                 <h3 className="journal-card-title font-display text-base sm:text-lg">{post.title}</h3>
-                <p className="mt-2 line-clamp-2 flex-1 text-sm text-muted">{post.meta?.description}</p>
+                <p className="hidden sm:block mt-2 line-clamp-2 flex-1 text-sm text-muted">{post.meta?.description}</p>
                 <span className="mt-4 text-xs font-medium text-secondary opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
                   Read article →
                 </span>

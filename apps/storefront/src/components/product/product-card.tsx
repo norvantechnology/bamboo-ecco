@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star, ShoppingBag, Check } from "lucide-react";
-import { loadGsap } from "@/lib/gsap";
+import { loadGsap, type GsapModule } from "@/lib/gsap";
 import { formatPrice, cn, getProductCardSubtitle } from "@/lib/utils";
 import type { Product } from "@/lib/api";
 import { pickBestImage, pickThumbnailImage } from "@/lib/pick-best-image";
@@ -38,16 +38,22 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const outOfStock =
     product.status === "out_of_stock" || !variant || variant.stockQty === 0;
   const subtitle = getProductCardSubtitle(product);
+  const compareAtPrice = variant?.compareAtPrice;
+  const hasDiscount = !!(compareAtPrice && compareAtPrice > variant.price);
+  const discountPercent = hasDiscount ? Math.round(((compareAtPrice - variant.price) / compareAtPrice) * 100) : 0;
 
   const displayImage = hovered && hoverImage && hoverImage.url !== image?.url ? hoverImage : image;
+
+  const gsapRef = useRef<GsapModule | null>(null);
 
   useEffect(() => {
     const inner = innerRef.current;
     if (!inner || prefersReducedMotion()) return;
     let cancelled = false;
     loadGsap().then((gsap) => {
-      if (cancelled || !innerRef.current) return;
-      gsap.set(innerRef.current, { transformPerspective: 1000, transformStyle: "preserve-3d" });
+      if (cancelled) return;
+      gsapRef.current = gsap;
+      gsap.set(inner, { transformPerspective: 1000, transformStyle: "preserve-3d" });
     });
     return () => {
       cancelled = true;
@@ -57,33 +63,31 @@ export function ProductCard({ product, className }: ProductCardProps) {
   function handleTilt(e: React.MouseEvent) {
     const card = cardRef.current;
     const inner = innerRef.current;
-    if (!card || !inner || prefersReducedMotion()) return;
+    const gsap = gsapRef.current;
+    if (!card || !inner || !gsap || prefersReducedMotion()) return;
     if (window.matchMedia("(hover: none)").matches) return;
 
     const rect = card.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-    void loadGsap().then((gsap) => {
-      gsap.to(inner, {
-        rotateY: x * 8,
-        rotateX: -y * 8,
-        duration: 0.4,
-        ease: "power2.out",
-      });
+    gsap.to(inner, {
+      rotateY: x * 8,
+      rotateX: -y * 8,
+      duration: 0.4,
+      ease: "power2.out",
     });
   }
 
   function resetTilt() {
     const inner = innerRef.current;
-    if (!inner || prefersReducedMotion()) return;
-    void loadGsap().then((gsap) => {
-      gsap.to(inner, {
-        rotateY: 0,
-        rotateX: 0,
-        duration: 0.65,
-        ease: "power3.out",
-      });
+    const gsap = gsapRef.current;
+    if (!inner || !gsap || prefersReducedMotion()) return;
+    gsap.to(inner, {
+      rotateY: 0,
+      rotateX: 0,
+      duration: 0.65,
+      ease: "power3.out",
     });
   }
 
@@ -120,7 +124,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
     <article
       ref={cardRef}
       data-product-card-3d
-      className={cn("group flex h-full flex-col", className)}
+      data-scroll-reveal="true"
+      className={cn("scroll-reveal group flex h-full flex-col", className)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
         setHovered(false);
@@ -144,7 +149,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               alt={displayImage.alt}
               fill
               sizes="(max-width: 640px) 50vw, 25vw"
-              quality={90}
+              quality={75}
               className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
           )}
@@ -190,39 +195,51 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </Link>
 
           {subtitle && (
-            <p className="line-clamp-1 break-words text-[11px] font-medium leading-snug text-muted sm:line-clamp-2 sm:text-sm">
+            <p className="hidden sm:block line-clamp-1 break-words text-[11px] font-medium leading-snug text-muted sm:line-clamp-2 sm:text-sm">
               {subtitle}
             </p>
           )}
 
-          <div className="mt-auto flex items-center justify-between gap-1.5 pt-1.5 sm:gap-3 sm:pt-3">
+          <div className="mt-auto pt-2 sm:pt-3">
             {variant && (
-              <span className="font-numeric text-sm font-semibold leading-none sm:text-lg">
-                {formatPrice(variant.price, variant.currency)}
-              </span>
+              <div className="flex flex-wrap items-baseline gap-1 sm:gap-1.5">
+                <span className="font-numeric text-sm font-semibold leading-none text-foreground sm:text-lg">
+                  {formatPrice(variant.price, variant.currency)}
+                </span>
+                {hasDiscount && (
+                  <>
+                    <span className="font-numeric text-[11px] text-muted line-through sm:text-xs">
+                      {formatPrice(compareAtPrice, variant.currency)}
+                    </span>
+                    <span className="text-[10px] font-bold text-[#8c321d] dark:text-[#c47c6e] sm:text-xs">
+                      ({discountPercent}% Off)
+                    </span>
+                  </>
+                )}
+              </div>
             )}
+            
             <button
               type="button"
               disabled={outOfStock}
               onClick={handleQuickAdd}
               className={cn(
-                "inline-flex h-9 shrink-0 items-center justify-center gap-1 rounded-lg px-3 text-xs font-semibold transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.95] sm:h-10 sm:gap-2 sm:rounded-full sm:px-4 sm:text-sm",
+                "mt-2 inline-flex w-full h-8 sm:h-10 items-center justify-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold uppercase tracking-wider transition-all duration-300 ease-out active:scale-[0.97]",
                 added
-                  ? "bg-secondary text-white"
-                  : "border border-border bg-background text-foreground sm:bg-transparent lg:opacity-0 lg:group-hover:opacity-100 lg:hover:border-secondary lg:hover:bg-secondary lg:hover:text-white",
+                  ? "bg-secondary text-white animate-add-pop"
+                  : "bg-[#8b5e34] text-white hover:bg-[#a0713f] lg:opacity-0 lg:group-hover:opacity-100",
                 outOfStock && "cursor-not-allowed opacity-40",
               )}
             >
               {added ? (
                 <>
-                  <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-check" />
                   <span>Added</span>
                 </>
               ) : (
                 <>
                   <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="sm:hidden">Add</span>
-                  <span className="hidden sm:inline">Quick add</span>
+                  <span>Add to cart</span>
                 </>
               )}
             </button>

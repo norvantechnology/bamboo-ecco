@@ -26,7 +26,7 @@ const SIZE = {
   },
   md: {
     icon: "h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11",
-    text: "text-[0.95rem] leading-none sm:text-2xl lg:text-[1.75rem]",
+    text: "text-[1.125rem] leading-none sm:text-2xl lg:text-[1.75rem]",
     gap: "gap-2 sm:gap-3",
   },
   lg: {

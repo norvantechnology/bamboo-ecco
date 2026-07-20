@@ -1,6 +1,6 @@
 import type { gsap as GsapType } from "gsap";
 
-type GsapModule = typeof GsapType;
+export type GsapModule = typeof GsapType;
 
 let gsapPromise: Promise<GsapModule> | null = null;
 

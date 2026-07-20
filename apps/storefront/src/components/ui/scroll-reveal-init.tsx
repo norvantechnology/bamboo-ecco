@@ -41,13 +41,6 @@ export function ScrollRevealInit() {
 
     const watch = (root: ParentNode = document) => {
       root.querySelectorAll<HTMLElement>(`${SELECTOR}:not(.${VISIBLE})`).forEach((node) => {
-        // Already in (or near) viewport — show immediately
-        const rect = node.getBoundingClientRect();
-        const vh = window.innerHeight || 0;
-        if (rect.top < vh * 1.15 && rect.bottom > -40) {
-          reveal(node);
-          return;
-        }
         observer.observe(node);
       });
     };

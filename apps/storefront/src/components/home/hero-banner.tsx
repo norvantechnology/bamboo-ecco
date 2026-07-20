@@ -73,20 +73,27 @@ function HeroSlides({
         );
       }}
     >
-      {images.map((src, i) => (
-        <Image
-          key={`${src}-${i}`}
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          priority={i === 0}
-          sizes="100vw"
-          className={`${className} transition-opacity duration-700 ease-out ${
-            i === index ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        />
-      ))}
+      {images.map((src, i) => {
+        const isActive = i === index;
+        const isNext = i === (index + 1) % images.length;
+        // Only render active slide and next slide to pre-load it. Skip others to save CPU & memory
+        if (!isActive && !isNext) return null;
+
+        return (
+          <Image
+            key={`${src}-${i}`}
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            priority={isActive}
+            sizes="100vw"
+            className={`${className} transition-opacity duration-700 ease-out ${
+              isActive ? "opacity-100 animate-hero-zoom" : "pointer-events-none opacity-0"
+            }`}
+          />
+        );
+      })}
       {images.length > 1 && (
         <div className="absolute bottom-3 left-1/2 z-[2] flex -translate-x-1/2 gap-1.5 sm:bottom-5">
           {images.map((_, i) => (
@@ -232,14 +239,15 @@ export function HeroBanner({
       <div
         ref={contentRef}
         className="absolute inset-0 z-[1] flex flex-col justify-end
-          pb-5 pt-10
+          pb-9 pt-10
           sm:justify-center sm:pb-16 sm:pt-16 lg:py-20"
       >
         <div className="container-page w-full min-w-0">
           {tagline ? (
             <p
               data-hero-tagline
-              className="mb-1.5 line-clamp-2 max-w-[20rem] text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-gold drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)] sm:mb-4 sm:max-w-xl sm:text-sm sm:font-bold sm:tracking-[0.2em]"
+              className="animate-hero-text mb-1.5 line-clamp-2 max-w-[20rem] text-[10px] font-semibold uppercase leading-snug tracking-[0.12em] text-gold drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)] sm:mb-4 sm:max-w-xl sm:text-sm sm:font-bold sm:tracking-[0.2em]"
+              style={{ animationDelay: "150ms" }}
             >
               {tagline}
             </p>
@@ -247,7 +255,8 @@ export function HeroBanner({
 
           <h1
             data-hero-headline
-            className="max-w-[16rem] break-words font-display text-[1.5rem] font-semibold leading-[1.12] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.55)] sm:max-w-2xl sm:text-4xl sm:leading-[1.12] lg:text-5xl"
+            className="animate-hero-text max-w-[16rem] break-words font-display text-[1.5rem] font-semibold leading-[1.12] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.55)] sm:max-w-2xl sm:text-4xl sm:leading-[1.12] lg:text-5xl"
+            style={{ animationDelay: "300ms" }}
           >
             {headline}
           </h1>
@@ -255,13 +264,17 @@ export function HeroBanner({
           {subheading ? (
             <p
               data-hero-sub
-              className="mt-2 line-clamp-2 max-w-[18rem] break-words text-[13px] font-medium leading-snug text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:mt-4 sm:max-w-lg sm:text-lg sm:leading-relaxed"
+              className="animate-hero-text mt-2 line-clamp-2 max-w-[18rem] break-words text-[13px] font-medium leading-snug text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:mt-4 sm:max-w-lg sm:text-lg sm:leading-relaxed"
+              style={{ animationDelay: "450ms" }}
             >
               {subheading}
             </p>
           ) : null}
 
-          <div className="mt-3.5 flex w-full flex-col gap-2 sm:mt-8 sm:max-w-none sm:flex-row sm:gap-3">
+          <div
+            className="animate-hero-text mt-3.5 flex w-full flex-col gap-2 sm:mt-8 sm:max-w-none sm:flex-row sm:gap-3"
+            style={{ animationDelay: "600ms" }}
+          >
             <Link
               data-hero-cta
               href="/shop"
@@ -272,7 +285,7 @@ export function HeroBanner({
             <Link
               data-hero-cta
               href="/pages/about"
-              className="hero-cta-secondary inline-flex h-10 w-full items-center justify-center rounded-lg px-4 text-[13px] font-semibold text-white backdrop-blur-sm sm:h-14 sm:w-auto sm:px-9 sm:text-base"
+              className="hero-cta-secondary inline-flex h-10 w-full items-center justify-center rounded-lg border border-foreground/20 bg-background/20 px-4 text-[13px] font-semibold text-foreground backdrop-blur-md hover:bg-background/40 active:scale-[0.98] sm:h-14 sm:w-auto sm:px-9 sm:text-base"
             >
               {secondaryCta}
             </Link>

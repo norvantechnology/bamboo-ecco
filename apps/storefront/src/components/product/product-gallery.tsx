@@ -135,7 +135,7 @@ export function ProductGallery({ images, title, model3d }: Props) {
                 fill
                 priority={active === 0}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px"
-                quality={90}
+                quality={75}
                 className="object-contain object-center p-3 sm:p-5"
               />
             ) : (

@@ -943,13 +943,82 @@
   }
 }
 
+/* Add-to-cart success pop and checkmark animations */
+.animate-add-pop {
+  animation: add-pop-keyframes 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-check {
+  animation: check-in-keyframes 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes add-pop-keyframes {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.05);
+  }
+  50% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes check-in-keyframes {
+  from {
+    transform: scale(0) rotate(-15deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Hero banner Ken Burns and text slide animations */
+.animate-hero-zoom {
+  animation: hero-ken-burns 12s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
+}
+
+@keyframes hero-ken-burns {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+.animate-hero-text {
+  opacity: 0;
+  animation: hero-fade-in-up-key 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes hero-fade-in-up-key {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .welcome-popup-panel,
   .announcement-pulse,
   .announcement-slide,
   .hero-ken-burns,
   .scroll-reveal,
-  .heart-pop {
+  .heart-pop,
+  .animate-add-pop,
+  .animate-check,
+  .animate-hero-zoom,
+  .animate-hero-text {
     animation: none !important;
   }
 

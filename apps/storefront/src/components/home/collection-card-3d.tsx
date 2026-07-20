@@ -12,7 +12,7 @@ interface CollectionCard3DProps {
 
 export function CollectionCard3D({ category, index = 0 }: CollectionCard3DProps) {
   return (
-    <div data-collection-card data-index={index} className="h-full">
+    <div data-collection-card data-index={index} data-scroll-reveal="true" className="scroll-reveal h-full">
       <Card3D className="h-full" intensity={10}>
         <Link
           href={`/collections/${category.slug}`}
@@ -26,7 +26,7 @@ export function CollectionCard3D({ category, index = 0 }: CollectionCard3DProps)
                 alt=""
                 fill
                 sizes="(max-width: 640px) 50vw, 25vw"
-                quality={90}
+                quality={75}
                 className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
               />
             ) : (

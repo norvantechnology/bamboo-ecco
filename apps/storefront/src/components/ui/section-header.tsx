@@ -22,7 +22,7 @@ export function SectionHeader({
 }: Props) {
   return (
     <div
-      data-scroll-reveal
+      data-scroll-reveal="true"
       suppressHydrationWarning
       className={cn(
         "scroll-reveal flex min-w-0 items-end justify-between gap-3 sm:gap-4",
