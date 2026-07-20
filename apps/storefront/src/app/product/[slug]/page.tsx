@@ -7,6 +7,7 @@ import { getProduct, getProductCategory, getRelatedProducts, getProductReviews }
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductPurchase } from "@/components/product/product-purchase";
 import { ProductCard } from "@/components/product/product-card";
+import { ProductFaqs } from "@/components/product/product-faqs";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
 import { absoluteUrl, buildProductMetadata, noIndexMetadata } from "@/lib/seo";
@@ -140,6 +141,8 @@ export default async function ProductPage({ params }: Props) {
           )}
         </div>
       </div>
+
+      <ProductFaqs faqs={product.faqs} />
 
       {reviews.length > 0 && (
         <section className="mt-16 border-t border-border pt-16">

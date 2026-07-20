@@ -81,6 +81,15 @@ export class ProductModel3d {
   posterUrl?: string;
 }
 
+@Schema({ _id: false })
+export class ProductFaq {
+  @Prop({ required: true })
+  question: string;
+
+  @Prop({ required: true })
+  answer: string;
+}
+
 @Schema({ timestamps: true })
 export class Product {
   @Prop({ type: Types.ObjectId, ref: 'Tenant', required: true, index: true })
@@ -134,6 +143,9 @@ export class Product {
 
   @Prop({ type: ProductSpecs, default: () => ({}) })
   specs: ProductSpecs;
+
+  @Prop({ type: [ProductFaq], default: [] })
+  faqs: ProductFaq[];
 
   @Prop({ default: false })
   isFeatured: boolean;

@@ -37,13 +37,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return staticRoutes;
   }
 
-  const pageRoutes = data.staticPages.map((p) =>
-    entry(`/pages/${p.slug}`, {
+  const pageRoutes = data.staticPages.map((p) => {
+    const path = p.slug === "artisan-stories" ? "/artisan-stories" : `/pages/${p.slug}`;
+    return entry(path, {
       lastModified: p.updatedAt,
       changeFrequency: "monthly",
       priority: p.slug === "faq" ? 0.6 : 0.5,
-    }),
-  );
+    });
+  });
 
   // Category product listing pages
   const collectionRoutes = data.categories.map((c) =>

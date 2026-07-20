@@ -96,7 +96,10 @@ function resolveFooterLinks(footerLinks?: FooterLinks): FooterLinks {
 }
 
 function toLinkItems(links: { href: string; title: string }[]) {
-  return links.map((link) => ({ href: link.href, label: link.title }));
+  return links.map((link) => {
+    const href = link.href === "/pages/artisan-stories" ? "/artisan-stories" : link.href;
+    return { href, label: link.title };
+  });
 }
 
 export function Footer({ storeName, tagline, categoryTree, footerLinks }: FooterProps) {

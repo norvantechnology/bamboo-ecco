@@ -115,6 +115,7 @@ export interface Product {
   videoUrl?: string;
   model3d?: { glbUrl?: string; usdzUrl?: string; posterUrl?: string };
   ratingSummary: { avg: number; count: number };
+  faqs?: { question: string; answer: string }[];
 }
 
 export function getProductCategory(product: Product): ProductCategoryRef | null {
