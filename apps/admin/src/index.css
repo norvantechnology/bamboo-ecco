@@ -99,3 +99,64 @@ body {
     opacity: 1 !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   👑 PREMIUM GLOBAL ADMIN Refinements
+   ────────────────────────────────────────────────────────────────────────── */
+button,
+a,
+[role="button"] {
+  @apply cursor-pointer select-none active:scale-[0.98] transition-transform duration-100;
+}
+
+/* Beautiful responsive tables across products, categories, orders list */
+table {
+  @apply w-full border-collapse text-left text-sm mt-1;
+}
+
+thead tr {
+  @apply border-b border-border bg-background/60 text-xs font-semibold text-muted uppercase tracking-wider;
+}
+
+th {
+  @apply px-5 py-4 font-semibold text-muted;
+}
+
+td {
+  @apply px-5 py-4 align-middle border-b border-border/50 text-foreground transition-colors duration-150;
+}
+
+tr:hover td {
+  @apply bg-background/50;
+}
+
+/* Form layouts and standard spacing alignments */
+form label {
+  @apply block text-sm font-medium text-foreground;
+}
+
+form label span.text-muted {
+  @apply block text-xs text-muted font-normal mt-0.5 leading-normal;
+}
+
+/* Sticky save bars, panels and form sections spacing */
+section.scroll-mt-32 {
+  @apply shadow-sm transition-shadow duration-200 hover:shadow-md;
+}
+
+/* Custom scrollbars for sidebars and tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+

@@ -53,19 +53,19 @@ export function Field({ label, hint, children, className }: FieldProps) {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-shadow focus:ring-2 focus:ring-accent/30";
+  "w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all duration-200 hover:border-accent/40 focus:border-accent focus:ring-2 focus:ring-accent/30 shadow-sm";
 
 export function TextInput({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(inputClass, className)} {...props} />;
 }
 
 export function TextArea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn(inputClass, "resize-y", className)} {...props} />;
+  return <textarea className={cn(inputClass, "resize-y min-h-[100px]", className)} {...props} />;
 }
 
 export function Select({ className, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select className={cn(inputClass, className)} {...props}>
+    <select className={cn(inputClass, "cursor-pointer", className)} {...props}>
       {children}
     </select>
   );
@@ -83,13 +83,16 @@ export function SaveBar({
   label?: string;
 }) {
   return (
-    <div className="sticky bottom-4 z-10 flex items-center justify-between gap-3 rounded-xl border border-border bg-surface/95 px-4 py-3 shadow-lg backdrop-blur">
-      <p className="text-sm text-muted">{saved ? "All changes saved" : "You have unsaved changes"}</p>
+    <div className="sticky bottom-4 z-10 flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface/95 px-5 py-4 shadow-xl backdrop-blur">
+      <div className="flex items-center gap-2">
+        <div className={cn("h-2 w-2 rounded-full", saved ? "bg-green-500" : "bg-amber-500 animate-pulse")} />
+        <p className="text-sm font-medium text-muted">{saved ? "All changes saved" : "You have unsaved changes"}</p>
+      </div>
       <button
         type="button"
         onClick={onSave}
         disabled={saving}
-        className="rounded-lg bg-foreground px-5 py-2 text-sm font-medium text-surface disabled:opacity-50"
+        className="rounded-xl bg-foreground px-6 py-2.5 text-sm font-semibold text-surface hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
       >
         {saving ? "Saving…" : label}
       </button>
@@ -113,12 +116,14 @@ export function Toggle({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cn(
-        "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
-        checked ? "bg-green-50 text-green-800" : "bg-gray-100 text-gray-600",
+        "inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm border transition-all active:scale-[0.98]",
+        checked 
+          ? "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100" 
+          : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100",
       )}
     >
       <span
-        className={cn("h-2 w-2 rounded-full", checked ? "bg-green-600" : "bg-gray-400")}
+        className={cn("h-2.5 w-2.5 rounded-full transition-transform duration-200", checked ? "bg-emerald-600 scale-110" : "bg-gray-400")}
         aria-hidden
       />
       {label}
