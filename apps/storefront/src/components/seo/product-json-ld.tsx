@@ -7,6 +7,7 @@ type Props = {
   images: { url: string; alt?: string }[];
   sku?: string;
   price?: number;
+  compareAtPrice?: number; // original price — enables crossed-out sale price in Google
   currency?: string;
   url: string;
   inStock?: boolean;

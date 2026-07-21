@@ -74,6 +74,7 @@ export default async function ProductPage({ params }: Props) {
         images={product.images.map((i) => ({ url: i.url, alt: i.alt }))}
         sku={product.variants[0]?.sku}
         price={product.variants[0]?.price}
+        compareAtPrice={product.variants[0]?.compareAtPrice}
         currency={product.variants[0]?.currency}
         inStock={
           product.status !== "out_of_stock" && (product.variants[0]?.stockQty ?? 0) > 0

@@ -348,6 +348,7 @@ export function productJsonLd(product: {
   images: { url: string; alt?: string }[];
   sku?: string;
   price?: number;
+  compareAtPrice?: number;  // original price before sale — enables crossed-out price in Google
   currency?: string;
   url: string;
   inStock?: boolean;
@@ -374,7 +375,19 @@ export function productJsonLd(product: {
     offers: product.price
       ? {
           "@type": "Offer",
-          price: product.price,
+          // When compareAtPrice exists: product is on sale.
+          // Google shows the sale price and the original crossed-out.
+          ...(product.compareAtPrice && product.compareAtPrice > product.price
+            ? {
+                priceSpecification: {
+                  "@type": "PriceSpecification",
+                  price: product.price,
+                  priceCurrency: product.currency ?? "INR",
+                },
+                // schema.org Offer.price must still be the current (lower) price
+                price: product.price,
+              }
+            : { price: product.price }),
           priceCurrency: product.currency ?? "INR",
           priceValidUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180)
             .toISOString()
