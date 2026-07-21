@@ -4,20 +4,19 @@ on:
   push:
     branches:
       - main
-  # Allow manual trigger from GitHub UI (Actions tab → Run workflow)
+  # Manual trigger from GitHub UI → Actions tab → Run workflow
   workflow_dispatch:
     inputs:
       force_all:
-        description: "Submit ALL sitemap URLs (ignores diff — useful for first-time setup)"
+        description: "Submit ALL sitemap URLs (ignores diff — use for first-time or full reindex)"
         required: false
         default: "false"
 
-# Only one indexing run at a time to prevent duplicate submissions
+# Only one indexing run at a time — never cancel a running one
 concurrency:
   group: gsc-indexing
   cancel-in-progress: false
 
-# Needed to write the Job Summary
 permissions:
   contents: read
 
@@ -35,17 +34,63 @@ jobs:
         uses: actions/checkout@v4
 
       # ──────────────────────────────────────────
-      # 2. Setup Node (scripts use native ESM — zero npm installs needed)
+      # 2. Setup Node 24 (matches current GitHub Actions default, no deprecation warnings)
       # ──────────────────────────────────────────
-      - name: 🟢  Setup Node.js 20
+      - name: 🟢  Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       # ──────────────────────────────────────────
-      # 3. Restore sitemap snapshot from previous run
-      #    Cache miss on first run is fine — the script handles it gracefully
-      #    by treating all current URLs as new.
+      # 3. Debug — confirm SITE_URL secret is set and reachable
+      #    (does NOT print the secret value — GitHub masks it automatically)
+      # ──────────────────────────────────────────
+      - name: 🔎  Debug — verify SITE_URL is reachable
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          if [ -z "$SITE_URL" ]; then
+            echo "❌ SITE_URL secret is EMPTY or not set!"
+            echo "   → Go to GitHub repo → Settings → Secrets and variables → Actions"
+            echo "   → Add secret: Name=SITE_URL  Value=https://yourdomain.com"
+            exit 1
+          fi
+
+          echo "✅ SITE_URL secret is set (value hidden by GitHub)"
+          echo "📡 Testing connectivity to sitemap..."
+
+          # Verbose curl: shows DNS resolution and HTTP response code
+          HTTP_CODE=$(curl -s -o /tmp/sitemap_test.txt -w "%{http_code}" \
+            --max-time 15 \
+            --connect-timeout 10 \
+            -L \
+            "$SITE_URL/sitemap.xml" 2>/tmp/curl_error.txt) || true
+
+          echo "   HTTP status: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Site is reachable and sitemap returned HTTP 200"
+            BYTES=$(wc -c < /tmp/sitemap_test.txt)
+            echo "   Sitemap size: $BYTES bytes"
+          elif [ "$HTTP_CODE" = "000" ] || [ -z "$HTTP_CODE" ]; then
+            echo "❌ Could NOT connect to $SITE_URL"
+            echo "   This usually means:"
+            echo "   1. SITE_URL secret has a typo (check for trailing slash or wrong domain)"
+            echo "   2. The site is not yet deployed / is down"
+            echo "   3. The site blocks GitHub Actions IP ranges (unlikely but possible)"
+            echo ""
+            echo "   curl error output:"
+            cat /tmp/curl_error.txt || true
+            exit 1
+          else
+            echo "⚠️  Site returned HTTP $HTTP_CODE — continuing anyway"
+            echo "   Response body preview:"
+            head -c 500 /tmp/sitemap_test.txt || true
+          fi
+
+      # ──────────────────────────────────────────
+      # 4. Restore sitemap snapshot from previous run
+      #    Cache miss on first run is normal — script handles it gracefully
       # ──────────────────────────────────────────
       - name: 💾  Restore previous sitemap snapshot
         id: cache-sitemap
@@ -61,11 +106,11 @@ jobs:
           if [ "${{ steps.cache-sitemap.outputs.cache-hit }}" = "true" ]; then
             echo "✅ Found cached sitemap snapshot from a previous run"
           else
-            echo "⚠️  No cached snapshot — all current sitemap URLs will be treated as NEW"
+            echo "⚠️  No cached snapshot — all current sitemap URLs will be treated as NEW (normal on first run)"
           fi
 
       # ──────────────────────────────────────────
-      # 4. Restore pending-urls.json (overflow queue from previous run)
+      # 5. Restore pending-urls.json (overflow queue from previous run)
       # ──────────────────────────────────────────
       - name: 💾  Restore pending-urls queue
         uses: actions/cache@v4
@@ -76,33 +121,8 @@ jobs:
             pending-urls-${{ runner.os }}-${{ github.ref_name }}-
 
       # ──────────────────────────────────────────
-      # 5. Wait for the deployment to be live
-      #    The sitemap is generated dynamically from the DB — we need
-      #    the LIVE site, not a static file. Poll until it responds HTTP 200.
-      # ──────────────────────────────────────────
-      - name: ⏳  Wait for deployment to go live
-        env:
-          SITE_URL: ${{ secrets.SITE_URL }}
-        run: |
-          echo "Polling $SITE_URL/sitemap.xml ..."
-          MAX_TRIES=20
-          DELAY=15
-          for i in $(seq 1 $MAX_TRIES); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$SITE_URL/sitemap.xml" || echo "000")
-            echo "  Attempt $i/$MAX_TRIES — HTTP $STATUS"
-            if [ "$STATUS" = "200" ]; then
-              echo "✅ Site is live!"
-              break
-            fi
-            if [ "$i" = "$MAX_TRIES" ]; then
-              echo "❌ Site did not come up after $((MAX_TRIES * DELAY))s — aborting"
-              exit 1
-            fi
-            sleep $DELAY
-          done
-
-      # ──────────────────────────────────────────
       # 6. Compare sitemaps → produces diff-result.json
+      #    The Node.js script itself handles retry logic internally
       # ──────────────────────────────────────────
       - name: 🔍  Compare old vs new sitemap
         env:
@@ -120,7 +140,7 @@ jobs:
 
       # ──────────────────────────────────────────
       # 7. Submit to Google Indexing API
-      #    Results are written to GITHUB_STEP_SUMMARY (visible in Actions UI)
+      #    Job Summary is written to GITHUB_STEP_SUMMARY (visible in Actions UI)
       # ──────────────────────────────────────────
       - name: 📡  Submit URLs to Google Indexing API
         env:
@@ -134,16 +154,17 @@ jobs:
       # 8. Promote current snapshot → previous (for next run's diff)
       # ──────────────────────────────────────────
       - name: 🔁  Promote sitemap snapshot for next run
+        if: always()
         run: |
           if [ -f scripts/gsc/current-sitemap-snapshot.xml ]; then
             cp scripts/gsc/current-sitemap-snapshot.xml scripts/gsc/previous-sitemap-snapshot.xml
             echo "✅ Snapshot promoted: current → previous"
           else
-            echo "⚠️  No current snapshot file found to promote"
+            echo "⚠️  No current snapshot file to promote (compare step may have failed)"
           fi
 
       # ──────────────────────────────────────────
-      # 9. Save updated snapshot to cache (used as "previous" next push)
+      # 9. Save updated snapshot to cache
       # ──────────────────────────────────────────
       - name: 💾  Save sitemap snapshot for next run
         uses: actions/cache/save@v4
@@ -173,4 +194,5 @@ jobs:
           path: |
             scripts/gsc/diff-result.json
             scripts/gsc/current-sitemap-snapshot.xml
+          if-no-files-found: warn
           retention-days: 30

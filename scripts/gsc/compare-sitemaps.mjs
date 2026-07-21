@@ -3,16 +3,21 @@
  * compare-sitemaps.mjs
  *
  * Compares a "previous" sitemap snapshot with the "current" live sitemap
- * fetched from the deployed site (or a local XML file).
+ * fetched from the deployed site.
  *
  * Outputs:
- *   - scripts/gsc/diff-result.json   → { added, changed, all }
+ *   - scripts/gsc/diff-result.json              → { added, changed, all }
  *   - scripts/gsc/current-sitemap-snapshot.xml  → saved for next run (as cache)
  *
  * Usage:
  *   node scripts/gsc/compare-sitemaps.mjs \
  *       --sitemap-url https://bambooecco.com/sitemap.xml \
  *       --prev-snapshot scripts/gsc/previous-sitemap-snapshot.xml
+ *
+ * Env vars:
+ *   SITE_URL  – used as fallback if --sitemap-url is not passed
+ *   FETCH_RETRIES      – number of fetch attempts (default 3)
+ *   FETCH_RETRY_DELAY  – ms between retries (default 10000)
  */
 
 import fs from "fs";
@@ -60,15 +65,26 @@ const DIFF_RESULT_PATH = path.join(OUTPUT_DIR, "diff-result.json");
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Fetch a URL and return the response body as a string. */
-function fetchText(url) {
+const FETCH_RETRIES = parseInt(process.env.FETCH_RETRIES || "3", 10);
+const FETCH_RETRY_DELAY = parseInt(process.env.FETCH_RETRY_DELAY || "10000", 10);
+
+/** Sleep for ms milliseconds. */
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Fetch a URL and return the response body as a string (one attempt). */
+function fetchTextOnce(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith("https") ? https : http;
-    client
-      .get(url, { headers: { "User-Agent": "bambooecco-gsc-indexer/1.0" } }, (res) => {
+    const req = client.get(
+      url,
+      {
+        headers: { "User-Agent": "bambooecco-gsc-indexer/1.0" },
+        timeout: 20000,  // 20s socket timeout
+      },
+      (res) => {
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          // follow one redirect
-          return fetchText(res.headers.location).then(resolve).catch(reject);
+          // Follow one redirect
+          return fetchTextOnce(res.headers.location).then(resolve).catch(reject);
         }
         if (res.statusCode !== 200) {
           return reject(
@@ -78,9 +94,38 @@ function fetchText(url) {
         let body = "";
         res.on("data", (chunk) => (body += chunk));
         res.on("end", () => resolve(body));
-      })
-      .on("error", reject);
+      }
+    );
+    req.on("timeout", () => {
+      req.destroy();
+      reject(new Error(`Request timed out after 20s: ${url}`));
+    });
+    req.on("error", reject);
   });
+}
+
+/**
+ * Fetch a URL with automatic retries.
+ * Logs each attempt so failures are visible in GitHub Actions logs.
+ */
+async function fetchText(url, retries = FETCH_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      console.log(`    🌐  Fetching (attempt ${attempt}/${retries}): ${url}`);
+      const text = await fetchTextOnce(url);
+      console.log(`    ✅  Fetch succeeded (${text.length} bytes)`);
+      return text;
+    } catch (err) {
+      console.warn(`    ⚠️  Attempt ${attempt}/${retries} failed: ${err.message}`);
+      if (attempt === retries) {
+        throw new Error(
+          `Failed to fetch ${url} after ${retries} attempts. Last error: ${err.message}`
+        );
+      }
+      console.log(`    ⏳  Waiting ${FETCH_RETRY_DELAY / 1000}s before retry...`);
+      await sleep(FETCH_RETRY_DELAY);
+    }
+  }
 }
 
 /**
