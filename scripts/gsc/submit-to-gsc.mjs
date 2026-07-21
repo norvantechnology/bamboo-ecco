@@ -405,16 +405,30 @@ async function main() {
     console.log("\n✅  All URLs submitted — no overflow.");
   }
 
-  // 7. Ping Google + Bing sitemaps
-  console.log("\n📡  Pinging search engines with sitemap...");
+  // 7. Ping Google + Bing with sitemap AND feed
+  console.log("\n📡  Pinging search engines with sitemap + feed...");
   const pings = [];
 
   if (SITEMAP_URL) {
-    const googlePing = await pingUrl(`https://www.google.com/ping?sitemap=${encodeURIComponent(SITEMAP_URL)}`);
-    const bingPing = await pingUrl(`https://www.bing.com/ping?sitemap=${encodeURIComponent(SITEMAP_URL)}`);
+    const FEED_URL = SITE_URL ? `${SITE_URL}/feed.xml` : null;
 
-    pings.push({ label: "📍 Google ping", ...googlePing });
-    pings.push({ label: "🔷 Bing ping", ...bingPing });
+    const [googleSitemapPing, bingSitemapPing] = await Promise.all([
+      pingUrl(`https://www.google.com/ping?sitemap=${encodeURIComponent(SITEMAP_URL)}`),
+      pingUrl(`https://www.bing.com/ping?sitemap=${encodeURIComponent(SITEMAP_URL)}`),
+    ]);
+
+    pings.push({ label: "📍 Google sitemap ping", ...googleSitemapPing });
+    pings.push({ label: "🔷 Bing sitemap ping", ...bingSitemapPing });
+
+    // Also ping with the Merchant Center feed URL so Google re-fetches product data
+    if (FEED_URL) {
+      const [googleFeedPing, bingFeedPing] = await Promise.all([
+        pingUrl(`https://www.google.com/ping?sitemap=${encodeURIComponent(FEED_URL)}`),
+        pingUrl(`https://www.bing.com/ping?sitemap=${encodeURIComponent(FEED_URL)}`),
+      ]);
+      pings.push({ label: "🛒 Google feed ping", ...googleFeedPing });
+      pings.push({ label: "🛒 Bing feed ping", ...bingFeedPing });
+    }
 
     pings.forEach((p) => {
       const icon = p.status === 200 ? "✅" : "⚠️";
@@ -432,8 +446,10 @@ async function main() {
 ✅  Succeeded:       ${results.success.length}
 ❌  Failed:          ${results.failed.length}
 ⏳  Queued next run: ${newPending.length}
-📡  Google pinged:   ${pings.find((p) => p.label.includes("Google"))?.status === 200 ? "✅" : "⚠️"}
-🔷  Bing pinged:     ${pings.find((p) => p.label.includes("Bing"))?.status === 200 ? "✅" : "⚠️"}
+📡  Google sitemap:  ${pings.find((p) => p.label.includes("Google sitemap"))?.status === 200 ? "✅" : "⚠️"}
+🔷  Bing sitemap:    ${pings.find((p) => p.label.includes("Bing sitemap"))?.status === 200 ? "✅" : "⚠️"}
+🛒  Google feed:     ${pings.find((p) => p.label.includes("Google feed"))?.status === 200 ? "✅" : "—"}
+🛒  Bing feed:       ${pings.find((p) => p.label.includes("Bing feed"))?.status === 200 ? "✅" : "—"}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
 
   if (results.failed.length > 0) {
