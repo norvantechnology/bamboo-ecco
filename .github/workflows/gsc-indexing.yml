@@ -42,51 +42,96 @@ jobs:
           node-version: "24"
 
       # ──────────────────────────────────────────
-      # 3. Debug — confirm SITE_URL secret is set and reachable
-      #    (does NOT print the secret value — GitHub masks it automatically)
+      # 3. Diagnostics — check SITE_URL and site reachability
+      #    This step NEVER fails the job — it only prints debug info.
+      #    The Node.js script in the next step does the actual fetching with retries.
       # ──────────────────────────────────────────
-      - name: 🔎  Debug — verify SITE_URL is reachable
+      - name: 🔎  Diagnostics — check SITE_URL and connectivity
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
         run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  SITE_URL DIAGNOSTICS"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          # ── 1. Check secret is set
           if [ -z "$SITE_URL" ]; then
-            echo "❌ SITE_URL secret is EMPTY or not set!"
-            echo "   → Go to GitHub repo → Settings → Secrets and variables → Actions"
-            echo "   → Add secret: Name=SITE_URL  Value=https://yourdomain.com"
+            echo "❌ FATAL: SITE_URL secret is empty or not set!"
+            echo "   Fix: GitHub repo → Settings → Secrets → Actions → New secret"
+            echo "        Name=SITE_URL   Value=https://yourdomain.com"
             exit 1
           fi
+          echo "✅ SITE_URL secret is set"
 
-          echo "✅ SITE_URL secret is set (value hidden by GitHub)"
-          echo "📡 Testing connectivity to sitemap..."
+          # ── 2. Length check (reveals hidden whitespace/newline problems)
+          RAW_LEN=${#SITE_URL}
+          TRIMMED=$(echo "$SITE_URL" | tr -d '[:space:]')
+          TRIMMED_LEN=${#TRIMMED}
+          echo "   Character length (raw):     $RAW_LEN"
+          echo "   Character length (trimmed): $TRIMMED_LEN"
+          if [ "$RAW_LEN" != "$TRIMMED_LEN" ]; then
+            echo "⚠️  WARNING: SITE_URL has leading/trailing whitespace or a newline!"
+            echo "   This is likely the cause of HTTP 000."
+            echo "   Fix: Delete the SITE_URL secret and re-add it (paste carefully, no spaces)"
+          fi
 
-          # Verbose curl: shows DNS resolution and HTTP response code
-          HTTP_CODE=$(curl -s -o /tmp/sitemap_test.txt -w "%{http_code}" \
-            --max-time 15 \
+          # ── 3. Protocol check
+          if echo "$SITE_URL" | grep -qE '^https?://'; then
+            echo "✅ SITE_URL starts with http:// or https://"
+          else
+            echo "⚠️  WARNING: SITE_URL does NOT start with https://"
+            echo "   Current value starts with: $(echo "$SITE_URL" | cut -c1-10)..."
+            echo "   Fix: Secret value should be exactly: https://yourdomain.com"
+          fi
+
+          # ── 4. DNS check — does the hostname resolve?
+          HOSTNAME=$(echo "$SITE_URL" | sed 's|https\?://||' | cut -d'/' -f1 | cut -d':' -f1 | tr -d '[:space:]')
+          echo ""
+          echo "   Extracted hostname: $HOSTNAME"
+          echo "   Attempting DNS resolution..."
+          if nslookup "$HOSTNAME" > /tmp/dns_result.txt 2>&1; then
+            echo "✅ DNS resolved OK:"
+            grep -E "Address|Name" /tmp/dns_result.txt | head -5 || true
+          else
+            echo "❌ DNS FAILED for hostname: $HOSTNAME"
+            echo "   This means the domain doesn't exist or can't be resolved."
+            cat /tmp/dns_result.txt || true
+          fi
+
+          # ── 5. Full curl verbose test (stderr = connection details)
+          echo ""
+          echo "   Running curl (verbose) against: $HOSTNAME/sitemap.xml"
+          HTTP_CODE=$(curl -s \
+            -o /tmp/sitemap_body.txt \
+            -w "%{http_code}" \
+            --max-time 20 \
             --connect-timeout 10 \
             -L \
-            "$SITE_URL/sitemap.xml" 2>/tmp/curl_error.txt) || true
+            --verbose \
+            "${TRIMMED}/sitemap.xml" 2>/tmp/curl_verbose.txt) || HTTP_CODE="000"
 
-          echo "   HTTP status: $HTTP_CODE"
+          echo "   HTTP status code: $HTTP_CODE"
+          echo ""
+          echo "   curl verbose output (connection details):"
+          echo "   ──────────────────────────────────────────"
+          cat /tmp/curl_verbose.txt | head -40 || true
+          echo "   ──────────────────────────────────────────"
 
           if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ Site is reachable and sitemap returned HTTP 200"
-            BYTES=$(wc -c < /tmp/sitemap_test.txt)
-            echo "   Sitemap size: $BYTES bytes"
-          elif [ "$HTTP_CODE" = "000" ] || [ -z "$HTTP_CODE" ]; then
-            echo "❌ Could NOT connect to $SITE_URL"
-            echo "   This usually means:"
-            echo "   1. SITE_URL secret has a typo (check for trailing slash or wrong domain)"
-            echo "   2. The site is not yet deployed / is down"
-            echo "   3. The site blocks GitHub Actions IP ranges (unlikely but possible)"
+            BYTES=$(wc -c < /tmp/sitemap_body.txt)
             echo ""
-            echo "   curl error output:"
-            cat /tmp/curl_error.txt || true
-            exit 1
+            echo "✅ SUCCESS: Sitemap is reachable! ($BYTES bytes)"
+            echo "   First 300 chars of sitemap:"
+            head -c 300 /tmp/sitemap_body.txt || true
           else
-            echo "⚠️  Site returned HTTP $HTTP_CODE — continuing anyway"
-            echo "   Response body preview:"
-            head -c 500 /tmp/sitemap_test.txt || true
+            echo ""
+            echo "⚠️  Sitemap returned HTTP $HTTP_CODE — the Node.js script will retry automatically"
           fi
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          # ✅ This step NEVER exits with error — diagnostics only
+          exit 0
 
       # ──────────────────────────────────────────
       # 4. Restore sitemap snapshot from previous run
