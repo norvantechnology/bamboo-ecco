@@ -289,7 +289,7 @@ export function rootMetadataFromSeo(seo: {
       ...(seo.bingVerification || seo.pinterestVerification
         ? {
             other: {
-              ...(seo.bingVerification ? { msvalidate: seo.bingVerification } : {}),
+              ...(seo.bingVerification ? { "msvalidate.01": seo.bingVerification } : {}),
               ...(seo.pinterestVerification ? { "p:domain_verify": seo.pinterestVerification } : {}),
             },
           }
