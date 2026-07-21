@@ -55,12 +55,14 @@ export async function buildPageMetadata({
   const siteName = seo.name;
   const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
-  const ogImage = image
+  
+  const displayImage = image || seo.ogImage;
+  const ogImage = displayImage
     ? [
         {
-          url: image,
+          url: displayImage,
           width: 1200,
-          height: 1200,
+          height: 630,
           alt: imageAlt || title,
         },
       ]
@@ -81,10 +83,11 @@ export async function buildPageMetadata({
       images: ogImage,
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: displayImage ? "summary_large_image" : "summary",
       title,
       description: desc || undefined,
-      images: image ? [image] : [BRAND_ASSETS.icon],
+      images: displayImage ? [displayImage] : [BRAND_ASSETS.icon],
+      ...(seo.twitterHandle ? { site: `@${seo.twitterHandle}`, creator: `@${seo.twitterHandle}` } : {}),
     },
     ...(noIndex ? { robots: { index: false, follow: false } } : {}),
   };
@@ -214,12 +217,18 @@ export function rootMetadataFromSeo(seo: {
   themeColor: string;
   backgroundColor: string;
   gscVerification: string;
+  ogImage?: string;
+  twitterHandle?: string;
+  bingVerification?: string;
+  pinterestVerification?: string;
 }): Metadata {
   const siteUrl = getSiteUrl();
   const defaultTitle =
     seo.name && seo.defaultTitle
       ? `${seo.name} | ${seo.defaultTitle}`
       : seo.name || seo.defaultTitle || undefined;
+
+  const displayImage = seo.ogImage || BRAND_ASSETS.icon;
 
   return {
     metadataBase: new URL(siteUrl),
@@ -244,13 +253,23 @@ export function rootMetadataFromSeo(seo: {
       title: seo.name || undefined,
       description: seo.description || undefined,
       url: siteUrl,
-      images: defaultOgImages(seo.name || "Bamboo Eco-Hub"),
+      images: seo.ogImage
+        ? [
+            {
+              url: seo.ogImage,
+              width: 1200,
+              height: 630,
+              alt: seo.name || "Bamboo Eco-Hub",
+            },
+          ]
+        : defaultOgImages(seo.name || "Bamboo Eco-Hub"),
     },
     twitter: {
-      card: "summary_large_image",
+      card: seo.ogImage ? "summary_large_image" : "summary",
       title: seo.name || undefined,
       description: seo.description || undefined,
-      images: [BRAND_ASSETS.icon],
+      images: [displayImage],
+      ...(seo.twitterHandle ? { site: `@${seo.twitterHandle}`, creator: `@${seo.twitterHandle}` } : {}),
     },
     robots: {
       index: true,
@@ -264,10 +283,18 @@ export function rootMetadataFromSeo(seo: {
       },
     },
     manifest: "/manifest.webmanifest",
-    ...(() => {
-      const google = normalizeGscVerification(seo.gscVerification);
-      return google ? { verification: { google } } : {};
-    })(),
+    verification: {
+      google: normalizeGscVerification(seo.gscVerification) || undefined,
+      yahoo: seo.bingVerification || undefined,
+      ...(seo.bingVerification || seo.pinterestVerification
+        ? {
+            other: {
+              ...(seo.bingVerification ? { msvalidate: seo.bingVerification } : {}),
+              ...(seo.pinterestVerification ? { "p:domain_verify": seo.pinterestVerification } : {}),
+            },
+          }
+        : {}),
+    },
     ...(seo.themeColor ? { other: { "theme-color": seo.themeColor } } : {}),
   };
 }
@@ -285,8 +312,22 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
   };
 }
 
-export function organizationJsonLd(brand: { name?: string; tagline?: string }) {
+export function organizationJsonLd(brand: {
+  name?: string;
+  tagline?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
+}) {
   const siteUrl = getSiteUrl();
+  const sameAs = brand.socialLinks
+    ? Object.values(brand.socialLinks).filter((url) => url && url.startsWith("http"))
+    : [];
+
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -296,6 +337,7 @@ export function organizationJsonLd(brand: { name?: string; tagline?: string }) {
     logo: brandAssetUrl("icon", siteUrl),
     image: brandAssetUrl("icon", siteUrl),
     email: "info@bambooecohub.com",
+    ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
 

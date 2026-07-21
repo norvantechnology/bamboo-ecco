@@ -5,6 +5,17 @@ export type TenantSeoConfig = {
   themeColor: string;
   backgroundColor: string;
   gscVerification: string;
+  ogImage?: string;
+  twitterHandle?: string;
+  bingVerification?: string;
+  pinterestVerification?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
 };
 
 /** Map tenant.seo (+ theme chrome) to a public SEO payload — no marketing copy defaults. */
@@ -19,5 +30,16 @@ export function resolveTenantSeo(
     themeColor: stored?.themeColor?.trim() || theme?.primary?.trim() || '',
     backgroundColor: stored?.backgroundColor?.trim() || theme?.background?.trim() || '',
     gscVerification: stored?.gscVerification?.trim() || '',
+    ogImage: stored?.ogImage?.trim() || '',
+    twitterHandle: stored?.twitterHandle?.trim() || '',
+    bingVerification: stored?.bingVerification?.trim() || '',
+    pinterestVerification: stored?.pinterestVerification?.trim() || '',
+    socialLinks: {
+      instagram: stored?.socialLinks?.instagram?.trim() || '',
+      facebook: stored?.socialLinks?.facebook?.trim() || '',
+      youtube: stored?.socialLinks?.youtube?.trim() || '',
+      pinterest: stored?.socialLinks?.pinterest?.trim() || '',
+      twitter: stored?.socialLinks?.twitter?.trim() || '',
+    },
   };
 }

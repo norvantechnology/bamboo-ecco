@@ -13,6 +13,17 @@ export type SiteSeo = {
   themeColor: string;
   backgroundColor: string;
   gscVerification: string;
+  ogImage?: string;
+  twitterHandle?: string;
+  bingVerification?: string;
+  pinterestVerification?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
 };
 
 /** Canonical site origin — deployment config only. */
@@ -41,6 +52,17 @@ export async function resolveSiteSeo(): Promise<SiteSeo> {
     themeColor: seo?.themeColor?.trim() || "",
     backgroundColor: seo?.backgroundColor?.trim() || "",
     gscVerification: seo?.gscVerification?.trim() || "",
+    ogImage: seo?.ogImage?.trim() || "",
+    twitterHandle: seo?.twitterHandle?.trim() || "",
+    bingVerification: seo?.bingVerification?.trim() || "",
+    pinterestVerification: seo?.pinterestVerification?.trim() || "",
+    socialLinks: {
+      instagram: seo?.socialLinks?.instagram?.trim() || "",
+      facebook: seo?.socialLinks?.facebook?.trim() || "",
+      youtube: seo?.socialLinks?.youtube?.trim() || "",
+      pinterest: seo?.socialLinks?.pinterest?.trim() || "",
+      twitter: seo?.socialLinks?.twitter?.trim() || "",
+    },
   };
 }
 

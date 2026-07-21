@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers>
           <CartProvider>
             <WishlistProvider>
-            <OrganizationJsonLd name={brand?.name ?? seo.name} tagline={brand?.tagline ?? seo.description} includeWebsite />
+            <OrganizationJsonLd name={brand?.name ?? seo.name} tagline={brand?.tagline ?? seo.description} socialLinks={seo.socialLinks} includeWebsite />
             {data?.promotions?.announcementBar && (
               <AnnouncementBar config={data.promotions.announcementBar} />
             )}

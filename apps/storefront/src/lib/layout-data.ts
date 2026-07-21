@@ -11,6 +11,17 @@ export interface LayoutSeo {
   themeColor: string;
   backgroundColor: string;
   gscVerification: string;
+  ogImage?: string;
+  twitterHandle?: string;
+  bingVerification?: string;
+  pinterestVerification?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
 }
 
 export interface LayoutData {

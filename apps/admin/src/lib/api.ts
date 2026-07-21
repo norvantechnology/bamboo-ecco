@@ -572,6 +572,22 @@ export interface TenantSeoSettings {
   themeColor: string;
   backgroundColor: string;
   gscVerification: string;
+  /** Default Open Graph / social share image URL */
+  ogImage?: string;
+  /** Twitter/X site handle — e.g. @bambooecohub */
+  twitterHandle?: string;
+  /** Bing Webmaster Tools verification meta content token */
+  bingVerification?: string;
+  /** Pinterest domain verification token */
+  pinterestVerification?: string;
+  /** Social profile URLs for Schema.org Organization */
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
 }
 
 export interface TenantSettings {

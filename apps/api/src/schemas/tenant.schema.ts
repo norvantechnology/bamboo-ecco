@@ -164,6 +164,32 @@ export class TenantSeo {
   /** Google Search Console HTML-tag verification content */
   @Prop({ default: '' })
   gscVerification: string;
+
+  /** Default Open Graph / social share image URL */
+  @Prop({ default: '' })
+  ogImage: string;
+
+  /** Twitter/X site handle */
+  @Prop({ default: '' })
+  twitterHandle: string;
+
+  /** Bing Webmaster Tools verification meta token */
+  @Prop({ default: '' })
+  bingVerification: string;
+
+  /** Pinterest verification token */
+  @Prop({ default: '' })
+  pinterestVerification: string;
+
+  /** Social profile URLs */
+  @Prop({ type: Object, default: () => ({}) })
+  socialLinks: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
 }
 
 @Schema({ timestamps: true })
