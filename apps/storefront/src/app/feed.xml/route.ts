@@ -188,7 +188,7 @@ function buildFeedItem(
   const lines: string[] = [];
 
   lines.push(`    <item>`);
-  lines.push(`      <g:id>${escXml(product.slug)}</g:id>`);
+  lines.push(`      <g:id>${escXml(toFeedId(product.slug))}</g:id>`);
   lines.push(`      <title>${escXml(product.meta?.title || product.title)}</title>`);
   lines.push(`      <description>${escXml(description)}</description>`);
   lines.push(`      <link>${productUrl}</link>`);
@@ -260,4 +260,19 @@ function escXml(raw: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+// ---------------------------------------------------------------------------
+// Google Merchant Center g:id — max 50 characters
+// If the slug is longer, truncate and append a 6-char hash so it stays unique
+// ---------------------------------------------------------------------------
+function toFeedId(slug: string): string {
+  if (slug.length <= 50) return slug;
+  // Simple djb2 hash → 6 hex chars
+  let hash = 5381;
+  for (let i = 0; i < slug.length; i++) {
+    hash = ((hash << 5) + hash) ^ slug.charCodeAt(i);
+  }
+  const suffix = (hash >>> 0).toString(16).slice(0, 6); // e.g. "a1b2c3"
+  return `${slug.slice(0, 43)}-${suffix}`; // 43 + 1 + 6 = 50 chars exactly
 }
