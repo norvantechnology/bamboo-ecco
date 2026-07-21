@@ -96,6 +96,7 @@ const SEO_FILES = [
   { path: "/ai.txt",                     label: "ai.txt",              hint: "AI crawl policy",              color: "text-violet-600", badge: "AI" },
   { path: "/.well-known/ai-plugin.json", label: "ai-plugin.json",     hint: "ChatGPT plugin manifest",      color: "text-emerald-600",badge: "AI" },
   { path: "/feed.xml",                   label: "feed.xml",            hint: "Google Merchant Center feed",  color: "text-orange-600", badge: "GMC" },
+  { path: "/feed/pinterest.xml",         label: "pinterest.xml",       hint: "Pinterest Catalog feed",       color: "text-rose-600",   badge: "PIN" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -708,6 +709,7 @@ export function SeoPage() {
                 <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                   file.badge === "AI"  ? "bg-violet-100 text-violet-700" :
                   file.badge === "GMC" ? "bg-orange-100 text-orange-700" :
+                  file.badge === "PIN" ? "bg-rose-100 text-rose-700" :
                                          "bg-slate-100 text-slate-600"
                 }`}>
                   {file.badge}

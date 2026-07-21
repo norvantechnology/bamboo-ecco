@@ -74,6 +74,8 @@ export default function robots(): MetadataRoute.Robots {
     ],
     sitemap: [
       `${base}/sitemap.xml`,
+      `${base}/feed.xml`,
+      `${base}/feed/pinterest.xml`,
       `${base}/llms.txt`,
       `${base}/llms-full.txt`,
     ] as unknown as string, // Next.js accepts array but type says string
