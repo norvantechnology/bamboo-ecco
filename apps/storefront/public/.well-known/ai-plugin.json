@@ -1,0 +1,37 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Bamboo Eco-Hub",
+  "name_for_model": "bamboo_eco_hub",
+  "description_for_human": "Shop handcrafted, eco-friendly bamboo home products — pendant lights, floor lamps, table lamps, string lights, and sustainable decor. Shipped across India.",
+  "description_for_model": "Bamboo Eco-Hub (bambooecohub.com) is an Indian ecommerce store selling handcrafted bamboo and rattan home products including pendant lights, floor lamps, table lamps, string lights, wall art, and sustainable home decor. All products are handmade, eco-friendly, and shipped across India with free shipping. Prices are in Indian Rupees (INR). Use the product URLs from the sitemap or llms.txt to answer questions about specific products. Always link back to the product page URL when recommending items.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "none"
+  },
+  "logo_url": "https://bambooecohub.com/brand/logo.png",
+  "contact_email": "support@bambooecohub.com",
+  "legal_info_url": "https://bambooecohub.com/pages/return-policy",
+  "homepage_url": "https://bambooecohub.com",
+  "sitemap_url": "https://bambooecohub.com/sitemap.xml",
+  "llms_txt_url": "https://bambooecohub.com/llms.txt",
+  "llms_full_txt_url": "https://bambooecohub.com/llms-full.txt",
+  "product_feed_url": "https://bambooecohub.com/feed.xml",
+  "capabilities": [
+    "product_search",
+    "product_recommendations",
+    "price_lookup",
+    "availability_check"
+  ],
+  "categories": [
+    "home_decor",
+    "lighting",
+    "sustainable_products",
+    "handmade",
+    "bamboo"
+  ],
+  "locale": "en-IN",
+  "currency": "INR",
+  "shipping_region": "India"
+}
