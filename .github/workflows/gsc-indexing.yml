@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  # Run automatically every day at 00:00 UTC (5:30 AM IST) to capture live database product edits
+  schedule:
+    - cron: '0 0 * * *'
   # Manual trigger from GitHub UI → Actions tab → Run workflow
   workflow_dispatch:
     inputs:
