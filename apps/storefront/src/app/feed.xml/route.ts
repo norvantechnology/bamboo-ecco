@@ -174,8 +174,6 @@ function buildFeedItem(
     .trim()
     .slice(0, 5000);
 
-  // ── Product type / category (dynamic from DB relation)
-  //    Falls back to a sensible default if no category is set
   const categoryObj =
     typeof product.categoryId === "object" && product.categoryId?.name
       ? product.categoryId
@@ -183,6 +181,14 @@ function buildFeedItem(
   const productType = categoryObj
     ? `Home and Garden > ${categoryObj.name}`
     : "Home and Garden";
+
+  const catName = categoryObj?.name?.toLowerCase() || "";
+  let googleProductCategory = "Home & Garden > Decor";
+  if (catName.includes("light") || catName.includes("lamp") || catName.includes("pendant")) {
+    googleProductCategory = "Home & Garden > Lighting > Lamps";
+  } else if (catName.includes("furniture") || catName.includes("table") || catName.includes("chair")) {
+    googleProductCategory = "Home & Garden > Furniture";
+  }
 
   // ── Build lines array — only push lines that have real values
   const lines: string[] = [];
@@ -211,6 +217,7 @@ function buildFeedItem(
   }
 
   lines.push(`      <g:brand>${escXml(brandName)}</g:brand>`);
+  lines.push(`      <g:google_product_category>${escXml(googleProductCategory)}</g:google_product_category>`);
   lines.push(`      <g:product_type>${escXml(productType)}</g:product_type>`);
 
   // MPN/SKU — only if present

@@ -150,6 +150,14 @@ function buildFeedItem(
     ? `Home & Garden > ${categoryObj.name}`
     : "Home & Garden";
 
+  const catName = categoryObj?.name?.toLowerCase() || "";
+  let googleProductCategory = "Home & Garden > Decor";
+  if (catName.includes("light") || catName.includes("lamp") || catName.includes("pendant")) {
+    googleProductCategory = "Home & Garden > Lighting > Lamps";
+  } else if (catName.includes("furniture") || catName.includes("table") || catName.includes("chair")) {
+    googleProductCategory = "Home & Garden > Furniture";
+  }
+
   const lines: string[] = [];
 
   lines.push(`    <item>`);
@@ -174,6 +182,7 @@ function buildFeedItem(
   }
 
   lines.push(`      <g:brand>${escXml(brandName)}</g:brand>`);
+  lines.push(`      <g:google_product_category>${escXml(googleProductCategory)}</g:google_product_category>`);
   lines.push(`      <g:product_type>${escXml(productType)}</g:product_type>`);
 
   if (variant.sku) {
