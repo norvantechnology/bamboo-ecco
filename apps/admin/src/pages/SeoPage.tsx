@@ -279,6 +279,61 @@ function SerpPreview({ title, description, url }: { title: string; description: 
 }
 
 // ---------------------------------------------------------------------------
+// Social Media Preview
+// ---------------------------------------------------------------------------
+function SocialSharePreview({
+  title,
+  description,
+  ogImage,
+  domain,
+}: {
+  title: string;
+  description: string;
+  ogImage: string;
+  domain: string;
+}) {
+  const cleanDomain = domain.replace(/^https?:\/\//, "").split("/")[0] || "bambooecohub.com";
+
+  return (
+    <div className="rounded-xl border border-border bg-background p-4 mt-2">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-3">
+        Social Media Preview (WhatsApp / Facebook)
+      </p>
+      <div className="max-w-md rounded-xl border border-border bg-muted/10 overflow-hidden shadow-sm">
+        {ogImage ? (
+          <div className="aspect-[1.91/1] w-full bg-slate-100 overflow-hidden border-b border-border">
+            <img
+              src={ogImage}
+              alt="OG Preview"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          </div>
+        ) : (
+          <div className="aspect-[1.91/1] w-full bg-muted flex flex-col items-center justify-center border-b border-border text-muted">
+            <Share2 className="h-8 w-8 opacity-40 mb-2" />
+            <span className="text-xs">No OG Image specified</span>
+          </div>
+        )}
+        <div className="p-3 bg-muted/30">
+          <p className="text-[11px] uppercase tracking-wider text-muted font-semibold">
+            {cleanDomain}
+          </p>
+          <p className="text-[14px] font-bold text-foreground mt-1 line-clamp-1">
+            {title || "Bamboo Eco-Hub | Handcrafted Lamps"}
+          </p>
+          <p className="text-xs text-muted mt-0.5 line-clamp-2">
+            {description || "No description provided."}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main SeoPage
 // ---------------------------------------------------------------------------
 export function SeoPage() {
@@ -484,17 +539,12 @@ export function SeoPage() {
               placeholder="https://bambooecohub.com/brand/og-default.jpg"
             />
           </label>
-          {seo.ogImage && (
-            <div className="rounded-xl border border-border overflow-hidden">
-              <img
-                src={seo.ogImage}
-                alt="OG preview"
-                className="w-full max-h-48 object-cover"
-                onError={(e) => (e.currentTarget.style.display = "none")}
-              />
-              <p className="px-3 py-2 text-xs text-muted">Preview (1200×630 recommended)</p>
-            </div>
-          )}
+          <SocialSharePreview
+            title={titlePreview}
+            description={seo.description}
+            ogImage={seo.ogImage ?? ""}
+            domain={STOREFRONT_URL}
+          />
 
           <label className="block text-sm">
             <span className="font-medium text-foreground">Twitter/X handle</span>
