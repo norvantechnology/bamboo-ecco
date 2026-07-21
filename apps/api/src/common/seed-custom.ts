@@ -190,6 +190,7 @@ async function run() {
         footerOrder: 1,
         publishedAt: new Date(),
         updatedAt: new Date(),
+        last_updated: new Date(),
       },
     },
     { upsert: true }
@@ -248,6 +249,7 @@ async function run() {
         footerOrder: 1,
         publishedAt: new Date(),
         updatedAt: new Date(),
+        last_updated: new Date(),
       },
     },
     { upsert: true }
@@ -285,7 +287,7 @@ async function run() {
 
     await productsCol.updateOne(
       { _id: product._id },
-      { $set: { faqs: productFaqs } }
+      { $set: { faqs: productFaqs, last_updated: new Date() } }
     );
   }
   

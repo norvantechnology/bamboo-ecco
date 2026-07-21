@@ -34,6 +34,9 @@ export class ContentPage {
 
   @Prop()
   publishedAt?: Date;
+
+  @Prop({ default: () => new Date() })
+  last_updated: Date;
 }
 
 export const ContentPageSchema = SchemaFactory.createForClass(ContentPage);

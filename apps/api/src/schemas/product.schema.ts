@@ -158,6 +158,9 @@ export class Product {
     default: { avg: 0, count: 0 },
   })
   ratingSummary: { avg: number; count: number };
+
+  @Prop({ default: () => new Date() })
+  last_updated: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
