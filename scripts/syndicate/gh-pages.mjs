@@ -4,7 +4,7 @@
  */
 export async function syndicateGhPages(article, canonicalUrl) {
   const mirrorRepo = process.env.GH_MIRROR_REPO;
-  const token = process.env.GITHUB_TOKEN || process.env.GH_PAT;
+  const token = process.env.GH_PAT || process.env.GITHUB_TOKEN;
 
   if (!mirrorRepo || !token) {
     return {
