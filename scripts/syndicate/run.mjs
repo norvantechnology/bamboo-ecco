@@ -141,6 +141,37 @@ async function main() {
   console.log(`API_URL:  ${API_URL}`);
   console.log(`DRY_RUN:  ${DRY_RUN}`);
 
+  // Debug: Show masked secrets to verify they are reaching the runner
+  const mask = (val) => {
+    if (!val) return "❌ NOT SET";
+    const v = val.trim();
+    if (v.length === 0) return "❌ EMPTY";
+    if (v.length <= 8) return `✅ SET (${v.length} chars): ${v.slice(0, 2)}***${v.slice(-2)}`;
+    return `✅ SET (${v.length} chars): ${v.slice(0, 4)}***${v.slice(-4)}`;
+  };
+
+  console.log("\n🔐 Secrets Debug Check:");
+  console.log("─────────────────────────────────────────────────");
+  console.log(`  DEVTO_KEY:              ${mask(process.env.DEVTO_KEY)}`);
+  console.log(`  WPCOM_TOKEN:            ${mask(process.env.WPCOM_TOKEN)}`);
+  console.log(`  WPCOM_SITE_ID:          ${mask(process.env.WPCOM_SITE_ID)}`);
+  console.log(`  BLOGGER_CLIENT_ID:      ${mask(process.env.BLOGGER_CLIENT_ID)}`);
+  console.log(`  BLOGGER_CLIENT_SECRET:  ${mask(process.env.BLOGGER_CLIENT_SECRET)}`);
+  console.log(`  BLOGGER_REFRESH_TOKEN:  ${mask(process.env.BLOGGER_REFRESH_TOKEN)}`);
+  console.log(`  BLOGGER_BLOG_ID:        ${mask(process.env.BLOGGER_BLOG_ID)}`);
+  console.log(`  TUMBLR_CONSUMER_KEY:    ${mask(process.env.TUMBLR_CONSUMER_KEY)}`);
+  console.log(`  TUMBLR_CONSUMER_SECRET: ${mask(process.env.TUMBLR_CONSUMER_SECRET)}`);
+  console.log(`  TUMBLR_TOKEN:           ${mask(process.env.TUMBLR_TOKEN)}`);
+  console.log(`  TUMBLR_TOKEN_SECRET:    ${mask(process.env.TUMBLR_TOKEN_SECRET)}`);
+  console.log(`  TUMBLR_BLOG_IDENTIFIER: ${mask(process.env.TUMBLR_BLOG_IDENTIFIER)}`);
+  console.log(`  MASTODON_INSTANCE_URL:  ${mask(process.env.MASTODON_INSTANCE_URL)}`);
+  console.log(`  MASTODON_TOKEN:         ${mask(process.env.MASTODON_TOKEN)}`);
+  console.log(`  GH_MIRROR_REPO:         ${mask(process.env.GH_MIRROR_REPO)}`);
+  console.log(`  GH_PAT:                 ${mask(process.env.GH_PAT)}`);
+  console.log(`  TELEGRAM_BOT_TOKEN:     ${mask(process.env.TELEGRAM_BOT_TOKEN)}`);
+  console.log(`  TELEGRAM_CHAT_ID:       ${mask(process.env.TELEGRAM_CHAT_ID)}`);
+  console.log("─────────────────────────────────────────────────");
+
   const targetUrls = getTargetUrls();
   console.log(`\nFound ${targetUrls.length} target URLs (Blogs, Products, Collections, Pages) to syndicate:`);
   targetUrls.forEach((u) => console.log(` - ${u}`));
