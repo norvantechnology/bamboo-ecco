@@ -1,0 +1,127 @@
+name: 🔗 Backlink & Content Syndication
+
+on:
+  push:
+    branches:
+      - main
+  # Run daily at 02:00 UTC to catch new database published articles/guides
+  schedule:
+    - cron: '0 2 * * *'
+  # Manual trigger from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      force_all:
+        description: "Syndicate ALL journal/guides URLs (ignores sitemap diff)"
+        required: false
+        default: "false"
+
+# Ensure only one syndication run runs at a time
+concurrency:
+  group: backlink-syndication
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  syndicate:
+    name: Detect & Syndicate Articles to 7 Platforms
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # 1. Checkout repository with full history for git commits
+      - name: ⬇️  Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2. Setup Node.js 24
+      - name: 🟢  Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # 3. Restore previous sitemap snapshot cache
+      - name: 💾  Restore previous sitemap snapshot
+        id: cache-sitemap
+        uses: actions/cache@v4
+        with:
+          path: scripts/gsc/previous-sitemap-snapshot.xml
+          key: sitemap-snapshot-${{ runner.os }}-${{ github.ref_name }}
+          restore-keys: |
+            sitemap-snapshot-${{ runner.os }}-
+
+      # 4. Compare sitemaps to get new/updated URLs (diff-result.json)
+      - name: 🔍  Compare sitemaps for content changes
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          FORCE_ALL: ${{ github.event.inputs.force_all }}
+        run: |
+          if [ "$FORCE_ALL" = "true" ]; then
+            echo "⚡ force_all=true — clearing snapshot cache"
+            rm -f scripts/gsc/previous-sitemap-snapshot.xml
+          fi
+          node scripts/gsc/compare-sitemaps.mjs \
+            --sitemap-url "${SITE_URL:-https://bambooecohub.com}/sitemap.xml" \
+            --prev-snapshot scripts/gsc/previous-sitemap-snapshot.xml \
+            --output-dir scripts/gsc
+
+      # 5. Run multi-platform syndication orchestrator
+      - name: 🚀  Syndicate Content to 7 Platforms
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          API_URL: ${{ secrets.API_URL }}
+          FORCE_ALL: ${{ github.event.inputs.force_all }}
+          DEVTO_KEY: ${{ secrets.DEVTO_KEY }}
+          WPCOM_TOKEN: ${{ secrets.WPCOM_TOKEN }}
+          WPCOM_SITE_ID: ${{ secrets.WPCOM_SITE_ID }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          TUMBLR_CONSUMER_KEY: ${{ secrets.TUMBLR_CONSUMER_KEY }}
+          TUMBLR_CONSUMER_SECRET: ${{ secrets.TUMBLR_CONSUMER_SECRET }}
+          TUMBLR_TOKEN: ${{ secrets.TUMBLR_TOKEN }}
+          TUMBLR_TOKEN_SECRET: ${{ secrets.TUMBLR_TOKEN_SECRET }}
+          TUMBLR_BLOG_IDENTIFIER: ${{ secrets.TUMBLR_BLOG_IDENTIFIER }}
+          MASTODON_INSTANCE_URL: ${{ secrets.MASTODON_INSTANCE_URL }}
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          GH_MIRROR_REPO: ${{ secrets.GH_MIRROR_REPO }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/syndicate/run.mjs
+
+      # 6. Promote sitemap snapshot for next run
+      - name: 🔁  Promote sitemap snapshot for next run
+        if: always()
+        run: |
+          if [ -f scripts/gsc/current-sitemap-snapshot.xml ]; then
+            cp scripts/gsc/current-sitemap-snapshot.xml scripts/gsc/previous-sitemap-snapshot.xml
+            echo "✅ Snapshot promoted: current → previous"
+          fi
+
+      # 7. Save updated snapshot to cache
+      - name: 💾  Save sitemap snapshot cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: scripts/gsc/previous-sitemap-snapshot.xml
+          key: sitemap-snapshot-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+
+      # 8. Commit backlink-state.json back to repository if modified
+      - name: 📝  Commit updated backlink state
+        if: always()
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -f .github/backlink-state.json ]; then
+            git add .github/backlink-state.json
+            if ! git diff --cached --quiet; then
+              git commit -m "chore(seo): update backlink syndication state [skip ci]"
+              git push origin main
+              echo "✅ Committed updated .github/backlink-state.json back to repo"
+            else
+              echo "ℹ️  No changes to .github/backlink-state.json"
+            fi
+          fi
