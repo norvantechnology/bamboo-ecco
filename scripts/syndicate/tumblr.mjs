@@ -52,38 +52,32 @@ function generateOAuth1Header(method, url, params, consumerSecret, tokenSecret) 
  * Secrets: TUMBLR_CONSUMER_KEY, TUMBLR_CONSUMER_SECRET, TUMBLR_TOKEN, TUMBLR_TOKEN_SECRET, TUMBLR_BLOG_IDENTIFIER (optional, defaults to token identity)
  */
 export async function syndicateTumblr(article, canonicalUrl) {
-  const consumerKey = process.env.TUMBLR_CONSUMER_KEY;
-  const consumerSecret = process.env.TUMBLR_CONSUMER_SECRET;
-  const token = process.env.TUMBLR_TOKEN;
-  const tokenSecret = process.env.TUMBLR_TOKEN_SECRET;
-  const blogIdentifier = process.env.TUMBLR_BLOG_IDENTIFIER || "bambooecohub";
+  const cleanConsumerKey = consumerKey.trim();
+  const cleanConsumerSecret = consumerSecret ? consumerSecret.trim() : "";
+  const cleanToken = token.trim();
+  const cleanTokenSecret = tokenSecret ? tokenSecret.trim() : "";
+  const cleanBlog = blogIdentifier.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const blogHost = cleanBlog.includes(".") ? cleanBlog : `${cleanBlog}.tumblr.com`;
 
-  if (!consumerKey || !token) {
-    return {
-      status: "skipped",
-      reason: "Tumblr secrets (TUMBLR_CONSUMER_KEY, TUMBLR_TOKEN) not set",
-    };
-  }
-
-  const endpoint = `https://api.tumblr.com/v2/blog/${blogIdentifier}/post`;
+  const endpoint = `https://api.tumblr.com/v2/blog/${blogHost}/post`;
   const contentWithCanonical = `${article.bodyHtml}<hr /><p><em>Originally published at <a href="${canonicalUrl}">${article.title}</a> on BambooEcoHub.</em></p>`;
 
   let authHeader = "";
-  if (consumerSecret && tokenSecret) {
+  if (cleanConsumerSecret && cleanTokenSecret) {
     // OAuth 1.0a
     authHeader = generateOAuth1Header(
       "POST",
       endpoint,
       {
-        oauth_consumer_key: consumerKey,
-        oauth_token: token,
+        oauth_consumer_key: cleanConsumerKey,
+        oauth_token: cleanToken,
       },
-      consumerSecret,
-      tokenSecret
+      cleanConsumerSecret,
+      cleanTokenSecret
     );
   } else {
     // OAuth2 Bearer token fallback
-    authHeader = `Bearer ${token}`;
+    authHeader = `Bearer ${cleanToken}`;
   }
 
   const res = await fetch(endpoint, {

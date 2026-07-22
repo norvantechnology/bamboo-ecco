@@ -12,30 +12,41 @@ export async function syndicateWordPress(article, canonicalUrl) {
 
   const contentWithCanonical = `${article.bodyHtml}<hr /><p><em>Originally published at <a href="${canonicalUrl}">${article.title}</a> on BambooEcoHub.</em></p>`;
 
-  const endpoint = `https://public-api.wordpress.com/rest/v1.1/sites/${siteId}/posts/new`;
+  const cleanSiteId = siteId.trim();
+  const rawToken = token.trim();
+  const decodedToken = token.includes("%") ? decodeURIComponent(token) : token;
+  const tokenCandidates = [...new Set([decodedToken.trim(), rawToken])];
 
-  const cleanToken = token.includes("%") ? decodeURIComponent(token) : token;
+  const endpoint = `https://public-api.wordpress.com/rest/v1.1/sites/${cleanSiteId}/posts/new`;
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${cleanToken}`,
-      "User-Agent": "BambooEcoHub-Syndicator/1.0",
-    },
-    body: JSON.stringify({
-      title: article.title,
-      content: contentWithCanonical,
-      status: "publish",
-      metadata: [{ key: "canonical_url", value: canonicalUrl }],
-    }),
-  });
+  let lastError = null;
+  for (const t of tokenCandidates) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${t}`,
+          "User-Agent": "BambooEcoHub-Syndicator/1.0",
+        },
+        body: JSON.stringify({
+          title: article.title,
+          content: contentWithCanonical,
+          status: "publish",
+          metadata: [{ key: "canonical_url", value: canonicalUrl }],
+        }),
+      });
 
-  if (!res.ok) {
-    const errorText = await res.text().catch(() => "");
-    throw new Error(`WordPress.com API returned ${res.status}: ${errorText}`);
+      if (res.ok) {
+        const data = await res.json();
+        return { status: "success", url: data.URL || data.link || canonicalUrl };
+      }
+      const errorText = await res.text().catch(() => "");
+      lastError = new Error(`WordPress.com API returned ${res.status}: ${errorText}`);
+    } catch (err) {
+      lastError = err;
+    }
   }
 
-  const data = await res.json();
-  return { status: "success", url: data.URL || data.link || canonicalUrl };
+  throw lastError;
 }

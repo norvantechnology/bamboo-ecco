@@ -18,15 +18,31 @@ export async function syndicateDevTo(article, canonicalUrl) {
     },
   };
 
-  const res = await fetch("https://dev.to/api/articles", {
+  const cleanApiKey = apiKey.trim();
+
+  let res = await fetch("https://dev.to/api/articles", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "api-key": apiKey,
+      "api-key": cleanApiKey,
       "User-Agent": "BambooEcoHub-Syndicator/1.0",
     },
     body: JSON.stringify(payload),
   });
+
+  if (res.status === 429) {
+    console.warn("  ⏳ Dev.to rate limit reached. Waiting 5 seconds before retrying...");
+    await new Promise((r) => setTimeout(r, 5000));
+    res = await fetch("https://dev.to/api/articles", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": cleanApiKey,
+        "User-Agent": "BambooEcoHub-Syndicator/1.0",
+      },
+      body: JSON.stringify(payload),
+    });
+  }
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");

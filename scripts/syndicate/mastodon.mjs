@@ -13,7 +13,8 @@ export async function syndicateMastodon(article, canonicalUrl) {
     };
   }
 
-  const cleanInstance = instanceUrl.replace(/\/$/, "");
+  const cleanInstance = instanceUrl.trim().replace(/\/$/, "");
+  const cleanToken = token.trim();
   const endpoint = `${cleanInstance}/api/v1/statuses`;
 
   // Status message (limit 500 chars)
@@ -23,7 +24,7 @@ export async function syndicateMastodon(article, canonicalUrl) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      "Authorization": `Bearer ${cleanToken}`,
       "User-Agent": "BambooEcoHub-Syndicator/1.0",
     },
     body: JSON.stringify({ status: statusText }),
