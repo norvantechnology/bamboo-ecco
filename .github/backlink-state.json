@@ -7,7 +7,7 @@
   "https://bambooecohub.com/pages/faq": {},
   "https://bambooecohub.com/shop": {
     "devto": "https://dev.to/norvan_technology_d122131/shop-13fj",
-    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/shop/",
     "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
     "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
     "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
@@ -15,7 +15,7 @@
   },
   "https://bambooecohub.com/new-arrivals": {
     "devto": "https://dev.to/norvan_technology_d122131/new-arrivals-4mnh",
-    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/new-arrivals/",
     "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
     "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
     "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
@@ -23,7 +23,7 @@
   },
   "https://bambooecohub.com/best-sellers": {
     "devto": "https://dev.to/norvan_technology_d122131/best-sellers-39b3",
-    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/best-sellers/",
     "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
     "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
     "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
@@ -31,7 +31,7 @@
   },
   "https://bambooecohub.com/journal": {
     "devto": "https://dev.to/norvan_technology_d122131/journal-480c",
-    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/journal/",
     "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
     "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
     "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
@@ -39,7 +39,7 @@
   },
   "https://bambooecohub.com/guides": {
     "devto": "https://dev.to/norvan_technology_d122131/guides-b2i",
-    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/guides/",
     "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
     "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
     "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
