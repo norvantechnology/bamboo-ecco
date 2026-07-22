@@ -8,41 +8,46 @@
   "https://bambooecohub.com/shop": {
     "devto": "https://dev.to/norvan_technology_d122131/shop-13fj",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/shop/",
-    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
-    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
-    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by integration\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}"
+    "blogger": "https://bambooecohub.blogspot.com/2026/07/shop.html",
+    "tumblr": "https://bambooecohub.tumblr.com/post/822849487794044928",
+    "mastodon": "https://mastodon.social/@bambooecohub/116964093173092343",
+    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
+    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
   },
   "https://bambooecohub.com/new-arrivals": {
     "devto": "https://dev.to/norvan_technology_d122131/new-arrivals-4mnh",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/new-arrivals/",
-    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
-    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
-    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by integration\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}"
+    "blogger": "https://bambooecohub.blogspot.com/2026/07/new-arrivals.html",
+    "tumblr": "https://bambooecohub.tumblr.com/post/822849508111171584",
+    "mastodon": "https://mastodon.social/@bambooecohub/116964094416130574",
+    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
+    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
   },
   "https://bambooecohub.com/best-sellers": {
     "devto": "https://dev.to/norvan_technology_d122131/best-sellers-39b3",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/best-sellers/",
-    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
-    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
-    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by integration\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}"
+    "blogger": "https://bambooecohub.blogspot.com/2026/07/best-sellers.html",
+    "tumblr": "https://bambooecohub.tumblr.com/post/822849522151587840",
+    "mastodon": "https://mastodon.social/@bambooecohub/116964095292438485",
+    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
+    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
   },
   "https://bambooecohub.com/journal": {
     "devto": "https://dev.to/norvan_technology_d122131/journal-480c",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/journal/",
-    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
-    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
-    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by integration\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}"
+    "blogger": "https://bambooecohub.blogspot.com/2026/07/journal.html",
+    "tumblr": "https://bambooecohub.tumblr.com/post/822849535904808960",
+    "mastodon": "https://mastodon.social/@bambooecohub/116964096165969539",
+    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
+    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
   },
   "https://bambooecohub.com/guides": {
     "devto": "https://dev.to/norvan_technology_d122131/guides-b2i",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/22/guides/",
-    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
-    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
-    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by integration\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}"
+    "blogger": "https://bambooecohub.blogspot.com/2026/07/guides.html",
+    "tumblr": "https://bambooecohub.tumblr.com/post/822849550103576576",
+    "mastodon": "https://mastodon.social/@bambooecohub/116964097045120544",
+    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
+    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
   }
 }
