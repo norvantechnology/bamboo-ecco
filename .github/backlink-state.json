@@ -11,8 +11,8 @@
     "blogger": "https://bambooecohub.blogspot.com/2026/07/shop.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822849487794044928",
     "mastodon": "https://mastodon.social/@bambooecohub/116964093173092343",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
-    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/shop.md",
+    "telegram": "https://t.me/bambooecohub/2"
   },
   "https://bambooecohub.com/new-arrivals": {
     "devto": "https://dev.to/norvan_technology_d122131/new-arrivals-4mnh",
@@ -20,8 +20,8 @@
     "blogger": "https://bambooecohub.blogspot.com/2026/07/new-arrivals.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822849508111171584",
     "mastodon": "https://mastodon.social/@bambooecohub/116964094416130574",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
-    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/new-arrivals.md",
+    "telegram": "https://t.me/bambooecohub/3"
   },
   "https://bambooecohub.com/best-sellers": {
     "devto": "https://dev.to/norvan_technology_d122131/best-sellers-39b3",
@@ -29,8 +29,8 @@
     "blogger": "https://bambooecohub.blogspot.com/2026/07/best-sellers.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822849522151587840",
     "mastodon": "https://mastodon.social/@bambooecohub/116964095292438485",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
-    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/best-sellers.md",
+    "telegram": "https://t.me/bambooecohub/4"
   },
   "https://bambooecohub.com/journal": {
     "devto": "https://dev.to/norvan_technology_d122131/journal-480c",
@@ -38,8 +38,8 @@
     "blogger": "https://bambooecohub.blogspot.com/2026/07/journal.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822849535904808960",
     "mastodon": "https://mastodon.social/@bambooecohub/116964096165969539",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
-    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/journal.md",
+    "telegram": "https://t.me/bambooecohub/5"
   },
   "https://bambooecohub.com/guides": {
     "devto": "https://dev.to/norvan_technology_d122131/guides-b2i",
@@ -47,7 +47,7 @@
     "blogger": "https://bambooecohub.blogspot.com/2026/07/guides.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822849550103576576",
     "mastodon": "https://mastodon.social/@bambooecohub/116964097045120544",
-    "gh-pages": "error: GitHub REST API returned 403: {\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"403\"}",
-    "telegram": "error: Telegram API returned 400: {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: chat not found\"}"
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/guides.md",
+    "telegram": "https://t.me/bambooecohub/6"
   }
 }
