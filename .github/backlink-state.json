@@ -4,5 +4,40 @@
   "https://bambooecohub.com/product/bamboo-toothbrush-pack": {},
   "https://bambooecohub.com/collections/kitchenware": {},
   "https://bambooecohub.com/journal/sustainable-living-tips": {},
-  "https://bambooecohub.com/pages/faq": {}
+  "https://bambooecohub.com/pages/faq": {},
+  "https://bambooecohub.com/shop": {
+    "devto": "https://dev.to/norvan_technology_d122131/shop-13fj",
+    "wordpress": "error: WordPress.com API returned 403: {\"error\":\"unauthorized\",\"message\":\"User cannot publish posts\"}",
+    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
+    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
+    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}"
+  },
+  "https://bambooecohub.com/new-arrivals": {
+    "devto": "https://dev.to/norvan_technology_d122131/new-arrivals-4mnh",
+    "wordpress": "error: WordPress.com API returned 403: {\"error\":\"unauthorized\",\"message\":\"User cannot publish posts\"}",
+    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
+    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
+    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}"
+  },
+  "https://bambooecohub.com/best-sellers": {
+    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "wordpress": "error: WordPress.com API returned 403: {\"error\":\"unauthorized\",\"message\":\"User cannot publish posts\"}",
+    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
+    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
+    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}"
+  },
+  "https://bambooecohub.com/journal": {
+    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "wordpress": "error: WordPress.com API returned 403: {\"error\":\"unauthorized\",\"message\":\"User cannot publish posts\"}",
+    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
+    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
+    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}"
+  },
+  "https://bambooecohub.com/guides": {
+    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "wordpress": "error: WordPress.com API returned 403: {\"error\":\"unauthorized\",\"message\":\"User cannot publish posts\"}",
+    "blogger": "error: Blogger OAuth token refresh failed (401): {\n  \"error\": \"unauthorized_client\",\n  \"error_description\": \"Unauthorized\"\n}",
+    "tumblr": "error: Tumblr API returned 401: {\"meta\":{\"status\":401,\"msg\":\"Unauthorized\"},\"errors\":[{\"title\":\"Unauthorized\",\"code\":1008,\"detail\":\"Unable to authorize\"}],\"response\":[]}",
+    "mastodon": "error: Mastodon API returned 401: {\"error\":\"The access token is invalid\"}"
+  }
 }
