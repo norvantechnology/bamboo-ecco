@@ -12,6 +12,7 @@ type Props = {
   url: string;
   inStock?: boolean;
   rating?: { avg: number; count: number };
+  reviews?: { _id: string; rating: number; body: string; reviewerName: string; createdAt?: string }[];
   brandName?: string;
   categoryName?: string;
   material?: string;

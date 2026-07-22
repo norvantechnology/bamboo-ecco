@@ -352,7 +352,7 @@ export class StorefrontService {
       this.categoryModel.find({ tenantId: tid }).select('slug updatedAt').lean().exec(),
       this.productModel
         .find({ tenantId: tid, ...catalogStatusFilter() })
-        .select('slug updatedAt')
+        .select('slug images updatedAt')
         .lean()
         .exec(),
       this.contentPageModel
@@ -377,6 +377,10 @@ export class StorefrontService {
       })),
       products: products.map((p) => ({
         slug: p.slug,
+        images: (p as { images?: { url: string; type?: string }[] }).images
+          ?.filter((i) => i.type !== 'lifestyle')
+          ?.map((i) => i.url)
+          ?.slice(0, 5) ?? [],
         updatedAt: (p as { updatedAt?: Date }).updatedAt?.toISOString(),
       })),
       posts: posts.map((p) => ({

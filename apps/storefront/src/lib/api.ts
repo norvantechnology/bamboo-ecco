@@ -326,7 +326,7 @@ export function getStaticPage(slug: string) {
 export interface SitemapUrls {
   staticPages: { slug: string; updatedAt?: string }[];
   categories: { slug: string; updatedAt?: string }[];
-  products: { slug: string; updatedAt?: string }[];
+  products: { slug: string; images?: string[]; updatedAt?: string }[];
   posts: { slug: string; type: "blog" | "guide"; publishedAt?: string; updatedAt?: string }[];
 }
 

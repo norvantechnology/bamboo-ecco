@@ -8,6 +8,7 @@ function entry(
     lastModified?: string | Date;
     changeFrequency?: MetadataRoute.Sitemap[0]["changeFrequency"];
     priority?: number;
+    images?: string[];
   },
 ): MetadataRoute.Sitemap[0] {
   const base = getSiteUrl();
@@ -17,6 +18,7 @@ function entry(
     lastModified: opts?.lastModified ? new Date(opts.lastModified) : new Date(),
     changeFrequency: opts?.changeFrequency ?? "weekly",
     priority: opts?.priority ?? 0.7,
+    ...(opts?.images?.length ? { images: opts.images } : {}),
   };
 }
 
@@ -60,6 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: p.updatedAt,
       changeFrequency: "weekly",
       priority: 0.7,
+      images: p.images,
     }),
   );
 

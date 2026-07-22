@@ -395,6 +395,7 @@ export function productJsonLd(product: {
   url: string;
   inStock?: boolean;
   rating?: { avg: number; count: number };
+  reviews?: { _id: string; rating: number; body: string; reviewerName: string; createdAt?: string }[];
   brandName?: string;
   categoryName?: string;
   material?: string;
@@ -490,19 +491,21 @@ export function productJsonLd(product: {
           }
         : undefined,
     review:
-      product.rating && product.rating.count > 0
-        ? {
+      product.reviews && product.reviews.length > 0
+        ? product.reviews.map((r) => ({
             "@type": "Review",
             reviewRating: {
               "@type": "Rating",
-              ratingValue: product.rating.avg,
+              ratingValue: r.rating,
               bestRating: 5,
             },
             author: {
               "@type": "Person",
-              name: "Verified Customer",
+              name: r.reviewerName || "Verified Customer",
             },
-          }
+            reviewBody: r.body || undefined,
+            ...(r.createdAt ? { datePublished: new Date(r.createdAt).toISOString().slice(0, 10) } : {}),
+          }))
         : undefined,
   };
 }

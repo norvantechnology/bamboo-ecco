@@ -80,6 +80,7 @@ export default async function ProductPage({ params }: Props) {
           product.status !== "out_of_stock" && (product.variants[0]?.stockQty ?? 0) > 0
         }
         rating={product.ratingSummary}
+        reviews={reviews}
         url={productUrl}
         brandName={seo.name || undefined}
         categoryName={category?.name}
