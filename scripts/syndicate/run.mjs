@@ -248,6 +248,8 @@ async function main() {
           status: "❌ Failed",
           detail: err.message,
         });
+      }
+
       // 2-second pause between platform API requests to avoid rate limits
       await new Promise((r) => setTimeout(r, 2000));
     }
