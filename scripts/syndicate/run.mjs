@@ -64,45 +64,68 @@ const PLATFORMS = [
 /**
  * Extract target journal & guides URLs from diff file or current sitemap
  */
+function filterSeoUrls(urlList) {
+  return [...new Set(urlList)].filter((url) => {
+    try {
+      const parsed = new URL(url);
+      const pathname = parsed.pathname.replace(/\/$/, "");
+      if (
+        pathname === "" ||
+        pathname === "/" ||
+        pathname.includes("/cart") ||
+        pathname.includes("/checkout") ||
+        pathname.includes("/account") ||
+        pathname.includes("/admin")
+      ) {
+        return false;
+      }
+      return (
+        pathname.startsWith("/journal") ||
+        pathname.startsWith("/guides") ||
+        pathname.startsWith("/product") ||
+        pathname.startsWith("/collections") ||
+        pathname.startsWith("/category") ||
+        pathname.startsWith("/categories") ||
+        pathname.startsWith("/brand") ||
+        pathname.startsWith("/pages") ||
+        pathname === "/shop" ||
+        pathname === "/new-arrivals" ||
+        pathname === "/best-sellers" ||
+        pathname.startsWith("/artisan-stories")
+      );
+    } catch {
+      return (
+        url.includes("/journal") ||
+        url.includes("/guides") ||
+        url.includes("/product") ||
+        url.includes("/collections") ||
+        url.includes("/pages") ||
+        url.includes("/shop")
+      );
+    }
+  });
+}
+
 function getTargetUrls() {
   let rawUrls = [];
+  let allUrls = [];
 
   if (fs.existsSync(DIFF_FILE_PATH)) {
     try {
       const diffData = JSON.parse(fs.readFileSync(DIFF_FILE_PATH, "utf-8"));
-      rawUrls = FORCE_ALL ? (diffData.all || []) : (diffData.added || []).concat(diffData.changed || []);
+      allUrls = diffData.all || [];
+      rawUrls = FORCE_ALL ? allUrls : (diffData.added || []).concat(diffData.changed || []);
     } catch (err) {
       console.warn(`⚠️ Could not parse diff file at ${DIFF_FILE_PATH}: ${err.message}`);
     }
   }
 
-  // Include all SEO content URLs: /journal/, /guides/, /product/, /collections/, /brand/, /pages/, /artisan-stories
-  const filtered = [...new Set(rawUrls)].filter((url) => {
-    try {
-      const parsed = new URL(url);
-      const pathname = parsed.pathname;
-      if (pathname === "/" || pathname === "" || pathname.includes("/cart") || pathname.includes("/checkout") || pathname.includes("/account")) {
-        return false;
-      }
-      return (
-        pathname.startsWith("/journal/") ||
-        pathname.startsWith("/guides/") ||
-        pathname.startsWith("/product/") ||
-        pathname.startsWith("/collections/") ||
-        pathname.startsWith("/brand/") ||
-        pathname.startsWith("/pages/") ||
-        pathname.startsWith("/artisan-stories")
-      );
-    } catch {
-      return (
-        url.includes("/journal/") ||
-        url.includes("/guides/") ||
-        url.includes("/product/") ||
-        url.includes("/collections/") ||
-        url.includes("/pages/")
-      );
-    }
-  });
+  let filtered = filterSeoUrls(rawUrls);
+
+  // If filtered is empty or FORCE_ALL is set, check allUrls to catch all site content
+  if (filtered.length === 0 && allUrls.length > 0) {
+    filtered = filterSeoUrls(allUrls);
+  }
 
   return filtered;
 }
