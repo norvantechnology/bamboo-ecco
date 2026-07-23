@@ -121,7 +121,7 @@ const SECTION_META: Record<
     manageLink?: string;
     manageLabel?: string;
     countKey: keyof HomepageCounts;
-    fields: { description?: boolean; href?: boolean; linkText?: boolean };
+    fields: { description?: boolean; href?: boolean; linkText?: boolean; limit?: boolean };
   }
 > = {
   collections: {
@@ -129,28 +129,28 @@ const SECTION_META: Record<
     manageLink: "/categories",
     manageLabel: "Categories",
     countKey: "categoriesWithImage",
-    fields: { description: true },
+    fields: { description: true, limit: true },
   },
   lifestyle: {
     name: "In Real Homes",
     manageLink: "/products",
     manageLabel: "Products",
     countKey: "lifestyleProducts",
-    fields: { description: true },
+    fields: { description: true, limit: true },
   },
   newArrivals: {
     name: "New Arrivals",
     manageLink: "/products",
     manageLabel: "Products",
     countKey: "newArrivals",
-    fields: { description: true, href: true },
+    fields: { description: true, href: true, limit: true },
   },
   bestSellers: {
     name: "Best Sellers",
     manageLink: "/products",
     manageLabel: "Products",
     countKey: "featuredProducts",
-    fields: { description: true, href: true },
+    fields: { description: true, href: true, limit: true },
   },
   whyChooseUs: {
     name: "Why Choose Us",
@@ -160,28 +160,28 @@ const SECTION_META: Record<
   customerHomes: {
     name: "Customer Homes",
     countKey: "publishedPhotos",
-    fields: { description: true },
+    fields: { description: true, limit: true },
   },
   reviews: {
     name: "Customer Reviews",
     manageLink: "/reviews",
     manageLabel: "Reviews",
     countKey: "approvedReviews",
-    fields: {},
+    fields: { limit: true },
   },
   journal: {
     name: "Journal",
     manageLink: "/content",
     manageLabel: "Site pages",
     countKey: "journalPosts",
-    fields: { description: true, href: true, linkText: true },
+    fields: { description: true, href: true, linkText: true, limit: true },
   },
   gallery: {
     name: "Instagram Gallery",
     manageLink: "/media",
     manageLabel: "Media",
     countKey: "galleryItems",
-    fields: {},
+    fields: { limit: true },
   },
 };
 
@@ -308,8 +308,19 @@ function SectionFields({
           />
         </Field>
       )}
-      {(fields.href || fields.linkText) && (
-        <FieldRow cols={2}>
+      {(fields.href || fields.linkText || fields.limit) && (
+        <FieldRow cols={fields.limit ? 3 : 2}>
+          {fields.limit && (
+            <Field label="Max items to display">
+              <TextInput
+                type="number"
+                min={1}
+                max={100}
+                value={section.limit ?? 24}
+                onChange={(e) => onChange({ limit: parseInt(e.target.value, 10) || 24 })}
+              />
+            </Field>
+          )}
           {fields.href && (
             <Field label="View all link">
               <TextInput
