@@ -41,6 +41,7 @@ export async function buildPageMetadata({
   noIndex,
   ogType = "website",
   keywords,
+  absoluteTitle = false,
 }: {
   title: string;
   description?: string;
@@ -50,6 +51,8 @@ export async function buildPageMetadata({
   noIndex?: boolean;
   ogType?: "website" | "article";
   keywords?: string;
+  /** When true, bypasses the root layout title template (use for homepage). */
+  absoluteTitle?: boolean;
 }): Promise<Metadata> {
   const seo = await resolveSiteSeo();
   const siteName = seo.name;
@@ -69,7 +72,7 @@ export async function buildPageMetadata({
     : defaultOgImages(imageAlt || siteName || title);
 
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description: desc || undefined,
     keywords: keywords || undefined,
     alternates: canonical ? { canonical } : undefined,

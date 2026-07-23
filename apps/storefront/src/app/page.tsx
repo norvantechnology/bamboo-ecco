@@ -11,12 +11,29 @@ export async function generateMetadata(): Promise<Metadata> {
     resolveSiteSeo(),
   ]);
   const brand = data?.brand;
+
+  // Build full keyword-rich homepage title: "Bamboo Eco-Hub | Handcrafted Bamboo Furniture & Home Decor Online India"
+  // We pass seo.defaultTitle as the title so the root layout template produces "defaultTitle | BrandName"
+  // OR if defaultTitle is empty, fall back to brand tagline
+  const titleSuffix = seo.defaultTitle || brand?.tagline || "";
+  const fullTitle = titleSuffix
+    ? `${seo.name || brand?.name} | ${titleSuffix}`
+    : (seo.name || brand?.name || "Home");
+
+  // Use SEO description from Admin Panel, fall back to tagline
+  const desc = seo.description || brand?.tagline || brand?.hero?.subheading || "";
+
+  // Use the stored og:image or fall back to hero image
+  const ogImage = seo.ogImage || brand?.hero?.imageUrls?.[0] || brand?.hero?.imageUrl;
+
   return buildPageMetadata({
-    title: brand?.name || seo.name || "Home",
-    description: brand?.tagline ?? brand?.hero?.subheading ?? seo.description,
+    title: fullTitle,
+    description: desc,
+    keywords: seo.keywords,
     path: "/",
-    image: brand?.hero?.imageUrls?.[0] || brand?.hero?.imageUrl,
-    imageAlt: brand?.hero?.headline,
+    image: ogImage,
+    imageAlt: brand?.hero?.headline || fullTitle,
+    absoluteTitle: true,
   });
 }
 
