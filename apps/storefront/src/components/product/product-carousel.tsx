@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "./product-card";
@@ -16,17 +16,22 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const updateScrollState = () => {
+  // Mouse Drag state for desktop drag-to-scroll
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftPos, setScrollLeftPos] = useState(0);
+
+  const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
     setCanScrollLeft(scrollLeft > 5);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     const maxScroll = scrollWidth - clientWidth;
     if (maxScroll > 0) {
       setScrollProgress(Math.min(100, Math.max(0, (scrollLeft / maxScroll) * 100)));
     }
-  };
+  }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -38,77 +43,144 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
       el.removeEventListener("scroll", updateScrollState);
       window.removeEventListener("resize", updateScrollState);
     };
-  }, [products]);
+  }, [updateScrollState, products]);
 
-  const scroll = (direction: "left" | "right") => {
+  const scrollBy = (direction: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 20 : 300;
+    const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 20 : 320;
     const scrollAmount = direction === "left" ? -cardWidth * 2 : cardWidth * 2;
     el.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  };
+
+  // Mouse Drag Handlers for Desktop Laptop smooth dragging
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setIsDragging(true);
+    setStartX(e.pageX - el.offsetLeft);
+    setScrollLeftPos(el.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const el = scrollRef.current;
+    if (!el) return;
+    const x = e.pageX - el.offsetLeft;
+    const walk = (x - startX) * 1.5; // Drag speed multiplier
+    el.scrollLeft = scrollLeftPos - walk;
   };
 
   if (!products || products.length === 0) return null;
 
   return (
-    <div className="relative group/carousel">
-      {/* Navigation Arrow Left */}
+    <div className="relative w-full">
+      {/* Top Header Navigation Controls */}
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-xs font-semibold text-muted tracking-wider uppercase">
+          {products.length} Products Available
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => scrollBy("left")}
+            disabled={!canScrollLeft}
+            aria-label="Previous products"
+            className={`flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-foreground shadow-sm transition-all duration-200 ${
+              canScrollLeft
+                ? "hover:bg-gold hover:text-white hover:border-gold hover:scale-105 active:scale-95 cursor-pointer"
+                : "opacity-30 cursor-not-allowed"
+            }`}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => scrollBy("right")}
+            disabled={!canScrollRight}
+            aria-label="Next products"
+            className={`flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-foreground shadow-sm transition-all duration-200 ${
+              canScrollRight
+                ? "hover:bg-gold hover:text-white hover:border-gold hover:scale-105 active:scale-95 cursor-pointer"
+                : "opacity-30 cursor-not-allowed"
+            }`}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Floating Side Arrows for quick laptop clicking */}
       <button
-        onClick={() => scroll("left")}
+        onClick={() => scrollBy("left")}
         disabled={!canScrollLeft}
         aria-label="Scroll Left"
-        className={`absolute -left-3 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-border/80 bg-surface/90 text-foreground shadow-warm backdrop-blur-md transition-all duration-300 ${
+        className={`absolute -left-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full border border-border/80 bg-surface/95 text-foreground shadow-lg backdrop-blur-md transition-all duration-200 ${
           canScrollLeft
-            ? "opacity-90 sm:opacity-0 group-hover/carousel:opacity-100 hover:bg-accent hover:text-white hover:scale-110 hover:shadow-warm-lg"
-            : "opacity-0 cursor-not-allowed"
+            ? "hover:bg-gold hover:text-white hover:scale-110 active:scale-95 cursor-pointer"
+            : "opacity-0 pointer-events-none"
         }`}
       >
-        <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+        <ChevronLeft className="h-5 w-5" />
       </button>
 
-      {/* Navigation Arrow Right */}
       <button
-        onClick={() => scroll("right")}
+        onClick={() => scrollBy("right")}
         disabled={!canScrollRight}
         aria-label="Scroll Right"
-        className={`absolute -right-3 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-border/80 bg-surface/90 text-foreground shadow-warm backdrop-blur-md transition-all duration-300 ${
+        className={`absolute -right-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full border border-border/80 bg-surface/95 text-foreground shadow-lg backdrop-blur-md transition-all duration-200 ${
           canScrollRight
-            ? "opacity-90 sm:opacity-0 group-hover/carousel:opacity-100 hover:bg-accent hover:text-white hover:scale-110 hover:shadow-warm-lg"
-            : "opacity-0 cursor-not-allowed"
+            ? "hover:bg-gold hover:text-white hover:scale-110 active:scale-95 cursor-pointer"
+            : "opacity-0 pointer-events-none"
         }`}
       >
-        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+        <ChevronRight className="h-5 w-5" />
       </button>
 
-      {/* Horizontal Carousel Track */}
+      {/* Hardware-Accelerated Smooth Carousel Track */}
       <div
         ref={scrollRef}
-        className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-3 px-1 scroll-smooth"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        className={`flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-2 px-1 ${
+          isDragging ? "cursor-grabbing select-none" : "cursor-grab"
+        }`}
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          WebkitOverflowScrolling: "touch",
+        }}
       >
         {products.map((product) => (
           <div
             key={product._id}
-            className="w-[240px] sm:w-[270px] md:w-[290px] lg:w-[310px] shrink-0 snap-start transition-transform duration-300"
+            className="w-[240px] sm:w-[270px] md:w-[290px] lg:w-[310px] shrink-0 snap-start"
           >
-            <ProductCard product={product} reveal />
+            {/* Note: reveal=false inside carousels for 60fps smooth scrolling */}
+            <ProductCard product={product} reveal={false} />
           </div>
         ))}
       </div>
 
-      {/* Progress Track Bar */}
+      {/* Smooth Progress Indicator Bar */}
       {products.length > 3 && (
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <div className="h-1.5 w-32 sm:w-48 overflow-hidden rounded-full bg-border/40">
+        <div className="mt-3 flex items-center justify-center">
+          <div className="h-1.5 w-40 sm:w-56 overflow-hidden rounded-full bg-border/40">
             <motion.div
-              className="h-full bg-gradient-to-r from-accent to-primary rounded-full"
+              className="h-full bg-gradient-to-r from-gold to-accent rounded-full"
               style={{ width: `${Math.max(15, scrollProgress)}%` }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              transition={{ type: "spring", stiffness: 400, damping: 35 }}
             />
           </div>
-          <span className="text-[11px] font-semibold text-muted tracking-wider uppercase">
-            {products.length} Items
-          </span>
         </div>
       )}
     </div>
