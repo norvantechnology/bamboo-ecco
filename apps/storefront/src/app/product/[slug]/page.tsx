@@ -86,6 +86,7 @@ export default async function ProductPage({ params }: Props) {
         brandName={seo.name || undefined}
         categoryName={category?.name}
         material={product.specs?.material}
+        videoUrl={product.videoUrl}
       />
       <BreadcrumbJsonLd items={crumbItems} />
       {product.faqs && product.faqs.length > 0 && (

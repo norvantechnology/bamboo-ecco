@@ -119,11 +119,21 @@ export async function buildProductMetadata(product: {
   const seo = await resolveSiteSeo();
   const { optimizeImageUrl } = await import("./cloudinary");
 
-  const title = (product.meta?.title || product.title).trim();
+  const rawTitle = (product.meta?.title || product.title).trim();
+  const variant = product.variants?.[0];
+  const priceFormatted = variant?.price
+    ? `${variant.currency === "INR" || !variant.currency ? "₹" : variant.currency + " "}${variant.price}`
+    : "";
+
+  // CTR-Optimized Title: "Product Name | ₹Price | Free Shipping India"
+  const title = priceFormatted
+    ? `${rawTitle} | ${priceFormatted} | Free Shipping India`
+    : `${rawTitle} | ${seo.name || "Bamboo Eco-Hub"}`;
+
+  // CTR-Optimized Description
   const description = (
     product.meta?.description ||
-    product.description ||
-    `Shop ${product.title} — handcrafted bamboo home decor online in India.`
+    `Buy ${rawTitle} online at ${priceFormatted || "best price"} on ${seo.name || "Bamboo Eco-Hub"}. 100% handcrafted artisan bamboo decor with free shipping & 30-day returns across India.`
   )
     .replace(/\s+/g, " ")
     .trim()
@@ -147,7 +157,6 @@ export async function buildProductMetadata(product: {
     : undefined;
   const imageAlt = primary && "alt" in primary && primary.alt ? primary.alt : product.title;
 
-  const variant = product.variants?.[0];
   const inStock =
     product.status !== "out_of_stock" && (variant?.stockQty == null || variant.stockQty > 0);
   const keywords =
@@ -411,6 +420,7 @@ export function productJsonLd(product: {
   brandName?: string;
   categoryName?: string;
   material?: string;
+  videoUrl?: string;
 }) {
   const images = productImageJsonLd(product.images);
   return {
@@ -427,6 +437,18 @@ export function productJsonLd(product: {
       "@type": "Brand",
       name: product.brandName || "Bamboo Eco-Hub",
     },
+    ...(product.videoUrl
+      ? {
+          subjectOf: {
+            "@type": "VideoObject",
+            name: `${product.name} Showcase Video`,
+            description: product.description || product.name,
+            thumbnailUrl: images[0] || undefined,
+            contentUrl: product.videoUrl,
+            uploadDate: new Date().toISOString().slice(0, 10),
+          },
+        }
+      : {}),
     offers: product.price
       ? {
           "@type": "Offer",

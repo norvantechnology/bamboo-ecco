@@ -16,6 +16,7 @@ type Props = {
   brandName?: string;
   categoryName?: string;
   material?: string;
+  videoUrl?: string;
 };
 
 export function ProductJsonLd(props: Props) {
