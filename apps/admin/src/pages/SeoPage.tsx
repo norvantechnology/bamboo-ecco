@@ -130,6 +130,7 @@ function charColor(len: number, warn: number, max: number) {
 const EMPTY_SEO: TenantSeoSettings = {
   description: "",
   defaultTitle: "",
+  keywords: "",
   locale: "en_IN",
   themeColor: "#4B3621",
   backgroundColor: "#FAF8F3",
@@ -493,6 +494,16 @@ export function SeoPage() {
             placeholder="Shop handcrafted bamboo lamps, lights and sustainable home decor online in India. Free shipping."
             multiline
             rows={3}
+          />
+
+          <CharInput
+            label="Site-wide meta keywords"
+            hint="Comma-separated target keywords for search indexing."
+            value={seo.keywords || ""}
+            onChange={(v) => setSeo({ ...seo, keywords: v })}
+            warn={150}
+            max={255}
+            placeholder="bamboo furniture, bamboo lamps, eco-friendly home decor, handcrafted bamboo India"
           />
 
           <SerpPreview

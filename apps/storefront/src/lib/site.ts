@@ -9,6 +9,7 @@ export type SiteSeo = {
   name: string;
   description: string;
   defaultTitle: string;
+  keywords?: string;
   locale: string;
   themeColor: string;
   backgroundColor: string;
@@ -48,6 +49,7 @@ export async function resolveSiteSeo(): Promise<SiteSeo> {
     name: layout?.brand?.name?.trim() || "",
     description: seo?.description?.trim() || layout?.brand?.tagline?.trim() || "",
     defaultTitle: seo?.defaultTitle?.trim() || "",
+    keywords: (seo as { keywords?: string })?.keywords?.trim() || "",
     locale: seo?.locale?.trim() || "en_IN",
     themeColor: seo?.themeColor?.trim() || "",
     backgroundColor: seo?.backgroundColor?.trim() || "",

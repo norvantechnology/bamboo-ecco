@@ -234,6 +234,7 @@ export function rootMetadataFromSeo(seo: {
   name: string;
   description: string;
   defaultTitle: string;
+  keywords?: string;
   locale: string;
   themeColor: string;
   backgroundColor: string;
@@ -244,23 +245,26 @@ export function rootMetadataFromSeo(seo: {
   pinterestVerification?: string;
 }): Metadata {
   const siteUrl = getSiteUrl();
-  const defaultTitle =
+  const brandName = seo.name;
+  const fullTitle =
     seo.name && seo.defaultTitle
       ? `${seo.name} | ${seo.defaultTitle}`
-      : seo.name || seo.defaultTitle || undefined;
+      : seo.name || seo.defaultTitle || "";
 
   const displayImage = seo.ogImage || BRAND_ASSETS.icon;
 
   return {
     metadataBase: new URL(siteUrl),
-    title: seo.name
-      ? { default: defaultTitle || seo.name, template: `%s | ${seo.name}` }
-      : defaultTitle || undefined,
+    title: {
+      default: fullTitle,
+      template: brandName ? `%s | ${brandName}` : "%s",
+    },
     description: seo.description || undefined,
-    applicationName: seo.name || undefined,
-    authors: seo.name ? [{ name: seo.name }] : undefined,
-    creator: seo.name || undefined,
-    publisher: seo.name || undefined,
+    keywords: seo.keywords || undefined,
+    applicationName: brandName || undefined,
+    authors: brandName ? [{ name: brandName }] : undefined,
+    creator: brandName || undefined,
+    publisher: brandName || undefined,
     formatDetection: { email: false, address: false, telephone: false },
     icons: {
       icon: [{ url: BRAND_ASSETS.icon, type: "image/svg+xml" }],
@@ -270,8 +274,8 @@ export function rootMetadataFromSeo(seo: {
     openGraph: {
       type: "website",
       locale: seo.locale || undefined,
-      siteName: seo.name || undefined,
-      title: seo.name || undefined,
+      siteName: brandName || undefined,
+      title: fullTitle || undefined,
       description: seo.description || undefined,
       url: siteUrl,
       images: seo.ogImage
@@ -280,14 +284,14 @@ export function rootMetadataFromSeo(seo: {
               url: seo.ogImage,
               width: 1200,
               height: 630,
-              alt: seo.name || "Bamboo Eco-Hub",
+              alt: fullTitle || brandName || "",
             },
           ]
-        : defaultOgImages(seo.name || "Bamboo Eco-Hub"),
+        : defaultOgImages(fullTitle || brandName || ""),
     },
     twitter: {
       card: seo.ogImage ? "summary_large_image" : "summary",
-      title: seo.name || undefined,
+      title: fullTitle || undefined,
       description: seo.description || undefined,
       images: [displayImage],
       ...(seo.twitterHandle ? { site: `@${seo.twitterHandle}`, creator: `@${seo.twitterHandle}` } : {}),

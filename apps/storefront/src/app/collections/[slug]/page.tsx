@@ -22,12 +22,15 @@ const VALID_SORTS = ["newest", "price-asc", "price-desc", "rating"] as const;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = await getCategory(slug).catch(() => null);
-  if (!category) return { title: "Category" };
+  if (!category) return { title: "Category Not Found" };
+  const title = category.meta?.title || category.name;
+  const description = category.meta?.description || undefined;
+  const keywords = category.meta?.keywords || undefined;
+
   return buildPageMetadata({
-    title: category.meta?.title || category.name,
-    description:
-      category.meta?.description ||
-      `Shop ${category.name} — handcrafted bamboo lamps, lights & home decor online in India`,
+    title,
+    description,
+    keywords,
     path: `/collections/${slug}`,
     image: category.imageUrl,
     imageAlt: category.name,

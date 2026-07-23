@@ -1,6 +1,7 @@
 export type TenantSeoConfig = {
   description: string;
   defaultTitle: string;
+  keywords?: string;
   locale: string;
   themeColor: string;
   backgroundColor: string;
@@ -26,6 +27,7 @@ export function resolveTenantSeo(
   return {
     description: stored?.description?.trim() || '',
     defaultTitle: stored?.defaultTitle?.trim() || '',
+    keywords: stored?.keywords?.trim() || '',
     locale: stored?.locale?.trim() || 'en_IN',
     themeColor: stored?.themeColor?.trim() || theme?.primary?.trim() || '',
     backgroundColor: stored?.backgroundColor?.trim() || theme?.background?.trim() || '',

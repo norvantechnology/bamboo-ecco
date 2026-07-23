@@ -568,6 +568,7 @@ export async function uploadMedia(
 export interface TenantSeoSettings {
   description: string;
   defaultTitle: string;
+  keywords?: string;
   locale: string;
   themeColor: string;
   backgroundColor: string;

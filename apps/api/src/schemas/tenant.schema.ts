@@ -149,6 +149,10 @@ export class TenantSeo {
   @Prop({ default: '' })
   defaultTitle: string;
 
+  /** Site-wide meta keywords */
+  @Prop({ default: '' })
+  keywords: string;
+
   /** Open Graph / HTML locale, e.g. en_IN */
   @Prop({ default: 'en_IN' })
   locale: string;
