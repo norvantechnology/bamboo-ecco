@@ -187,7 +187,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                 <motion.div
                   key={item.title}
                   variants={cardVariants}
-                  className="group relative flex flex-col items-center text-center rounded-2xl border border-border/60 bg-[#FAF8F5]/85 p-6 sm:p-8 shadow-warm hover:shadow-warm-lg transition-all duration-300 hover:-translate-y-1.5"
+                  className="group relative flex flex-col items-center text-center rounded-2xl border border-border/60 dark:border-border bg-surface/85 dark:bg-surface-elevated/90 p-6 sm:p-8 shadow-warm hover:shadow-warm-lg transition-all duration-300 hover:-translate-y-1.5"
                 >
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4A5D3E] to-[#C9A24B] shadow-sm transition-transform duration-300 group-hover:scale-110">
                     <BrandIcon

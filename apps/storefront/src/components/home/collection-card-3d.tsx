@@ -19,7 +19,7 @@ export function CollectionCard3D({ category, index = 0 }: CollectionCard3DProps)
           aria-label={category.name}
           className="group flex h-full flex-col overflow-hidden rounded-xl bg-surface shadow-warm transition-shadow duration-500 hover:shadow-warm-lg sm:rounded-2xl"
         >
-          <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e2d8]">
+          <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e2d8] dark:bg-[#22201d]">
             {category.imageUrl ? (
               <Image
                 src={category.imageUrl}

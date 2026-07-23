@@ -142,7 +142,7 @@ export function ProductCard({ product, className, reveal = false }: ProductCardP
 
         <Link
           href={`/product/${product.slug}`}
-          className="relative aspect-[3/4] overflow-hidden bg-[#f0ebe3]"
+          className="relative aspect-[3/4] overflow-hidden bg-[#f0ebe3] dark:bg-[#22201d]"
         >
           {displayImage && (
             <Image

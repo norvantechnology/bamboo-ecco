@@ -31,24 +31,24 @@
 }
 
 .dark {
-  --background: #171614;
-  --foreground: #edeae4;
-  --surface: #1f1e1b;
-  --surface-elevated: #282724;
-  --muted: #b0a99e;
-  --primary: #edeae4;
-  --secondary: #8fa882;
-  --accent: #8fa882;
-  --accent-warm: #c4a574;
-  --gold: #c4a574;
-  --border: #2e2c28;
-  --ring: #8fa882;
-  --footer-bg: #121110;
-  --footer-fg: #edeae4;
-  --footer-muted: #7a746b;
-  --footer-border: #252320;
-  --shadow-warm: 0 4px 24px rgba(0, 0, 0, 0.25);
-  --shadow-warm-lg: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --background: #131210;
+  --foreground: #f5f2eb;
+  --surface: #1d1b18;
+  --surface-elevated: #262420;
+  --muted: #bbb4a8;
+  --primary: #f5f2eb;
+  --secondary: #9ec094;
+  --accent: #9ec094;
+  --accent-warm: #dfba78;
+  --gold: #dfba78;
+  --border: #2e2b26;
+  --ring: #9ec094;
+  --footer-bg: #0e0d0c;
+  --footer-fg: #f5f2eb;
+  --footer-muted: #8e887d;
+  --footer-border: #22201d;
+  --shadow-warm: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-warm-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
@@ -1230,4 +1230,45 @@
     transform: none !important;
   }
 }
+
+/* ── Dark Mode Legibility & Contrast Overrides ── */
+.dark .welcome-popup-panel {
+  background-color: #262420 !important;
+  border: 1px solid #3d3932 !important;
+  color: #f5f2eb !important;
+}
+
+.dark .welcome-popup-panel h1,
+.dark .welcome-popup-panel h2,
+.dark .welcome-popup-panel h3,
+.dark .welcome-popup-panel h4,
+.dark .welcome-popup-panel h5,
+.dark .welcome-popup-panel p,
+.dark .welcome-popup-panel span,
+.dark .welcome-popup-panel div {
+  color: #f5f2eb !important;
+}
+
+.dark .welcome-popup-panel a {
+  color: #9ec094 !important;
+}
+
+.dark .welcome-popup-panel button,
+.dark .welcome-popup-panel input[type="submit"],
+.dark .welcome-popup-panel [data-close-popup] {
+  background-color: #5c6b52 !important;
+  color: #ffffff !important;
+}
+
+.dark .welcome-popup-panel button:hover {
+  background-color: #6e7f62 !important;
+}
+
+/* High contrast for green text elements in dark mode */
+.dark .text-[#1b4d1b],
+.dark .text-[#4A5D3E],
+.dark .text-[#2e4026] {
+  color: #9ec094 !important;
+}
+
 
