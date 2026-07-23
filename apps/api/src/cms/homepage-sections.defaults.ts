@@ -41,7 +41,7 @@ export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionsMap = {
     title: 'New Bamboo Decor & Furniture',
     description: 'Fresh handcrafted bamboo pieces — just added to our online store',
     href: '/new-arrivals',
-    limit: 4,
+    limit: 24,
   },
   bestSellers: {
     enabled: true,
@@ -49,7 +49,7 @@ export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionsMap = {
     title: 'Best-Selling Bamboo Home Decor',
     description: 'Our most-loved sustainable furniture and decor, chosen by customers across India',
     href: '/best-sellers',
-    limit: 8,
+    limit: 24,
   },
   whyChooseUs: {
     enabled: true,
