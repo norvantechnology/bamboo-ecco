@@ -46,12 +46,12 @@ export class ProductsController {
 
   @Get('new-arrivals')
   newArrivals(@CurrentTenantId() tenantId: string, @Query('limit') limit?: string) {
-    return this.productsService.findNewArrivals(tenantId, limit ? parseInt(limit, 10) : 8);
+    return this.productsService.findNewArrivals(tenantId, limit ? parseInt(limit, 10) : 50);
   }
 
   @Get('featured')
   featured(@CurrentTenantId() tenantId: string, @Query('limit') limit?: string) {
-    return this.productsService.findFeatured(tenantId, limit ? parseInt(limit, 10) : 8);
+    return this.productsService.findFeatured(tenantId, limit ? parseInt(limit, 10) : 50);
   }
 
   @Get('category-slug/:slug')

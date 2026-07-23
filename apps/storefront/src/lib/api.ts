@@ -271,12 +271,12 @@ export function getCategory(slug: string) {
   return fetchApi<Category>(`/categories/${slug}`);
 }
 
-export function getFeaturedProducts() {
-  return fetchApi<Product[]>("/products/featured");
+export function getFeaturedProducts(limit = 100) {
+  return fetchApi<Product[]>(`/products/featured?limit=${limit}`);
 }
 
-export function getNewArrivals() {
-  return fetchApi<Product[]>("/products/new-arrivals");
+export function getNewArrivals(limit = 100) {
+  return fetchApi<Product[]>(`/products/new-arrivals?limit=${limit}`);
 }
 
 export function getProductsByCategorySlug(
