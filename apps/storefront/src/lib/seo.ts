@@ -388,6 +388,72 @@ export function websiteJsonLd(brand: { name?: string; description?: string }) {
   };
 }
 
+/**
+ * OnlineStore + LocalBusiness JSON-LD for Google Business Profile.
+ * Works without a physical address — uses areaServed: India.
+ * Helps Google Knowledge Panel, GBP indexing, and Shopping rich results.
+ */
+export function localBusinessJsonLd(brand: {
+  name?: string;
+  tagline?: string;
+  email?: string;
+  phone?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
+}) {
+  const siteUrl = getSiteUrl();
+  const sameAs = brand.socialLinks
+    ? Object.values(brand.socialLinks).filter((url) => url && url.startsWith("http"))
+    : [];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": ["LocalBusiness", "OnlineStore"],
+    name: brand.name || "Bamboo Eco-Hub",
+    description: brand.tagline || "Handcrafted bamboo furniture, lamps & eco-friendly home decor. Pan-India delivery.",
+    url: siteUrl,
+    logo: brandAssetUrl("icon", siteUrl),
+    image: brandAssetUrl("icon", siteUrl),
+    email: brand.email || "support@bambooecohub.com",
+    ...(brand.phone ? { telephone: brand.phone } : {}),
+    priceRange: "₹₹",
+    currenciesAccepted: "INR",
+    paymentAccepted: "Cash, Credit Card, UPI, Net Banking",
+    areaServed: {
+      "@type": "Country",
+      name: "India",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "IN",
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "00:00",
+        closes: "23:59",
+      },
+    ],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Handcrafted Bamboo Products",
+      itemListElement: [
+        { "@type": "Offer", itemOffered: { "@type": "Product", name: "Bamboo Pendant Lights" } },
+        { "@type": "Offer", itemOffered: { "@type": "Product", name: "Bamboo Table Lamps" } },
+        { "@type": "Offer", itemOffered: { "@type": "Product", name: "Bamboo Home Decor" } },
+        { "@type": "Offer", itemOffered: { "@type": "Product", name: "Bamboo Furniture" } },
+      ],
+    },
+    ...(sameAs.length > 0 ? { sameAs } : {}),
+  };
+}
+
 export function articleJsonLd(post: {
   title: string;
   slug: string;

@@ -1,5 +1,5 @@
 import { JsonLd } from "./json-ld";
-import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import { organizationJsonLd, websiteJsonLd, localBusinessJsonLd } from "@/lib/seo";
 
 type Props = {
   name?: string;
@@ -15,12 +15,14 @@ type Props = {
   includeWebsite?: boolean;
 };
 
-/** Site-wide Organization schema from DB brand fields (no static fallbacks). */
+/** Site-wide Organization + OnlineStore schema from DB brand fields (no static fallbacks). */
 export function OrganizationJsonLd({ name, tagline, socialLinks, includeWebsite }: Props) {
   if (!name && !tagline) return null;
   const org = organizationJsonLd({ name, tagline, socialLinks });
+  const local = localBusinessJsonLd({ name, tagline, socialLinks });
   if (includeWebsite) {
-    return <JsonLd data={[org, websiteJsonLd({ name, description: tagline })]} />;
+    return <JsonLd data={[org, local, websiteJsonLd({ name, description: tagline })]} />;
   }
-  return <JsonLd data={org} />;
+  return <JsonLd data={[org, local]} />;
 }
+
