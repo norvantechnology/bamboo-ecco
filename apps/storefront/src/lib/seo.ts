@@ -89,7 +89,19 @@ export async function buildPageMetadata({
       images: displayImage ? [displayImage] : [BRAND_ASSETS.icon],
       ...(seo.twitterHandle ? { site: `@${seo.twitterHandle}`, creator: `@${seo.twitterHandle}` } : {}),
     },
-    ...(noIndex ? { robots: { index: false, follow: false } } : {}),
+    robots: noIndex
+      ? { index: false, follow: false }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+            "max-video-preview": -1,
+          },
+        },
   };
 }
 
