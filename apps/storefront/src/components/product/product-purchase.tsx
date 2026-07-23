@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Truck, RotateCcw, ShieldCheck } from "lucide-react";
 import { AddToCartButton } from "./add-to-cart-button";
 import { formatPrice, formatVariantSubtitle, cn } from "@/lib/utils";
 import type { Product } from "@/lib/api";
@@ -109,6 +109,22 @@ export function ProductPurchase({ product, defaultImage }: Props) {
           quantity={quantity}
           disabled={!inStock}
         />
+      </div>
+
+      {/* Conversion-Focused Trust Signals */}
+      <div className="mt-6 rounded-xl border border-border/80 bg-surface/60 p-4 text-xs sm:text-sm space-y-2.5">
+        <div className="flex items-center gap-2.5 text-muted">
+          <Truck className="h-4 w-4 shrink-0 text-secondary" />
+          <span><strong>Free Delivery:</strong> All India shipping within 3–7 business days</span>
+        </div>
+        <div className="flex items-center gap-2.5 text-muted">
+          <RotateCcw className="h-4 w-4 shrink-0 text-secondary" />
+          <span><strong>30 Days Return:</strong> Easy hassle-free returns & replacement</span>
+        </div>
+        <div className="flex items-center gap-2.5 text-muted">
+          <ShieldCheck className="h-4 w-4 shrink-0 text-secondary" />
+          <span><strong>100% Handcrafted:</strong> Authentic Indian artisan bamboo products</span>
+        </div>
       </div>
     </div>
   );

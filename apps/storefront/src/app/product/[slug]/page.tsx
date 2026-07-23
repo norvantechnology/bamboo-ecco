@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { ProductFaqs } from "@/components/product/product-faqs";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
+import { FAQJsonLd } from "@/components/seo/faq-json-ld";
 import { absoluteUrl, buildProductMetadata, noIndexMetadata } from "@/lib/seo";
 
 interface Props {
@@ -87,6 +88,9 @@ export default async function ProductPage({ params }: Props) {
         material={product.specs?.material}
       />
       <BreadcrumbJsonLd items={crumbItems} />
+      {product.faqs && product.faqs.length > 0 && (
+        <FAQJsonLd items={product.faqs.map((f) => ({ question: f.question, answer: f.answer }))} />
+      )}
 
       <nav className="mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[13px] text-muted sm:mb-6 sm:gap-x-2 sm:text-sm">
         <Link href="/" className="-mx-1 rounded px-1 py-1 hover:text-foreground active:text-foreground">Home</Link>
