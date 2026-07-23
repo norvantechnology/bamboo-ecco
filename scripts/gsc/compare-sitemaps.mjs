@@ -213,12 +213,14 @@ async function main() {
     }
   }
 
-  const all = [...new Set([...added, ...changed])];
+  const newOrChanged = [...new Set([...added, ...changed])];
+  const allCurrent = Array.from(currentMap.keys());
 
   console.log(`\n📊  Diff results:`);
-  console.log(`    ✅  New URLs:     ${added.length}`);
-  console.log(`    🔄  Updated URLs: ${changed.length}`);
-  console.log(`    📦  Total to submit: ${all.length}`);
+  console.log(`    ✅  New URLs:           ${added.length}`);
+  console.log(`    🔄  Updated URLs:       ${changed.length}`);
+  console.log(`    📦  New/Changed URLs:   ${newOrChanged.length}`);
+  console.log(`    🌐  Total Sitemap URLs: ${allCurrent.length}`);
 
   if (added.length > 0) {
     console.log("\n    🆕  New URLs:");
@@ -229,7 +231,13 @@ async function main() {
     changed.forEach((u) => console.log(`        ${u}`));
   }
 
-  const result = { added, changed, all, totalCurrent: currentMap.size };
+  const result = {
+    added,
+    changed,
+    newOrChanged,
+    all: allCurrent,
+    totalCurrent: currentMap.size,
+  };
   fs.writeFileSync(DIFF_RESULT_PATH, JSON.stringify(result, null, 2), "utf-8");
   console.log(`\n💾  Diff result saved → ${DIFF_RESULT_PATH}`);
 }

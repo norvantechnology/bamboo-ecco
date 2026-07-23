@@ -111,13 +111,22 @@ export async function fetchContentFromApi(apiUrl, targetUrl, siteUrl = "") {
         let bodyHtml = data.body || data.description || "";
 
         if (pathname.startsWith("/product/")) {
-          title = `Product: ${title}`;
-          const priceText = data.price ? `<p><strong>Price:</strong> $${data.price}</p>` : "";
+          const rawTitle = data.title || data.name || slug;
+          title = `${rawTitle}`;
+          const variant = data.variants?.[0];
+          const price = variant?.price ?? data.price;
+          const currency = variant?.currency || "INR";
+          const priceFormatted = price ? `${currency === "INR" ? "₹" : currency + " "}${price}` : "";
+          const priceText = priceFormatted ? `<p><strong>Price:</strong> ${priceFormatted}</p>` : "";
           const descText = data.description ? `<p>${data.description}</p>` : "";
-          bodyHtml = `${descText}${priceText}`;
+          const primaryImg = data.images?.[0]?.url;
+          const imgText = primaryImg ? `<p><img src="${primaryImg}" alt="${rawTitle}" /></p>` : "";
+          bodyHtml = `${imgText}${descText}${priceText}<p>Explore <strong>${rawTitle}</strong> on BambooEcoHub — handcrafted sustainable bamboo lifestyle decor.</p>`;
         } else if (pathname.startsWith("/collections/")) {
-          title = `Collection: ${title}`;
-          bodyHtml = `<p>Explore our ${data.name || slug} collection on BambooEcoHub.</p><p>${data.description || ""}</p>`;
+          const rawTitle = data.name || data.title || slug;
+          title = `Collection: ${rawTitle}`;
+          const imgText = data.imageUrl ? `<p><img src="${data.imageUrl}" alt="${rawTitle}" /></p>` : "";
+          bodyHtml = `${imgText}<p>Explore our <strong>${rawTitle}</strong> collection on BambooEcoHub.</p><p>${data.description || ""}</p>`;
         }
 
         const bodyMarkdown = await htmlToMarkdown(bodyHtml);

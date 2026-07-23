@@ -9,3 +9,5 @@ dist
 .DS_Store
 coverage
 .vercel
+scripts/gsc/diff-result.json
+scripts/gsc/current-sitemap-snapshot.xml
