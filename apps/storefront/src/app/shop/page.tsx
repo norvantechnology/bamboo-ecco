@@ -3,7 +3,8 @@ import { Suspense } from "react";
 import { CategoryToolbar } from "@/components/category/category-toolbar";
 import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import { getShopProducts } from "@/lib/api";
-import { buildPageMetadata } from "@/lib/seo";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
+import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
 
 const VALID_SORTS = ["newest", "price-asc", "price-desc", "rating"] as const;
 
@@ -34,6 +35,12 @@ export default async function ShopPage({ searchParams }: Props) {
 
   return (
     <div className="container-page py-5 sm:py-14">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: absoluteUrl("/") },
+          { name: "Shop", url: absoluteUrl("/shop") },
+        ]}
+      />
       <h1 className="font-display text-2xl text-primary sm:text-4xl">
         Shop Bamboo Furniture &amp; Home Decor
       </h1>
