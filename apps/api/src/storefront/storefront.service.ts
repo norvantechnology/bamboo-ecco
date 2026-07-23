@@ -80,7 +80,7 @@ export class StorefrontService {
         ? this.productModel
             .find({ tenantId: tid, ...catalogStatusFilter(), isFeatured: true })
             .sort({ 'ratingSummary.avg': -1 })
-            .limit(sections.bestSellers.limit ?? 8)
+            .limit(sections.bestSellers.limit ?? 24)
             .lean()
             .exec()
         : Promise.resolve([]),
@@ -127,7 +127,7 @@ export class StorefrontService {
         ? this.productModel
             .find({ tenantId: tid, ...catalogStatusFilter(), isNewArrival: true })
             .sort({ createdAt: -1 })
-            .limit(sections.newArrivals.limit ?? 4)
+            .limit(sections.newArrivals.limit ?? 24)
             .lean()
             .exec()
         : Promise.resolve([]),

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ProductCard } from "@/components/product/product-card";
+import { ProductCarousel } from "@/components/product/product-carousel";
 import { BrandIcon } from "@/components/ui/brand-icon";
 import { StarRating } from "@/components/ui/star-rating";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -129,10 +129,8 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             description={sections.newArrivals.description}
             href={sections.newArrivals.href}
           />
-          <div data-product-grid className="product-grid mt-4 sm:mt-8">
-            {newArrivals.map((product) => (
-              <ProductCard key={product._id} product={product} reveal />
-            ))}
+          <div className="mt-4 sm:mt-8">
+            <ProductCarousel products={newArrivals} />
           </div>
         </section>
       )}
@@ -146,10 +144,8 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
               description={sections.bestSellers.description}
               href={sections.bestSellers.href}
             />
-            <div data-product-grid className="product-grid mt-4 sm:mt-8">
-              {bestSellers.map((product) => (
-                <ProductCard key={product._id} product={product} reveal />
-              ))}
+            <div className="mt-4 sm:mt-8">
+              <ProductCarousel products={bestSellers} />
             </div>
           </div>
         </section>

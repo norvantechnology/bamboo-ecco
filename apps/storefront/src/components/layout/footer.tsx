@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, ArrowUpRight } from "lucide-react";
+import { Mail, ArrowUpRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import type { Category, FooterLinks } from "@/lib/api";
 import { FooterColumn } from "./footer-column";
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -18,39 +18,39 @@ const shopQuickLinks = [
 ];
 
 const exploreAppLinks = [
-  { href: "/journal", label: "Journal" },
-  { href: "/guides", label: "Guides" },
+  { href: "/journal", label: "Journal & Stories" },
+  { href: "/guides", label: "Buying Guides" },
+  { href: "/artisan-stories", label: "Artisan Crafts" },
 ];
 
 const accountLinks = [
-  { href: "/account", label: "My account" },
-  { href: "/account/wishlist", label: "Wishlist" },
-  { href: "/login", label: "Sign in" },
+  { href: "/account", label: "My Account" },
+  { href: "/account/wishlist", label: "Saved Wishlist" },
+  { href: "/account/track", label: "Track Your Order" },
+  { href: "/login", label: "Sign In" },
 ];
-
-const helpAppLinks = [{ href: "/account/track", label: "Track your order" }];
 
 const defaultFooterLinks: FooterLinks = {
   explore: [
-    { slug: "about", title: "About us", href: "/pages/about" },
+    { slug: "about", title: "About Us", href: "/pages/about" },
     { slug: "sustainability", title: "Sustainability", href: "/pages/sustainability" },
-    { slug: "contact", title: "Contact", href: "/pages/contact" },
+    { slug: "contact", title: "Contact Us", href: "/pages/contact" },
   ],
   help: [
-    { slug: "faq", title: "FAQ", href: "/pages/faq" },
-    { slug: "shipping", title: "Shipping info", href: "/pages/shipping" },
-    { slug: "returns", title: "Returns & refunds", href: "/pages/returns" },
+    { slug: "faq", title: "FAQ & Support", href: "/pages/faq" },
+    { slug: "shipping", title: "Shipping & Delivery", href: "/pages/shipping" },
+    { slug: "returns", title: "Returns & Exchanges", href: "/pages/returns" },
   ],
   legal: [
-    { slug: "privacy", title: "Privacy policy", href: "/pages/privacy" },
-    { slug: "terms", title: "Terms of service", href: "/pages/terms" },
-    { slug: "contact", title: "Contact", href: "/pages/contact" },
+    { slug: "privacy", title: "Privacy Policy", href: "/pages/privacy" },
+    { slug: "terms", title: "Terms of Service", href: "/pages/terms" },
+    { slug: "contact", title: "Contact Us", href: "/pages/contact" },
   ],
 };
 
 function FooterLink({ href, label, external }: { href: string; label: string; external?: boolean }) {
   const className =
-    "inline-flex items-center gap-1 py-1.5 text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg active:text-footer-fg sm:py-0 sm:text-base";
+    "inline-flex items-center gap-1 py-1 text-sm font-medium text-footer-muted transition-colors hover:text-gold active:text-gold";
 
   if (external) {
     return (
@@ -68,15 +68,9 @@ function FooterLink({ href, label, external }: { href: string; label: string; ex
   );
 }
 
-function FooterLinkList({
-  links,
-  columns = false,
-}: {
-  links: { href: string; label: string; external?: boolean }[];
-  columns?: boolean;
-}) {
+function FooterLinkList({ links }: { links: { href: string; label: string; external?: boolean }[] }) {
   return (
-    <ul className={columns ? "grid grid-cols-2 gap-x-3 gap-y-2 sm:block sm:space-y-2.5" : "space-y-2 sm:space-y-2.5"}>
+    <ul className="space-y-1.5">
       {links.map((link) => (
         <li key={link.href}>
           <FooterLink {...link} />
@@ -108,111 +102,98 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
   const links = resolveFooterLinks(footerLinks);
 
   const exploreLinks = [...toLinkItems(links.explore), ...exploreAppLinks];
-  const helpLinks = [...toLinkItems(links.help), ...helpAppLinks];
-  const legalLinks = toLinkItems(links.legal);
+  const helpLinks = [...toLinkItems(links.help)];
 
   return (
     <footer className="texture-footer mt-auto border-t border-footer-border bg-footer text-footer-fg">
-      <div className="container-page py-6 sm:py-12 lg:py-16">
-        {/* Brand row — compact on mobile */}
-        <div className="flex items-start justify-between gap-4 lg:hidden">
-          <div className="min-w-0 flex-1">
-            <Link href="/" className="inline-block transition-opacity hover:opacity-90" aria-label={storeName}>
-              <BrandLogo storeName={storeName} variant="dark" size="md" />
-            </Link>
-            <p className="mt-1.5 line-clamp-2 max-w-xs text-[13px] leading-snug text-footer-muted">
-              {tagline || "Handcrafted bamboo furniture & eco-friendly home decor."}
-            </p>
+      {/* Value Badges Row */}
+      <div className="border-b border-footer-border/60 bg-[#161f12]/50 py-5">
+        <div className="container-page grid grid-cols-2 gap-4 text-center sm:grid-cols-4 sm:gap-6">
+          <div className="flex flex-col items-center gap-1.5 p-2">
+            <ShieldCheck className="h-5 w-5 text-gold" />
+            <span className="text-xs font-semibold text-footer-fg">100% Artisan Quality</span>
+            <span className="text-[11px] text-footer-muted">Handcrafted in India</span>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <a
-              href="mailto:info@bambooecohub.com"
-              className="social-icon-btn flex h-9 w-9 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-wood/45 hover:text-wood"
-              aria-label="Email us"
-            >
-              <Mail className="h-4 w-4" />
-            </a>
+          <div className="flex flex-col items-center gap-1.5 p-2">
+            <Truck className="h-5 w-5 text-gold" />
+            <span className="text-xs font-semibold text-footer-fg">Safe Pan-India Shipping</span>
+            <span className="text-[11px] text-footer-muted">Free delivery over ₹999</span>
+          </div>
+          <div className="flex flex-col items-center gap-1.5 p-2">
+            <RefreshCw className="h-5 w-5 text-gold" />
+            <span className="text-xs font-semibold text-footer-fg">Easy 30-Day Returns</span>
+            <span className="text-[11px] text-footer-muted">Hassle-free guarantee</span>
+          </div>
+          <div className="flex flex-col items-center gap-1.5 p-2">
+            <Mail className="h-5 w-5 text-gold" />
+            <span className="text-xs font-semibold text-footer-fg">Dedicated Support</span>
+            <span className="text-[11px] text-footer-muted">info@bambooecohub.com</span>
           </div>
         </div>
+      </div>
 
-        <div className="mt-5 grid gap-0 lg:mt-0 lg:grid-cols-12 lg:gap-10 xl:gap-12">
-          {/* Desktop brand column */}
-          <div className="hidden lg:col-span-4 lg:block">
+      <div className="container-page py-8 sm:py-12 lg:py-16">
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-10 xl:gap-12">
+          {/* Brand Column */}
+          <div className="lg:col-span-4">
             <Link href="/" className="inline-block transition-opacity hover:opacity-90" aria-label={storeName}>
               <BrandLogo storeName={storeName} variant="dark" size="lg" />
             </Link>
-            <p className="mt-3 max-w-sm text-base leading-relaxed text-footer-muted">
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-footer-muted sm:text-base">
               {tagline || "Handcrafted bamboo furniture & eco-friendly home decor for modern Indian homes."}
             </p>
 
-            <div className="mt-6 space-y-2 text-sm text-footer-muted">
+            <div className="mt-5 rounded-xl border border-footer-border/80 bg-[#161f12]/80 p-3.5 max-w-xs">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-gold">Get in touch</span>
               <a
                 href="mailto:info@bambooecohub.com"
-                className="inline-flex items-center gap-2 transition-colors hover:text-footer-fg"
+                className="mt-1.5 flex items-center gap-2.5 text-sm font-medium text-footer-fg transition-colors hover:text-gold"
               >
-                <Mail className="h-4 w-4 shrink-0" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gold/15 text-gold shrink-0">
+                  <Mail className="h-4 w-4" />
+                </div>
                 info@bambooecohub.com
-              </a>
-            </div>
-
-            <div className="mt-6 flex items-center gap-3">
-              <a
-                href="mailto:info@bambooecohub.com"
-                className="social-icon-btn flex h-10 w-10 items-center justify-center rounded-full border border-footer-border text-footer-muted hover:border-wood/45 hover:text-wood"
-                aria-label="Email us"
-              >
-                <Mail className="h-5 w-5" />
               </a>
             </div>
           </div>
 
-          <div className="grid gap-0 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
+          {/* Navigation Link Columns */}
+          <div className="grid gap-6 sm:grid-cols-3 lg:col-span-8">
             <FooterColumn title="Shop" defaultOpen>
-              <FooterLinkList links={shopQuickLinks} columns />
+              <FooterLinkList links={shopQuickLinks} />
               {roots.length > 0 && (
-                <div className="mt-3 border-t border-footer-border/60 pt-3 sm:mt-5 sm:pt-4">
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-footer-fg/70 sm:mb-2.5 sm:text-xs">
-                    Categories
+                <div className="mt-4 border-t border-footer-border/60 pt-3">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gold">
+                    Popular Categories
                   </p>
-                  <ul className="grid grid-cols-2 gap-x-3 gap-y-1 sm:gap-y-1.5">
+                  <ul className="space-y-1">
                     {roots.map((cat) => (
                       <li key={cat._id}>
                         <Link
                           href={`/collections/${cat.slug}`}
-                          className="block py-1.5 text-[13px] font-medium text-footer-muted transition-colors hover:text-footer-fg active:text-gold sm:py-1 sm:text-sm"
+                          className="block py-1 text-sm font-medium text-footer-muted transition-colors hover:text-gold"
                         >
                           {cat.name}
                         </Link>
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href="/shop"
-                    className="mt-3 inline-flex items-center gap-1 text-[13px] font-medium text-gold transition-colors hover:text-wood hover:underline sm:mt-4 sm:text-sm"
-                  >
-                    Browse all
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  </Link>
                 </div>
               )}
             </FooterColumn>
 
             <FooterColumn title="Explore">
-              <FooterLinkList links={exploreLinks} columns />
+              <FooterLinkList links={exploreLinks} />
             </FooterColumn>
 
-            <FooterColumn title="Help & account">
-              <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-1">
+            <FooterColumn title="Help & Account">
+              <div className="space-y-5">
                 <div>
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-footer-fg/70 sm:mb-2.5 sm:text-xs">
-                    Care
-                  </p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gold">Customer Care</p>
                   <FooterLinkList links={helpLinks} />
                 </div>
                 <div>
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-footer-fg/70 sm:mb-2.5 sm:text-xs">
-                    Account
-                  </p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gold">My Account</p>
                   <FooterLinkList links={accountLinks} />
                 </div>
               </div>
@@ -221,15 +202,14 @@ export function Footer({ storeName, tagline, categoryTree, footerLinks }: Footer
         </div>
       </div>
 
-      <div className="border-t border-footer-border bg-[#141a0f]">
-        <div className="container-page flex flex-col items-center justify-between gap-2.5 py-3.5 text-center text-[11px] text-footer-muted sm:flex-row sm:gap-4 sm:py-5 sm:text-left sm:text-sm">
-          <p>
-            © {year} {storeName}. All rights reserved.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-x-5 sm:gap-y-2">
-            {legalLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="transition-colors hover:text-footer-fg">
-                {link.label}
+      {/* Bottom Bar */}
+      <div className="border-t border-footer-border bg-[#12180e]">
+        <div className="container-page flex flex-col items-center justify-between gap-3 py-4 text-center text-xs text-footer-muted sm:flex-row sm:gap-4 sm:py-5 sm:text-left sm:text-sm">
+          <p>© {year} {storeName}. All rights reserved.</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            {links.legal.map((link) => (
+              <Link key={link.href} href={link.href} className="transition-colors hover:text-gold">
+                {link.title}
               </Link>
             ))}
           </div>
