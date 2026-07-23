@@ -278,7 +278,7 @@ export default function CheckoutPage() {
   const grandTotal = subtotal + shippingCost;
 
   return (
-    <div className="container-page max-w-6xl mx-auto py-6 sm:py-12 relative">
+    <div className="container-page max-w-[1440px] mx-auto py-6 sm:py-12 relative">
       <AnimatePresence>
         {isSuccess && (
           <motion.div

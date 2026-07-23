@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function ReturnPolicyPage() {
   const siteUrl = absoluteUrl("/");
   return (
-    <div className="container-page max-w-3xl py-8 sm:py-14">
+    <div className="container-page max-w-4xl lg:max-w-5xl py-8 sm:py-14">
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: siteUrl },

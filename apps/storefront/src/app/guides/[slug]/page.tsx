@@ -32,7 +32,7 @@ export default async function GuideArticlePage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <article className="container-page max-w-3xl py-10 sm:py-14">
+    <article className="container-page max-w-4xl lg:max-w-5xl py-10 sm:py-14">
       <ArticleJsonLd
         title={post.title}
         slug={slug}

@@ -27,7 +27,7 @@ export default function CartPage() {
   // Display structured loading skeleton to prevent hydration flashes
   if (!mounted) {
     return (
-      <div className="container-page max-w-6xl mx-auto py-8 sm:py-16">
+      <div className="container-page max-w-[1440px] mx-auto py-8 sm:py-16">
         <div className="h-8 w-44 animate-pulse rounded bg-border/80" />
         <div className="mt-8 grid gap-8 md:grid-cols-[1fr_340px] lg:grid-cols-[1fr_380px] lg:gap-10">
           <div className="space-y-4">
@@ -68,7 +68,7 @@ export default function CartPage() {
   const grandTotal = subtotal + shippingCost;
 
   return (
-    <div className="container-page max-w-6xl mx-auto py-6 sm:py-12">
+    <div className="container-page max-w-[1440px] mx-auto py-6 sm:py-12">
       <h1 className="font-display text-2xl sm:text-4xl text-foreground">Shopping Cart</h1>
       <p className="mt-1 text-sm text-muted">{items.length} item{items.length !== 1 ? "s" : ""}</p>
 
