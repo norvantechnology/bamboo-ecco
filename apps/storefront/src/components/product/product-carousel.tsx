@@ -95,7 +95,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
       </div>
 
       {/* 💻 DESKTOP / TABLET VIEW: Smooth 60fps Horizontal Carousel Slider */}
-      <div className="hidden sm:block">
+      <div className="hidden sm:block overflow-x-clip">
         {/* Top Header Navigation Controls */}
         <div className="mb-3 flex items-center justify-between">
           <span className="text-xs font-semibold text-muted tracking-wider uppercase">

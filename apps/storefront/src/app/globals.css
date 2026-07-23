@@ -88,6 +88,8 @@
     @apply scroll-smooth;
     font-size: 15px;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   @media (min-width: 768px) {
