@@ -299,10 +299,16 @@ async function main() {
   markdownSummary += `| :--- | :--- | :--- | :--- |\n`;
 
   for (const row of summaryResults) {
-    const detailFormatted = row.detail.startsWith("http")
-      ? `[Live Backlink](${row.detail})`
-      : row.detail.replace(/\|/g, "\\|");
-    markdownSummary += `| \`${row.url}\` | **${row.platform}** | ${row.status} | ${detailFormatted} |\n`;
+    let detailFormatted = row.detail;
+    const urlMatch = row.detail.match(/https?:\/\/\S+/);
+    if (urlMatch) {
+      const fullUrl = urlMatch[0];
+      const prefix = row.detail.slice(0, row.detail.indexOf(fullUrl));
+      detailFormatted = `${prefix}[${fullUrl}](${fullUrl})`;
+    } else {
+      detailFormatted = row.detail.replace(/\|/g, "\\|");
+    }
+    markdownSummary += `| [${row.url}](${row.url}) | **${row.platform}** | ${row.status} | ${detailFormatted} |\n`;
   }
 
   console.log(markdownSummary);

@@ -55,7 +55,7 @@ jobs:
       # 4. Compare sitemaps to get new/updated URLs (diff-result.json)
       - name: 🔍  Compare sitemaps for content changes
         env:
-          SITE_URL: ${{ secrets.SITE_URL }}
+          SITE_URL: "https://bambooecohub.com"
           FORCE_ALL: ${{ github.event.inputs.force_all }}
         run: |
           if [ "$FORCE_ALL" = "true" ]; then
@@ -63,15 +63,15 @@ jobs:
             rm -f scripts/gsc/previous-sitemap-snapshot.xml
           fi
           node scripts/gsc/compare-sitemaps.mjs \
-            --sitemap-url "${SITE_URL:-https://bambooecohub.com}/sitemap.xml" \
+            --sitemap-url "${SITE_URL}/sitemap.xml" \
             --prev-snapshot scripts/gsc/previous-sitemap-snapshot.xml \
             --output-dir scripts/gsc
 
       # 5. Run multi-platform syndication orchestrator
       - name: 🚀  Syndicate Content to 7 Platforms
         env:
-          SITE_URL: ${{ secrets.SITE_URL }}
-          API_URL: ${{ secrets.API_URL }}
+          SITE_URL: "https://bambooecohub.com"
+          API_URL: "https://api.bambooecohub.com"
           FORCE_ALL: ${{ github.event.inputs.force_all }}
           DEVTO_KEY: ${{ secrets.DEVTO_KEY }}
           WPCOM_TOKEN: ${{ secrets.WPCOM_TOKEN }}
