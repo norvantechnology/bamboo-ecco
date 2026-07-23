@@ -7,6 +7,7 @@ const IS_DEV = process.env.NODE_ENV === "development";
 export interface LayoutSeo {
   description: string;
   defaultTitle: string;
+  keywords?: string;
   locale: string;
   themeColor: string;
   backgroundColor: string;
@@ -48,7 +49,7 @@ export async function getLayoutData(): Promise<LayoutData | null> {
         "Content-Type": "application/json",
         "x-tenant-domain": getTenantDomain(),
       },
-      ...(IS_DEV ? { cache: "no-store" as const } : { next: { revalidate: 120 } }),
+      next: { revalidate: 60 },
     });
     if (!res.ok) return null;
     return res.json();
