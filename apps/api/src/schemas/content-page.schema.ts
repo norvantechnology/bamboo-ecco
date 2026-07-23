@@ -20,6 +20,12 @@ export class ContentPage {
   @Prop({ type: Types.ObjectId, ref: 'User' })
   authorId?: Types.ObjectId;
 
+  @Prop()
+  heroImage?: string;
+
+  @Prop()
+  imageCredit?: string;
+
   @Prop({ type: { title: String, description: String }, default: {} })
   meta: { title?: string; description?: string };
 

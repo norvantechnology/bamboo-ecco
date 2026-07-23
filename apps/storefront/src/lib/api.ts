@@ -182,6 +182,8 @@ export interface BlogPost {
   slug: string;
   title: string;
   type?: "blog" | "guide";
+  heroImage?: string;
+  imageCredit?: string;
   meta?: { title?: string; description?: string };
   publishedAt?: string;
 }

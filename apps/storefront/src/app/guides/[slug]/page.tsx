@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getJournalPost } from "@/lib/api";
 import { ArticleJsonLd } from "@/components/seo/article-json-ld";
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildPageMetadata({
     title: post?.meta?.title ?? post?.title ?? "Guide",
     description: post?.meta?.description,
+    image: post?.heroImage || undefined,
     path: `/guides/${slug}`,
   });
 }
@@ -46,14 +48,30 @@ export default async function GuideArticlePage({ params }: Props) {
           { name: post.title, url: absoluteUrl(`/guides/${slug}`) },
         ]}
       />
-      <Link href="/guides" className="text-sm text-secondary hover:underline">
-        ← Guides
+      <Link href="/guides" className="text-sm font-medium text-accent hover:underline">
+        ← Back to Guides
       </Link>
-      <h1 className="mt-6 font-display text-3xl text-primary sm:text-4xl">{post.title}</h1>
-      <div
-        className="prose prose-neutral mt-8 max-w-none text-foreground"
-        dangerouslySetInnerHTML={{ __html: post.body }}
-      />
+      <h1 className="mt-4 font-display text-3xl text-primary sm:text-4xl leading-tight">{post.title}</h1>
+
+      {post.heroImage ? (
+        <div className="mt-6 overflow-hidden rounded-xl bg-muted/20">
+          <div className="relative aspect-[16/9] w-full">
+            <Image
+              src={post.heroImage}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 768px) 100vw, 768px"
+            />
+          </div>
+          {post.imageCredit ? (
+            <p className="px-4 py-2 text-right text-xs italic text-muted opacity-75">{post.imageCredit}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="cms-content mt-8" dangerouslySetInnerHTML={{ __html: post.body }} />
     </article>
   );
 }
