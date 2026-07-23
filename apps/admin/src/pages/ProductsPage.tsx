@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pencil, Plus, Trash2, Star, Sparkles } from "lucide-react";
+import { Pencil, Plus, Trash2, Star, Sparkles, CheckSquare, Square, X } from "lucide-react";
 import {
   getAdminProducts,
   getAdminCategories,
@@ -35,6 +35,8 @@ export function ProductsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState(emptyForm());
   const [saving, setSaving] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkUpdating, setBulkUpdating] = useState(false);
 
   function load() {
     setLoading(true);
@@ -63,13 +65,18 @@ export function ProductsPage() {
       categoryId: product.categoryId ?? categories[0]?._id ?? "",
       slug: product.slug,
       title: product.title,
-      description: product.description,
+      description: product.description ?? "",
       status: product.status,
       isFeatured: product.isFeatured ?? false,
       isNewArrival: product.isNewArrival ?? false,
-      images: product.images ?? [],
+      images: (product.images ?? []).map((img) => ({
+        url: img.url,
+        alt: img.alt || "",
+        sortOrder: img.sortOrder ?? 0,
+        type: img.type || "product",
+      })),
       variants: variant
-        ? [{ sku: variant.sku, price: variant.price, currency: variant.currency, stockQty: variant.stockQty }]
+        ? [{ sku: variant.sku, price: variant.price, currency: variant.currency || "INR", stockQty: variant.stockQty }]
         : [{ sku: "", price: 0, currency: "INR", stockQty: 0 }],
     });
     setFormOpen(true);
@@ -112,13 +119,104 @@ export function ProductsPage() {
     }
   }
 
+  // ─── BULK SELECTION HANDLERS ────────────────────────────────────────────────
+  function toggleSelectAll() {
+    if (selectedIds.length === products.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(products.map((p) => p._id));
+    }
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  }
+
+  async function handleBulkFlag(flag: "isFeatured" | "isNewArrival", value: boolean) {
+    if (selectedIds.length === 0) return;
+    setBulkUpdating(true);
+    setError("");
+    try {
+      const selectedProducts = products.filter((p) => selectedIds.includes(p._id));
+      await Promise.all(
+        selectedProducts.map((product) =>
+          updateProduct(product._id, {
+            categoryId: product.categoryId ?? categories[0]?._id ?? "",
+            slug: product.slug,
+            title: product.title,
+            description: product.description,
+            status: product.status,
+            isFeatured: flag === "isFeatured" ? value : (product.isFeatured ?? false),
+            isNewArrival: flag === "isNewArrival" ? value : (product.isNewArrival ?? false),
+            images: product.images,
+            variants: product.variants,
+          })
+        )
+      );
+      setSelectedIds([]);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bulk update failed");
+    } finally {
+      setBulkUpdating(false);
+    }
+  }
+
+  async function handleBulkStatus(status: string) {
+    if (selectedIds.length === 0) return;
+    setBulkUpdating(true);
+    setError("");
+    try {
+      const selectedProducts = products.filter((p) => selectedIds.includes(p._id));
+      await Promise.all(
+        selectedProducts.map((product) =>
+          updateProduct(product._id, {
+            categoryId: product.categoryId ?? categories[0]?._id ?? "",
+            slug: product.slug,
+            title: product.title,
+            description: product.description,
+            status,
+            isFeatured: product.isFeatured ?? false,
+            isNewArrival: product.isNewArrival ?? false,
+            images: product.images,
+            variants: product.variants,
+          })
+        )
+      );
+      setSelectedIds([]);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bulk status update failed");
+    } finally {
+      setBulkUpdating(false);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Delete ${selectedIds.length} selected products?`)) return;
+    setBulkUpdating(true);
+    setError("");
+    try {
+      await Promise.all(selectedIds.map((id) => deleteProduct(id)));
+      setSelectedIds([]);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bulk delete failed");
+    } finally {
+      setBulkUpdating(false);
+    }
+  }
+
   function statusBadge(status: string) {
     const key = status === "archived" ? "hidden" : status;
     const styles: Record<string, string> = {
-      active: "bg-green-50 text-green-800",
-      out_of_stock: "bg-amber-50 text-amber-900",
-      draft: "bg-slate-100 text-slate-700",
-      hidden: "bg-red-50 text-red-800",
+      active: "bg-green-50 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+      out_of_stock: "bg-amber-50 text-amber-900 dark:bg-amber-900/40 dark:text-amber-300",
+      draft: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+      hidden: "bg-red-50 text-red-800 dark:bg-red-900/40 dark:text-red-300",
     };
     const labels: Record<string, string> = {
       active: "Active",
@@ -164,6 +262,8 @@ export function ProductsPage() {
 
   if (loading) return <PageLoader label="Loading products…" />;
 
+  const isAllSelected = selectedIds.length > 0 && selectedIds.length === products.length;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -182,352 +282,457 @@ export function ProductsPage() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800/40 dark:bg-red-900/30 dark:text-red-300">{error}</div>
+      )}
+
+      {/* BULK ACTIONS TOOLBAR */}
+      {selectedIds.length > 0 && (
+        <MotionFade>
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm">
+            <div className="flex items-center gap-2 font-medium">
+              <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-2 text-xs font-bold text-surface">
+                {selectedIds.length}
+              </span>
+              <span>products selected</span>
+              <button
+                type="button"
+                onClick={() => setSelectedIds([])}
+                className="ml-2 inline-flex items-center gap-1 text-xs text-muted hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" /> Clear
+              </button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                disabled={bulkUpdating}
+                onClick={() => handleBulkFlag("isFeatured", true)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 disabled:opacity-50 dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-300"
+              >
+                <Star className="h-3.5 w-3.5 text-amber-600 fill-amber-500" />
+                Add Best Seller
+              </button>
+              <button
+                type="button"
+                disabled={bulkUpdating}
+                onClick={() => handleBulkFlag("isFeatured", false)}
+                className="inline-flex items-center gap-1 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium hover:bg-background disabled:opacity-50"
+              >
+                Remove Best Seller
+              </button>
+
+              <div className="h-4 w-[1px] bg-border" />
+
+              <button
+                type="button"
+                disabled={bulkUpdating}
+                onClick={() => handleBulkFlag("isNewArrival", true)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-green-300 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-800 hover:bg-green-100 disabled:opacity-50 dark:border-green-700/50 dark:bg-green-900/30 dark:text-green-300"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-green-600 fill-green-500" />
+                Add New Arrival
+              </button>
+              <button
+                type="button"
+                disabled={bulkUpdating}
+                onClick={() => handleBulkFlag("isNewArrival", false)}
+                className="inline-flex items-center gap-1 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium hover:bg-background disabled:opacity-50"
+              >
+                Remove New Arrival
+              </button>
+
+              <div className="h-4 w-[1px] bg-border" />
+
+              <select
+                disabled={bulkUpdating}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    handleBulkStatus(e.target.value);
+                    e.target.value = "";
+                  }
+                }}
+                defaultValue=""
+                className="rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium"
+              >
+                <option value="" disabled>Change status…</option>
+                <option value="active">Set Active</option>
+                <option value="out_of_stock">Set Out of stock</option>
+                <option value="draft">Set Draft</option>
+                <option value="hidden">Set Hidden</option>
+              </select>
+
+              <button
+                type="button"
+                disabled={bulkUpdating}
+                onClick={handleBulkDelete}
+                className="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-50 dark:border-red-800/40 dark:bg-red-900/30 dark:text-red-300"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete Selected
+              </button>
+            </div>
+          </div>
+        </MotionFade>
       )}
 
       {formOpen && (
         <MotionFade>
           <form onSubmit={handleSave} className="rounded-xl border border-border bg-surface p-6">
-          <h2 className="font-semibold">{form.id ? "Edit product" : "New product"}</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm">
-              <span className="text-muted">Title</span>
-              <input
-                required
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="text-muted">Slug</span>
-              <input
-                required
-                value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="text-muted">Category</span>
-              <select
-                required
-                value={form.categoryId}
-                onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-              >
-                <option value="" disabled>
-                  Select category
-                </option>
-                {categories
-                  .filter((c) => !c.parentId)
-                  .map((root) => {
-                    const children = categories.filter((c) => c.parentId === root._id);
-                    if (children.length === 0) {
-                      return (
-                        <option key={root._id} value={root._id}>
-                          {root.name}
-                        </option>
-                      );
-                    }
-                    return (
-                      <optgroup key={root._id} label={root.name}>
-                        <option value={root._id}>{root.name} (all)</option>
-                        {children.map((child) => (
-                          <option key={child._id} value={child._id}>
-                            {child.name}
+            <h2 className="font-semibold">{form.id ? "Edit product" : "New product"}</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <label className="block text-sm">
+                <span className="text-muted">Title</span>
+                <input
+                  required
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-muted">Slug</span>
+                <input
+                  required
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-muted">Category</span>
+                <select
+                  required
+                  value={form.categoryId}
+                  onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                >
+                  <option value="" disabled>
+                    Select category
+                  </option>
+                  {categories
+                    .filter((c) => !c.parentId)
+                    .map((root) => {
+                      const children = categories.filter((c) => c.parentId === root._id);
+                      if (children.length === 0) {
+                        return (
+                          <option key={root._id} value={root._id}>
+                            {root.name}
                           </option>
-                        ))}
-                      </optgroup>
-                    );
-                  })}
-              </select>
-            </label>
-            <label className="block text-sm sm:col-span-2">
-              <span className="text-muted">Status</span>
-              <select
-                value={form.status === "archived" ? "hidden" : form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-              >
-                <option value="active">Active (in stock — shown in shop)</option>
-                <option value="out_of_stock">Out of stock (shown, cannot buy)</option>
-                <option value="draft">Draft (not shown on site)</option>
-                <option value="hidden">Hidden (not shown anywhere)</option>
-              </select>
-              <span className="mt-1 block text-xs text-muted">
-                Hidden and draft products are never returned by shop, search, homepage, or sitemap.
-              </span>
-            </label>
-            <label className="block text-sm">
-              <span className="text-muted">SKU</span>
-              <input
-                required
-                value={form.variants[0]?.sku ?? ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    variants: [{ ...form.variants[0], sku: e.target.value }],
-                  })
-                }
-                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="text-muted">Price (INR)</span>
-              <input
-                required
-                type="number"
-                min={0}
-                value={form.variants[0]?.price ?? 0}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    variants: [{ ...form.variants[0], price: Number(e.target.value) }],
-                  })
-                }
-                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="text-muted">Stock</span>
-              <input
-                required
-                type="number"
-                min={0}
-                value={form.variants[0]?.stockQty ?? 0}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    variants: [{ ...form.variants[0], stockQty: Number(e.target.value) }],
-                  })
-                }
-                className="mt-1 w-full rounded-lg border border-border px-3 py-2"
-              />
-            </label>
-          </div>
+                        );
+                      }
+                      return (
+                        <optgroup key={root._id} label={root.name}>
+                          <option value={root._id}>{root.name} (all)</option>
+                          {children.map((child) => (
+                            <option key={child._id} value={child._id}>
+                              {child.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      );
+                    })}
+                </select>
+              </label>
+              <label className="block text-sm sm:col-span-2">
+                <span className="text-muted">Status</span>
+                <select
+                  value={form.status === "archived" ? "hidden" : form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                >
+                  <option value="active">Active (in stock — shown in shop)</option>
+                  <option value="out_of_stock">Out of stock (shown, cannot buy)</option>
+                  <option value="draft">Draft (not shown on site)</option>
+                  <option value="hidden">Hidden (not shown anywhere)</option>
+                </select>
+                <span className="mt-1 block text-xs text-muted">
+                  Hidden and draft products are never returned by shop, search, homepage, or sitemap.
+                </span>
+              </label>
+              <label className="block text-sm">
+                <span className="text-muted">SKU</span>
+                <input
+                  required
+                  value={form.variants[0]?.sku ?? ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      variants: [{ ...form.variants[0], sku: e.target.value, price: form.variants[0]?.price ?? 0, stockQty: form.variants[0]?.stockQty ?? 0 }],
+                    })
+                  }
+                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-muted">Price (INR)</span>
+                <input
+                  required
+                  type="number"
+                  min={0}
+                  value={form.variants[0]?.price ?? 0}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      variants: [{ ...form.variants[0], sku: form.variants[0]?.sku ?? "", price: Number(e.target.value), stockQty: form.variants[0]?.stockQty ?? 0 }],
+                    })
+                  }
+                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-muted">Stock</span>
+                <input
+                  required
+                  type="number"
+                  min={0}
+                  value={form.variants[0]?.stockQty ?? 0}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      variants: [{ ...form.variants[0], sku: form.variants[0]?.sku ?? "", price: form.variants[0]?.price ?? 0, stockQty: Number(e.target.value) }],
+                    })
+                  }
+                  className="mt-1 w-full rounded-lg border border-border px-3 py-2"
+                />
+              </label>
+            </div>
 
-          <div className="mt-4 flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={form.isFeatured ?? false}
-                onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
-              />
-              <Star className="h-4 w-4 text-amber-500" />
-              Best Seller (homepage)
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={form.isNewArrival ?? false}
-                onChange={(e) => setForm({ ...form, isNewArrival: e.target.checked })}
-              />
-              <Sparkles className="h-4 w-4 text-secondary" />
-              New Arrival (homepage)
-            </label>
-          </div>
+            <div className="mt-4 flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.isFeatured ?? false}
+                  onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
+                />
+                <Star className="h-4 w-4 text-amber-500 fill-amber-400" />
+                Best Seller (homepage)
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.isNewArrival ?? false}
+                  onChange={(e) => setForm({ ...form, isNewArrival: e.target.checked })}
+                />
+                <Sparkles className="h-4 w-4 text-green-600 fill-green-500" />
+                New Arrival (homepage)
+              </label>
+            </div>
 
-          <div className="mt-4 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <p className="text-sm font-medium">Product images</p>
-                <p className="text-xs text-muted">
-                  Add several photos — customers can scroll through them on the product page.
-                </p>
+            <div className="mt-4 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-medium">Product images</p>
+                  <p className="text-xs text-muted">
+                    Add several photos — customers can scroll through them on the product page.
+                  </p>
+                </div>
+                <ImageUpload
+                  folder="products"
+                  alt={form.title || "Product"}
+                  label="Add images"
+                  multiple
+                  onUploadedMany={(results) => {
+                    const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                    const existing = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                    const added = results.map((r, idx) => ({
+                      url: r.url,
+                      alt: form.title || "Product",
+                      sortOrder: existing.length + idx,
+                      type: "product" as const,
+                    }));
+                    setForm({
+                      ...form,
+                      images: [...existing, ...added, ...lifestyle],
+                    });
+                  }}
+                />
               </div>
-              <ImageUpload
-                folder="products"
-                alt={form.title || "Product"}
-                label="Add images"
-                multiple
-                onUploadedMany={(results) => {
+
+              {(form.images?.filter((i) => i.type !== "lifestyle").length ?? 0) > 0 ? (
+                <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {form.images
+                    ?.filter((i) => i.type !== "lifestyle")
+                    .map((img, index) => (
+                      <li
+                        key={`${img.url}-${index}`}
+                        className="group relative overflow-hidden rounded-lg border border-border bg-background"
+                      >
+                        <img
+                          src={img.url}
+                          alt={img.alt || form.title}
+                          className="aspect-square w-full object-contain p-2"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-black/55 px-2 py-1.5 text-xs text-white">
+                          <span>#{index + 1}</span>
+                          <div className="flex gap-1">
+                            <button
+                              type="button"
+                              disabled={index === 0}
+                              onClick={() => {
+                                const productImgs =
+                                  form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                                const lifestyle =
+                                  form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                                if (index <= 0) return;
+                                const next = [...productImgs];
+                                [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                                setForm({
+                                  ...form,
+                                  images: [
+                                    ...next.map((im, i) => ({ ...im, sortOrder: i, type: "product" })),
+                                    ...lifestyle,
+                                  ],
+                                });
+                              }}
+                              className="rounded bg-white/15 px-1.5 py-0.5 disabled:opacity-30"
+                              title="Move earlier"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const productImgs =
+                                  form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                                const lifestyle =
+                                  form.images?.filter((i) => i.type === "lifestyle") ?? [];
+                                const next = productImgs.filter((_, i) => i !== index);
+                                setForm({
+                                  ...form,
+                                  images: [
+                                    ...next.map((im, i) => ({ ...im, sortOrder: i, type: "product" })),
+                                    ...lifestyle,
+                                  ],
+                                });
+                              }}
+                              className="rounded bg-red-500/80 px-1.5 py-0.5"
+                              title="Remove"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              ) : (
+                <p className="rounded-lg border border-dashed border-border px-3 py-6 text-center text-sm text-muted">
+                  No product photos yet. Upload one or more images.
+                </p>
+              )}
+
+              <input
+                placeholder="Or paste an image URL and press Enter"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter") return;
+                  e.preventDefault();
+                  const input = e.currentTarget;
+                  const url = input.value.trim();
+                  if (!url) return;
                   const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
                   const existing = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
-                  const added = results.map((r, idx) => ({
-                    url: r.url,
-                    alt: form.title || "Product",
-                    sortOrder: existing.length + idx,
-                    type: "product" as const,
-                  }));
                   setForm({
                     ...form,
-                    images: [...existing, ...added, ...lifestyle],
+                    images: [
+                      ...existing,
+                      {
+                        url,
+                        alt: form.title || "Product",
+                        sortOrder: existing.length,
+                        type: "product",
+                      },
+                      ...lifestyle,
+                    ],
                   });
+                  input.value = "";
                 }}
               />
             </div>
 
-            {(form.images?.filter((i) => i.type !== "lifestyle").length ?? 0) > 0 ? (
-              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {form.images
-                  ?.filter((i) => i.type !== "lifestyle")
-                  .map((img, index) => (
-                    <li
-                      key={`${img.url}-${index}`}
-                      className="group relative overflow-hidden rounded-lg border border-border bg-background"
-                    >
-                      <img
-                        src={img.url}
-                        alt={img.alt || form.title}
-                        className="aspect-square w-full object-contain p-2"
-                      />
-                      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-black/55 px-2 py-1.5 text-xs text-white">
-                        <span>#{index + 1}</span>
-                        <div className="flex gap-1">
-                          <button
-                            type="button"
-                            disabled={index === 0}
-                            onClick={() => {
-                              const productImgs =
-                                form.images?.filter((i) => i.type !== "lifestyle") ?? [];
-                              const lifestyle =
-                                form.images?.filter((i) => i.type === "lifestyle") ?? [];
-                              if (index <= 0) return;
-                              const next = [...productImgs];
-                              [next[index - 1], next[index]] = [next[index], next[index - 1]];
-                              setForm({
-                                ...form,
-                                images: [
-                                  ...next.map((im, i) => ({ ...im, sortOrder: i, type: "product" })),
-                                  ...lifestyle,
-                                ],
-                              });
-                            }}
-                            className="rounded bg-white/15 px-1.5 py-0.5 disabled:opacity-30"
-                            title="Move earlier"
-                          >
-                            ↑
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const productImgs =
-                                form.images?.filter((i) => i.type !== "lifestyle") ?? [];
-                              const lifestyle =
-                                form.images?.filter((i) => i.type === "lifestyle") ?? [];
-                              const next = productImgs.filter((_, i) => i !== index);
-                              setForm({
-                                ...form,
-                                images: [
-                                  ...next.map((im, i) => ({ ...im, sortOrder: i, type: "product" })),
-                                  ...lifestyle,
-                                ],
-                              });
-                            }}
-                            className="rounded bg-red-500/80 px-1.5 py-0.5"
-                            title="Remove"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            ) : (
-              <p className="rounded-lg border border-dashed border-border px-3 py-6 text-center text-sm text-muted">
-                No product photos yet. Upload one or more images.
+            <div className="mt-4 space-y-2">
+              <p className="text-sm text-muted">
+                Lifestyle image (optional — shows in “In Real Homes” on homepage)
               </p>
-            )}
-
-            <input
-              placeholder="Or paste an image URL and press Enter"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                e.preventDefault();
-                const input = e.currentTarget;
-                const url = input.value.trim();
-                if (!url) return;
-                const lifestyle = form.images?.filter((i) => i.type === "lifestyle") ?? [];
-                const existing = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
-                setForm({
-                  ...form,
-                  images: [
-                    ...existing,
-                    {
-                      url,
-                      alt: form.title || "Product",
-                      sortOrder: existing.length,
-                      type: "product",
-                    },
-                    ...lifestyle,
-                  ],
-                });
-                input.value = "";
-              }}
-            />
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <p className="text-sm text-muted">
-              Lifestyle image (optional — shows in “In Real Homes” on homepage)
-            </p>
-            <ImageUpload
-              folder="products/lifestyle"
-              alt={`${form.title || "Product"} in a home`}
-              label="Upload lifestyle photo"
-              onUploaded={(r) => {
-                const productImgs = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
-                setForm({
-                  ...form,
-                  images: [
-                    ...productImgs,
-                    {
-                      url: r.url,
+              <ImageUpload
+                folder="products/lifestyle"
+                alt={`${form.title || "Product"} in a home`}
+                label="Upload lifestyle photo"
+                onUploaded={(r) => {
+                  const productImgs = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                  setForm({
+                    ...form,
+                    images: [
+                      ...productImgs,
+                      {
+                        url: r.url,
+                        alt: `${form.title || "Product"} in a home`,
+                        sortOrder: productImgs.length,
+                        type: "lifestyle",
+                      },
+                    ],
+                  });
+                }}
+              />
+              <input
+                placeholder="Lifestyle image URL"
+                value={form.images?.find((i) => i.type === "lifestyle")?.url ?? ""}
+                onChange={(e) => {
+                  const productImgs = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
+                  const images = [...productImgs];
+                  if (e.target.value) {
+                    images.push({
+                      url: e.target.value,
                       alt: `${form.title || "Product"} in a home`,
                       sortOrder: productImgs.length,
                       type: "lifestyle",
-                    },
-                  ],
-                });
-              }}
-            />
-            <input
-              placeholder="Lifestyle image URL"
-              value={form.images?.find((i) => i.type === "lifestyle")?.url ?? ""}
-              onChange={(e) => {
-                const productImgs = form.images?.filter((i) => i.type !== "lifestyle") ?? [];
-                const images = [...productImgs];
-                if (e.target.value) {
-                  images.push({
-                    url: e.target.value,
-                    alt: `${form.title || "Product"} in a home`,
-                    sortOrder: productImgs.length,
-                    type: "lifestyle",
-                  });
-                }
-                setForm({ ...form, images });
-              }}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
-            />
-          </div>
+                    });
+                  }
+                  setForm({ ...form, images });
+                }}
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+              />
+            </div>
 
-          <div className="mt-4 flex gap-3">
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface disabled:opacity-50"
-            >
-              {saving ? "Saving…" : "Save"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormOpen(false)}
-              className="rounded-lg border border-border px-4 py-2 text-sm"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+            <div className="mt-4 flex gap-3">
+              <button
+                type="submit"
+                disabled={saving}
+                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface disabled:opacity-50"
+              >
+                {saving ? "Saving…" : "Save"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormOpen(false)}
+                className="rounded-lg border border-border px-4 py-2 text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </MotionFade>
       )}
 
       <div className="overflow-x-auto rounded-xl border border-border bg-surface">
-        <table className="w-full min-w-[720px] text-left text-sm">
+        <table className="w-full min-w-[760px] text-left text-sm">
           <thead>
             <tr className="border-b border-border text-muted">
+              <th className="w-10 px-4 py-3">
+                <button
+                  type="button"
+                  onClick={toggleSelectAll}
+                  className="flex items-center text-muted hover:text-foreground"
+                  title={isAllSelected ? "Deselect all" : "Select all"}
+                >
+                  {isAllSelected ? (
+                    <CheckSquare className="h-4 w-4 text-primary" />
+                  ) : (
+                    <Square className="h-4 w-4" />
+                  )}
+                </button>
+              </th>
               <th className="px-4 py-3 font-medium">Title</th>
               <th className="px-4 py-3 font-medium">Flags</th>
               <th className="px-4 py-3 font-medium">SKU</th>
@@ -540,8 +745,27 @@ export function ProductsPage() {
           <tbody>
             {products.map((product) => {
               const variant = product.variants[0];
+              const isSelected = selectedIds.includes(product._id);
               return (
-                <tr key={product._id} className="border-b border-border last:border-0">
+                <tr
+                  key={product._id}
+                  className={`border-b border-border last:border-0 transition-colors ${
+                    isSelected ? "bg-primary/5" : ""
+                  }`}
+                >
+                  <td className="w-10 px-4 py-3">
+                    <button
+                      type="button"
+                      onClick={() => toggleSelect(product._id)}
+                      className="flex items-center text-muted hover:text-foreground"
+                    >
+                      {isSelected ? (
+                        <CheckSquare className="h-4 w-4 text-primary" />
+                      ) : (
+                        <Square className="h-4 w-4" />
+                      )}
+                    </button>
+                  </td>
                   <td className="px-4 py-3 font-medium">{product.title}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
@@ -549,17 +773,25 @@ export function ProductsPage() {
                         type="button"
                         title="Toggle Best Seller"
                         onClick={() => toggleFlag(product, "isFeatured")}
-                        className={`rounded p-1 ${product.isFeatured ? "bg-amber-50 text-amber-700" : "text-muted hover:bg-background"}`}
+                        className={`rounded p-1 transition-colors ${
+                          product.isFeatured
+                            ? "bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                            : "text-muted hover:bg-background"
+                        }`}
                       >
-                        <Star className="h-4 w-4" />
+                        <Star className={`h-4 w-4 ${product.isFeatured ? "fill-amber-400" : ""}`} />
                       </button>
                       <button
                         type="button"
                         title="Toggle New Arrival"
                         onClick={() => toggleFlag(product, "isNewArrival")}
-                        className={`rounded p-1 ${product.isNewArrival ? "bg-green-50 text-green-700" : "text-muted hover:bg-background"}`}
+                        className={`rounded p-1 transition-colors ${
+                          product.isNewArrival
+                            ? "bg-green-50 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                            : "text-muted hover:bg-background"
+                        }`}
                       >
-                        <Sparkles className="h-4 w-4" />
+                        <Sparkles className={`h-4 w-4 ${product.isNewArrival ? "fill-green-500" : ""}`} />
                       </button>
                     </div>
                   </td>
@@ -591,7 +823,7 @@ export function ProductsPage() {
                       <button
                         type="button"
                         onClick={() => handleDelete(product._id)}
-                        className="rounded p-1 text-red-600 hover:bg-red-50"
+                        className="rounded p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
                         aria-label="Delete"
                       >
                         <Trash2 className="h-4 w-4" />

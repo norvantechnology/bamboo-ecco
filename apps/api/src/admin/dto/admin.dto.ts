@@ -12,6 +12,14 @@ import {
 import { Type } from 'class-transformer';
 
 export class ProductVariantDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsString()
+  _id?: string;
+
   @IsString()
   sku: string;
 
@@ -36,11 +44,20 @@ export class ProductVariantDto {
 }
 
 export class ProductImageDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsString()
+  _id?: string;
+
   @IsString()
   url: string;
 
+  @IsOptional()
   @IsString()
-  alt: string;
+  alt?: string;
 
   @IsOptional()
   @IsNumber()
@@ -49,6 +66,18 @@ export class ProductImageDto {
   @IsOptional()
   @IsEnum(['product', 'lifestyle'])
   type?: string;
+
+  @IsOptional()
+  @IsNumber()
+  width?: number;
+
+  @IsOptional()
+  @IsNumber()
+  height?: number;
+
+  @IsOptional()
+  @IsNumber()
+  bytes?: number;
 }
 
 export class ProductSpecsDto {
@@ -79,6 +108,14 @@ export class ProductMetaDto {
 }
 
 export class CreateProductDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsString()
+  _id?: string;
+
   @IsString()
   categoryId: string;
 

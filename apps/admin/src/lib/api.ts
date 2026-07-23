@@ -300,17 +300,38 @@ export interface ProductPayload {
   variants: { sku: string; price: number; currency?: string; stockQty: number }[];
 }
 
+function cleanProductPayload(data: any): ProductPayload {
+  const { id, _id, __v, createdAt, updatedAt, ratingSummary, reviews, faqs, customerHomes, ...rest } = data;
+  return {
+    ...rest,
+    images: (rest.images || []).map((img: any) => ({
+      url: img.url,
+      alt: img.alt || "",
+      sortOrder: img.sortOrder ?? 0,
+      type: img.type || "product",
+    })),
+    variants: (rest.variants || []).map((v: any) => ({
+      sku: v.sku,
+      attributes: v.attributes,
+      price: Number(v.price) || 0,
+      compareAtPrice: v.compareAtPrice ? Number(v.compareAtPrice) : undefined,
+      currency: v.currency || "INR",
+      stockQty: Number(v.stockQty) || 0,
+    })),
+  };
+}
+
 export function createProduct(data: ProductPayload) {
   return authApi<AdminProduct>("/admin/products", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(cleanProductPayload(data)),
   });
 }
 
 export function updateProduct(id: string, data: ProductPayload) {
   return authApi<AdminProduct>(`/admin/products/${id}`, {
     method: "PUT",
-    body: JSON.stringify(data),
+    body: JSON.stringify(cleanProductPayload(data)),
   });
 }
 
