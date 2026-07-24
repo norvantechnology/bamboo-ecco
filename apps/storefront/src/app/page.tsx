@@ -23,8 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
   // Use SEO description from Admin Panel, fall back to tagline
   const desc = seo.description || brand?.tagline || brand?.hero?.subheading || "";
 
-  // Use the stored og:image or fall back to hero image
-  const ogImage = seo.ogImage || brand?.hero?.imageUrls?.[0] || brand?.hero?.imageUrl;
+  // Use the stored og:image or fall back to all dynamic hero banner images
+  const heroList = (brand?.hero?.imageUrls ?? []).filter((u): u is string => Boolean(u && u.trim()));
+  if (!heroList.length && brand?.hero?.imageUrl?.trim()) {
+    heroList.push(brand.hero.imageUrl.trim());
+  }
+  const ogImage = seo.ogImage || heroList[0];
+  const allImages = [seo.ogImage, ...heroList].filter((u): u is string => Boolean(u && u.trim()));
 
   return buildPageMetadata({
     title: fullTitle,
@@ -32,6 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: seo.keywords,
     path: "/",
     image: ogImage,
+    images: allImages.length ? allImages : undefined,
     imageAlt: brand?.hero?.headline || fullTitle,
     absoluteTitle: true,
   });

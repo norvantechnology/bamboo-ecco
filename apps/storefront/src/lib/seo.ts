@@ -37,6 +37,7 @@ export async function buildPageMetadata({
   description,
   path,
   image,
+  images,
   imageAlt,
   noIndex,
   ogType = "website",
@@ -47,6 +48,7 @@ export async function buildPageMetadata({
   description?: string;
   path?: string;
   image?: string;
+  images?: (string | { url: string; width?: number; height?: number; alt?: string })[];
   imageAlt?: string;
   noIndex?: boolean;
   ogType?: "website" | "article";
@@ -58,18 +60,23 @@ export async function buildPageMetadata({
   const siteName = seo.name;
   const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
-  
-  const displayImage = image || seo.ogImage;
-  const ogImage = displayImage
-    ? [
-        {
-          url: displayImage,
-          width: 1200,
-          height: 630,
-          alt: imageAlt || title,
-        },
-      ]
-    : defaultOgImages(imageAlt || siteName || title);
+
+  let ogImages: { url: string; width?: number; height?: number; alt?: string }[] = [];
+
+  if (images && images.length > 0) {
+    ogImages = images.map((img) =>
+      typeof img === "string"
+        ? { url: img, width: 1200, height: 630, alt: imageAlt || title }
+        : { width: 1200, height: 630, alt: imageAlt || title, ...img },
+    );
+  } else if (image || seo.ogImage) {
+    const single = image || seo.ogImage || "";
+    ogImages = [{ url: single, width: 1200, height: 630, alt: imageAlt || title }];
+  } else {
+    ogImages = defaultOgImages(imageAlt || siteName || title);
+  }
+
+  const primaryImage = ogImages[0]?.url;
 
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -83,13 +90,13 @@ export async function buildPageMetadata({
       description: desc || undefined,
       url: canonical,
       locale: seo.locale || undefined,
-      images: ogImage,
+      images: ogImages,
     },
     twitter: {
-      card: displayImage ? "summary_large_image" : "summary",
+      card: primaryImage ? "summary_large_image" : "summary",
       title,
       description: desc || undefined,
-      images: displayImage ? [displayImage] : [BRAND_ASSETS.icon],
+      images: ogImages.map((i) => i.url),
       ...(seo.twitterHandle ? { site: `@${seo.twitterHandle}`, creator: `@${seo.twitterHandle}` } : {}),
     },
     robots: noIndex
@@ -160,7 +167,6 @@ export async function buildProductMetadata(product: {
     ? optimizeImageUrl(primary.url, { width: 1200, height: 1200, crop: "limit" })
     : undefined;
   const imageAlt = primary && "alt" in primary && primary.alt ? primary.alt : product.title;
-
   const inStock =
     product.status !== "out_of_stock" && (variant?.stockQty == null || variant.stockQty > 0);
   const keywords =
@@ -169,11 +175,19 @@ export async function buildProductMetadata(product: {
       .filter(Boolean)
       .join(", ");
 
+  const allImages = scored.map((img) => ({
+    url: optimizeImageUrl(img.url, { width: 1200, height: 1200, crop: "limit" }),
+    width: 1200,
+    height: 1200,
+    alt: ("alt" in img && img.alt) ? img.alt : product.title,
+  }));
+
   const base = await buildPageMetadata({
     title,
     description,
     path: `/product/${product.slug}`,
     image: ogSrc,
+    images: allImages.length ? allImages : undefined,
     imageAlt,
     keywords,
   });

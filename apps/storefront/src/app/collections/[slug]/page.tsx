@@ -21,18 +21,25 @@ const VALID_SORTS = ["newest", "price-asc", "price-desc", "rating"] as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCategory(slug).catch(() => null);
+  const [category, productsResult] = await Promise.all([
+    getCategory(slug).catch(() => null),
+    getProductsByCategorySlug(slug, 1, "newest").catch(() => null),
+  ]);
   if (!category) return { title: "Category Not Found" };
   const title = category.meta?.title || category.name;
   const description = category.meta?.description || undefined;
   const keywords = category.meta?.keywords || undefined;
+
+  const topProductImage = productsResult?.data?.[0]?.images?.[0]?.url;
+  const categoryImages = [category.imageUrl, topProductImage].filter((u): u is string => Boolean(u && u.trim()));
 
   return buildPageMetadata({
     title,
     description,
     keywords,
     path: `/collections/${slug}`,
-    image: category.imageUrl,
+    image: category.imageUrl || topProductImage,
+    images: categoryImages.length ? categoryImages : undefined,
     imageAlt: category.name,
   });
 }
