@@ -33,18 +33,6 @@ export function optimizeImageUrl(
     return `https://res.cloudinary.com/${cloudName}/image/upload/${transform}/${src}`;
   }
 
-  if (src.includes("unsplash.com")) {
-    try {
-      const url = new URL(src);
-      url.searchParams.set("w", String(w));
-      url.searchParams.set("auto", "format");
-      url.searchParams.set("q", "85");
-      return url.toString();
-    } catch {
-      return src;
-    }
-  }
-
   return src;
 }
 

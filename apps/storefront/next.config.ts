@@ -28,10 +28,6 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: `/${cloudName || "*"}/**`,
       },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
     ],
   },
   async redirects() {

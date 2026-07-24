@@ -10,7 +10,7 @@ export function getCompressedImageUrl(
 ): string {
   if (!url) return "";
 
-  // 1. Cloudinary URLs
+  // Cloudinary URLs
   if (url.includes("res.cloudinary.com")) {
     const marker = "/upload/";
     const idx = url.indexOf(marker);
@@ -29,20 +29,6 @@ export function getCompressedImageUrl(
     }
 
     return `${prefix}${transformParts.join(",")}/${rest}`;
-  }
-
-  // 2. Unsplash URLs
-  if (url.includes("images.unsplash.com") || url.includes("unsplash.com")) {
-    try {
-      const parsed = new URL(url);
-      if (width) parsed.searchParams.set("w", String(width));
-      parsed.searchParams.set("q", "80");
-      parsed.searchParams.set("auto", "format");
-      parsed.searchParams.set("fit", "crop");
-      return parsed.toString();
-    } catch {
-      return url;
-    }
   }
 
   return url;

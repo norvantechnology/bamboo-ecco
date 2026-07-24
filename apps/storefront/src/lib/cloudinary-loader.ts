@@ -28,9 +28,5 @@ export default function cloudinaryLoader({
     return `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,${qualityPreset},fl_progressive,w_${width},c_limit/${src}`;
   }
 
-  if (src.includes("images.unsplash.com") || src.includes("unsplash.com")) {
-    return getCompressedImageUrl(src, width, qualityPreset);
-  }
-
   return src;
 }

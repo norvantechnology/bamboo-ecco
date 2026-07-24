@@ -61,7 +61,7 @@ async function run() {
 
       <figure class="my-8 space-y-2">
         <img 
-          src="https://images.unsplash.com/photo-1716918658777-c2535dfa54c4?fm=jpg&q=80&w=1600&auto=format&fit=crop" 
+          src="https://res.cloudinary.com/ddkubtgk0/image/upload/v1783786822/Gemini_Generated_Image_gh71v7gh71v7gh71_ysoamv.png" 
           alt="Misty bamboo and forest hills near Agartala, Tripura"
           class="w-full rounded-2xl border border-border/40 shadow-warm"
         />
@@ -75,7 +75,7 @@ async function run() {
 
       <figure class="my-8 space-y-2">
         <img 
-          src="https://images.unsplash.com/photo-1768902406144-a348c559c73c?fm=jpg&q=80&w=1600&auto=format&fit=crop" 
+          src="https://res.cloudinary.com/ddkubtgk0/image/upload/v1784296115/bamboo-eco-hub/6a50778dc3283026fb4f633a/hero/file_k6kycc.png" 
           alt="Artisan hands weaving a bamboo and cane basket by hand"
           class="w-full rounded-2xl border border-border/40 shadow-warm"
         />
@@ -116,7 +116,7 @@ async function run() {
 
       <figure class="my-8 space-y-2">
         <img 
-          src="https://images.unsplash.com/photo-1646170629004-b3c84a27fc17?fm=jpg&q=80&w=1600&auto=format&fit=crop" 
+          src="https://res.cloudinary.com/ddkubtgk0/image/upload/v1784296130/bamboo-eco-hub/6a50778dc3283026fb4f633a/hero/file_xqmmvk.png" 
           alt="Close-up of finished handwoven bamboo basket texture"
           class="w-full rounded-2xl border border-border/40 shadow-warm"
         />
@@ -130,7 +130,7 @@ async function run() {
 
       <figure class="my-8 space-y-2">
         <img 
-          src="https://images.unsplash.com/photo-1763054781554-862cb8dd6bc7?fm=jpg&q=80&w=1600&auto=format&fit=crop" 
+          src="https://res.cloudinary.com/ddkubtgk0/image/upload/v1783786822/Gemini_Generated_Image_gh71v7gh71v7gh71_ysoamv.png" 
           alt="Handwoven bamboo pendant lights hanging in a warm-lit dining space"
           class="w-full rounded-2xl border border-border/40 shadow-warm"
         />
@@ -146,7 +146,7 @@ async function run() {
 
       <figure class="my-8 space-y-2">
         <img 
-          src="https://images.unsplash.com/photo-1544914167-c71759753c6d?fm=jpg&q=80&w=1600&auto=format&fit=crop" 
+          src="https://res.cloudinary.com/ddkubtgk0/image/upload/v1784296115/bamboo-eco-hub/6a50778dc3283026fb4f633a/hero/file_k6kycc.png" 
           alt="Handwoven bamboo and wicker home decor styled on a table"
           class="w-full rounded-2xl border border-border/40 shadow-warm"
         />
