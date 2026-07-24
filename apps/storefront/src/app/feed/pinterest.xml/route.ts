@@ -136,11 +136,16 @@ function buildFeedItem(
     : variant.price.toFixed(2);
   const salePrice = isOnSale ? variant.price.toFixed(2) : null;
 
-  const description = (product.description || product.title)
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 5000);
+  // Use product.title (clean product name) — never meta.title which may
+  // contain promotional text like "| ₹2199 | Free Shipping India".
+  const feedTitle = stripPromoText(product.title);
+
+  const description = stripPromoText(
+    (product.description || product.title)
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+  ).slice(0, 5000);
 
   const categoryObj =
     typeof product.categoryId === "object" && product.categoryId?.name
@@ -162,7 +167,7 @@ function buildFeedItem(
 
   lines.push(`    <item>`);
   lines.push(`      <g:id>${escXml(toFeedId(product.slug))}</g:id>`);
-  lines.push(`      <title>${escXml(product.meta?.title || product.title)}</title>`);
+  lines.push(`      <title>${escXml(feedTitle)}</title>`);
   lines.push(`      <description>${escXml(description)}</description>`);
   lines.push(`      <link>${productUrl}</link>`);
   lines.push(`      <g:image_link>${escXml(primaryImage.url)}</g:image_link>`);
@@ -213,6 +218,39 @@ function buildFeedItem(
   lines.push(`    </item>`);
 
   return lines.join("\n");
+}
+
+/**
+ * Strip promotional text that Google Merchant Center flags as
+ * "Additional or promotional info" violations.
+ */
+function stripPromoText(text: string): string {
+  return text
+    // Remove "| ₹XXXX | Free Shipping India" or similar appended price/promo
+    .replace(/\s*\|\s*[₹$€]\s*[\d,.]+\s*/gi, " ")
+    .replace(/\s*\|\s*free\s+shipping[^|]*/gi, " ")
+    // Remove standalone promotional phrases
+    .replace(/free\s+(shipping|delivery)\s*(india|pan[- ]?india|all\s+over)?/gi, "")
+    .replace(/best\s+price\s+guarantee/gi, "")
+    .replace(/money\s+back\s+guarantee/gi, "")
+    .replace(/\d+[- ]?day\s+(money\s+back\s+)?return[s]?/gi, "")
+    .replace(/\bcod\s+available\b/gi, "")
+    .replace(/\bbuy\s+now\b/gi, "")
+    .replace(/\bbuy\s+online\b/gi, "")
+    .replace(/limited\s+time\s+offer/gi, "")
+    .replace(/\bsale\b/gi, "")
+    .replace(/\bdiscount\b/gi, "")
+    .replace(/flat\s+\d+%\s+off/gi, "")
+    .replace(/\boff\s+on\s+all\b/gi, "")
+    // Remove "Buy ... online at ₹XXXX on BrandName." pattern from descriptions
+    .replace(/buy\s+.{1,60}?online\s+at\s+[₹$€]?\s*[\d,.]+\s*(on\s+[\w\s-]+\.)?/gi, "")
+    // Remove "100% handcrafted artisan bamboo decor with free delivery/shipping"
+    .replace(/100%\s+handcrafted\s+artisan\s+bamboo\s+decor\s+with\s+free\s+\w+/gi, "")
+    // Clean up leftover pipes, double spaces, leading/trailing junk
+    .replace(/\s*\|\s*$/g, "")
+    .replace(/^\s*\|\s*/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 function escXml(raw: string): string {

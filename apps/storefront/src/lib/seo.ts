@@ -122,21 +122,22 @@ export async function buildProductMetadata(product: {
   const seo = await resolveSiteSeo();
   const { optimizeImageUrl } = await import("./cloudinary");
 
-  const rawTitle = (product.meta?.title || product.title).trim();
+  // Google Merchant Center compliant title — NO prices, NO "Free Shipping", NO promotions.
+  // If meta.title is set, use it as-is (admin can customise). Otherwise build:
+  // "Product Name - Category | Brand"
+  const brandName = seo.name || "Bamboo Eco-Hub";
+  const { categoryName } = product;
+  const catSuffix = categoryName ? ` - ${categoryName}` : "";
+  const title = product.meta?.title
+    ? product.meta.title.trim()
+    : `${product.title.trim()}${catSuffix} | ${brandName}`;
+
   const variant = product.variants?.[0];
-  const priceFormatted = variant?.price
-    ? `${variant.currency === "INR" || !variant.currency ? "₹" : variant.currency + " "}${variant.price}`
-    : "";
 
-  // CTR-Optimized Title: "Product Name | ₹Price | Free Shipping India"
-  const title = priceFormatted
-    ? `${rawTitle} | ${priceFormatted} | Free Shipping India`
-    : `${rawTitle} | ${seo.name || "Bamboo Eco-Hub"}`;
-
-  // CTR-Optimized Description
+  // Google Merchant Center compliant description — NO "Buy...online at ₹XXXX", NO promotional text.
   const description = (
     product.meta?.description ||
-    `Buy ${rawTitle} online at ${priceFormatted || "best price"} on ${seo.name || "Bamboo Eco-Hub"}. 100% handcrafted artisan bamboo decor with free shipping & 30-day returns across India.`
+    `${product.title} — premium handcrafted bamboo decor for Indian homes. Made by skilled artisans using sustainable bamboo. Shop at ${brandName}.`
   )
     .replace(/\s+/g, " ")
     .trim()
