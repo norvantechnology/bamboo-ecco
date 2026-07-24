@@ -4,11 +4,13 @@ import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { ScrollRevealInit } from "@/components/ui/scroll-reveal-init";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
+import { BambooPreloader } from "@/components/ui/bamboo-preloader";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="terra-theme">
       <SmoothScrollProvider>
+        <BambooPreloader />
         <ScrollRevealInit />
         {children}
       </SmoothScrollProvider>

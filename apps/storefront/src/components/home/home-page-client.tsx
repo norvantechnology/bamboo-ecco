@@ -3,18 +3,11 @@
 import dynamic from "next/dynamic";
 import type { HomepageData, WelcomePopupConfig } from "@/lib/api";
 import { withHomepageSections } from "@/lib/homepage-sections";
+import { HomePageAnimated } from "@/components/home/home-page-animated";
 
 const WelcomePopup = dynamic(
   () => import("@/components/promo/welcome-popup").then((m) => m.WelcomePopup),
   { ssr: false },
-);
-
-const HomePageAnimated = dynamic(
-  () => import("@/components/home/home-page-animated").then((m) => m.HomePageAnimated),
-  {
-    ssr: true,
-    loading: () => <div className="min-h-[40vh]" aria-hidden />,
-  },
 );
 
 type HomePageClientProps = {

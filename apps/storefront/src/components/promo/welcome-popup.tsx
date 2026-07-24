@@ -59,8 +59,13 @@ export function WelcomePopup({ config }: WelcomePopupProps) {
     // Only on real open / refresh — not when soft-navigating back to home
     if (alreadyShownThisPageLoad()) return;
 
-    markShownThisPageLoad();
-    setOpen(true);
+    // Delay popup by 2.2s so page settles smoothly first
+    const timer = setTimeout(() => {
+      markShownThisPageLoad();
+      setOpen(true);
+    }, 2200);
+
+    return () => clearTimeout(timer);
   }, [config]);
 
   useEffect(() => {
