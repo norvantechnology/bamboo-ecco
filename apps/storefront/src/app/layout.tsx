@@ -47,6 +47,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${sans.variable} ${cormorant.variable} flex min-h-dvh flex-col overflow-x-hidden font-medium`}>
+        {/* Instant Scroll-to-Top Reset on Page Refresh */}
+        <script dangerouslySetInnerHTML={{ __html: `if('scrollRestoration' in history){history.scrollRestoration='manual'}window.scrollTo(0,0);` }} />
+
         {/* Instant Growing Bamboo Preloader Overlay (0ms Paint on line 1 of HTML) */}
         <div
           id="bamboo-root-preloader"

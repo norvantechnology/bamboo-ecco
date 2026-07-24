@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 interface SmoothScrollContextValue {
   scrollTo: (target: string | HTMLElement | number) => void;
@@ -15,6 +16,20 @@ export function useSmoothScroll() {
 }
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Force browser to manual scroll restoration so refreshes always start at top (scrollTop 0)
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    // Scroll to top immediately on refresh and route change
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   const scrollTo = (target: string | HTMLElement | number) => {
     if (typeof window === "undefined") return;
 
