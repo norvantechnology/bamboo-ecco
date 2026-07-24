@@ -12,6 +12,7 @@ import { useCart } from "@/components/cart/cart-context";
 import { useWishlist } from "@/components/wishlist/wishlist-context";
 import { WoodFrame } from "@/components/animation/wood-grain";
 import { prefersReducedMotion } from "@/lib/motion";
+import { MotionReveal } from "@/components/ui/motion-reveal";
 
 interface ProductCardProps {
   product: Product;
@@ -121,12 +122,11 @@ export function ProductCard({ product, className, reveal = false }: ProductCardP
     setTimeout(() => setAdded(false), 1800);
   }
 
-  return (
+  const cardContent = (
     <article
       ref={cardRef}
       data-product-card-3d
-      data-scroll-reveal={reveal ? "true" : undefined}
-      className={cn(reveal && "scroll-reveal", "group flex h-full flex-col", className)}
+      className={cn("group flex h-full flex-col", className)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
         setHovered(false);
@@ -249,4 +249,10 @@ export function ProductCard({ product, className, reveal = false }: ProductCardP
       </div>
     </article>
   );
+
+  if (reveal) {
+    return <MotionReveal className="h-full">{cardContent}</MotionReveal>;
+  }
+
+  return cardContent;
 }

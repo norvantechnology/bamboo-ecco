@@ -114,7 +114,7 @@ export function InfiniteProductGrid({
     <div>
       <div className="product-grid">
         {products.map((product) => (
-          <ProductCard key={product._id} product={product} />
+          <ProductCard key={product._id} product={product} reveal={true} />
         ))}
       </div>
 
