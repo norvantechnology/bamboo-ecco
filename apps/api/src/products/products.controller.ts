@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
+import { Controller, Get, Header, NotFoundException, Param, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CategoriesService } from '../categories/categories.service';
 import { CurrentTenantId } from '../common/decorators/tenant.decorator';
@@ -26,6 +26,7 @@ export class ProductsController {
   }
 
   @Get('shop')
+  @Header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
   shop(
     @CurrentTenantId() tenantId: string,
     @Query('page') page?: string,
@@ -45,16 +46,19 @@ export class ProductsController {
   }
 
   @Get('new-arrivals')
+  @Header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
   newArrivals(@CurrentTenantId() tenantId: string, @Query('limit') limit?: string) {
     return this.productsService.findNewArrivals(tenantId, limit ? parseInt(limit, 10) : 50);
   }
 
   @Get('featured')
+  @Header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
   featured(@CurrentTenantId() tenantId: string, @Query('limit') limit?: string) {
     return this.productsService.findFeatured(tenantId, limit ? parseInt(limit, 10) : 50);
   }
 
   @Get('category-slug/:slug')
+  @Header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
   async byCategorySlug(
     @CurrentTenantId() tenantId: string,
     @Param('slug') slug: string,
@@ -123,6 +127,7 @@ export class ProductsController {
   }
 
   @Get(':slug')
+  @Header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
   findOne(@CurrentTenantId() tenantId: string, @Param('slug') slug: string) {
     return this.productsService.findBySlug(tenantId, slug);
   }

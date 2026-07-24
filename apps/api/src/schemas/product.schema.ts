@@ -164,12 +164,14 @@ export class Product {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
-ProductSchema.index({ tenantId: 1, status: 1, slug: 1 }, { unique: true });
-ProductSchema.index({ tenantId: 1, categoryId: 1, status: 1, createdAt: -1 });
+ProductSchema.index({ tenantId: 1, slug: 1 }, { unique: true });
 ProductSchema.index({ tenantId: 1, status: 1, createdAt: -1 });
-ProductSchema.index({ tenantId: 1, status: 1, isFeatured: 1, 'ratingSummary.avg': -1 });
+ProductSchema.index({ tenantId: 1, categoryId: 1, status: 1, createdAt: -1 });
+ProductSchema.index({ tenantId: 1, status: 1, isFeatured: 1, 'ratingSummary.avg': -1, createdAt: -1 });
 ProductSchema.index({ tenantId: 1, status: 1, isNewArrival: 1, createdAt: -1 });
 ProductSchema.index({ tenantId: 1, status: 1, 'images.type': 1 });
+ProductSchema.index({ tenantId: 1, status: 1, 'variants.0.price': 1 });
+ProductSchema.index({ tenantId: 1, status: 1, 'variants.0.price': -1 });
+ProductSchema.index({ tenantId: 1, status: 1, 'ratingSummary.avg': -1 });
 ProductSchema.index({ tenantId: 1, 'variants.sku': 1 });
-ProductSchema.index({ tenantId: 1, status: 1, 'variants.stockQty': 1 });
 ProductSchema.index({ title: 'text', description: 'text' });
