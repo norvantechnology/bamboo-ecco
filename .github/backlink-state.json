@@ -78,7 +78,7 @@
   "https://bambooecohub.com/brand/table-lamp": {},
   "https://bambooecohub.com/brand/wall-lamp": {},
   "https://bambooecohub.com/product/artisan-bamboo-bedside-lamp-bh-01403": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "https://dev.to/norvan_technology_d122131/artisan-bamboo-bedside-lamp-bh-01403-1cjk",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/artisan-bamboo-bedside-lamp-bh-01403-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955105643102208",
@@ -456,7 +456,7 @@
     "telegram": "https://t.me/bambooecohub/15"
   },
   "https://bambooecohub.com/guides/bamboo-basket-buying-guide": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/bamboo-basket-buying-guide/",
     "blogger": "https://bambooecohub.blogspot.com/2026/07/bamboo-basket-buying-guide.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822948824282759168",
@@ -465,7 +465,7 @@
     "telegram": "https://t.me/bambooecohub/16"
   },
   "https://bambooecohub.com/guides/bamboo-pendant-light-buying-guide": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-pendant-light-buying-guide-1pop",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/bamboo-pendant-light-buying-guide/",
     "blogger": "https://bambooecohub.blogspot.com/2026/07/bamboo-pendant-light-buying-guide.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822948852849147904",
