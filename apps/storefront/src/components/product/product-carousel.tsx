@@ -16,34 +16,43 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Mouse Drag state for desktop drag-to-scroll
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeftPos, setScrollLeftPos] = useState(0);
+  const rafIdRef = useRef<number | null>(null);
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanScrollLeft(scrollLeft > 5);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    
+    const nextLeft = scrollLeft > 5;
+    const nextRight = scrollLeft < scrollWidth - clientWidth - 10;
     const maxScroll = scrollWidth - clientWidth;
-    if (maxScroll > 0) {
-      setScrollProgress(Math.min(100, Math.max(0, (scrollLeft / maxScroll) * 100)));
-    }
+    const nextProgress = maxScroll > 0 ? Math.min(100, Math.max(0, (scrollLeft / maxScroll) * 100)) : 0;
+
+    setCanScrollLeft((prev) => (prev !== nextLeft ? nextLeft : prev));
+    setCanScrollRight((prev) => (prev !== nextRight ? nextRight : prev));
+    setScrollProgress((prev) => (Math.abs(prev - nextProgress) > 0.5 ? nextProgress : prev));
   }, []);
+
+  const handleScroll = useCallback(() => {
+    if (rafIdRef.current !== null) return;
+    rafIdRef.current = requestAnimationFrame(() => {
+      updateScrollState();
+      rafIdRef.current = null;
+    });
+  }, [updateScrollState]);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     updateScrollState();
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
     return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
+      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
+      el.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
-  }, [updateScrollState, products]);
+  }, [handleScroll, updateScrollState, products]);
 
   const scrollBy = (direction: "left" | "right") => {
     const el = scrollRef.current;
@@ -53,33 +62,6 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
     el.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
-  // Mouse Drag Handlers for Desktop Laptop smooth dragging
-  const handleMouseDown = (e: React.MouseEvent) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setIsDragging(true);
-    setStartX(e.pageX - el.offsetLeft);
-    setScrollLeftPos(el.scrollLeft);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const el = scrollRef.current;
-    if (!el) return;
-    const x = e.pageX - el.offsetLeft;
-    const walk = (x - startX) * 1.5; // Drag speed multiplier
-    el.scrollLeft = scrollLeftPos - walk;
-  };
-
   if (!products || products.length === 0) return null;
 
   // Mobile slice: 12 products (2 per row x 6 rows)
@@ -87,14 +69,14 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
 
   return (
     <div className="relative w-full">
-      {/* 📱 MOBILE VIEW: 2-column grid showing 12 products (NO horizontal scrolling) */}
+      {/* 📱 MOBILE VIEW: 2-column grid showing 12 products */}
       <div className="grid grid-cols-2 gap-2.5 sm:hidden">
         {mobileProducts.map((product) => (
           <ProductCard key={product._id} product={product} reveal={false} />
         ))}
       </div>
 
-      {/* 💻 DESKTOP / TABLET VIEW: Smooth 60fps Horizontal Carousel Slider */}
+      {/* 💻 DESKTOP / TABLET VIEW: Hardware-Accelerated Smooth CSS Carousel Slider */}
       <div className="hidden sm:block overflow-x-clip">
         {/* Top Header Navigation Controls */}
         <div className="mb-3 flex items-center justify-between">
@@ -129,7 +111,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
           </div>
         </div>
 
-        {/* Floating Side Arrows for quick laptop clicking */}
+        {/* Floating Side Arrows */}
         <button
           onClick={() => scrollBy("left")}
           disabled={!canScrollLeft}
@@ -159,25 +141,19 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
         {/* Hardware-Accelerated Smooth Carousel Track */}
         <div
           ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          className={`flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-2 px-1 ${
-            isDragging ? "cursor-grabbing select-none" : "cursor-grab"
-          }`}
+          className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory scroll-smooth py-2 px-1"
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
             WebkitOverflowScrolling: "touch",
           }}
         >
-          {products.map((product) => (
+          {products.map((product, index) => (
             <div
               key={product._id}
               className="w-[240px] sm:w-[270px] md:w-[290px] lg:w-[310px] shrink-0 snap-start"
             >
-              <ProductCard product={product} reveal={false} />
+              <ProductCard product={product} reveal={false} priorityImage={index < 4} />
             </div>
           ))}
         </div>

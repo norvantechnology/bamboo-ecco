@@ -18,9 +18,10 @@ interface ProductCardProps {
   product: Product;
   className?: string;
   reveal?: boolean;
+  priorityImage?: boolean;
 }
 
-export function ProductCard({ product, className, reveal = false }: ProductCardProps) {
+export function ProductCard({ product, className, reveal = false, priorityImage = false }: ProductCardProps) {
   const { addItem } = useCart();
   const { toggle, isWishlisted } = useWishlist();
   const [hovered, setHovered] = useState(false);
@@ -147,10 +148,12 @@ export function ProductCard({ product, className, reveal = false }: ProductCardP
           {displayImage && (
             <Image
               src={displayImage.url}
-              alt={displayImage.alt}
+              alt={displayImage.alt || product.title}
               fill
-              sizes="(max-width: 640px) 50vw, 25vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               quality={75}
+              priority={priorityImage}
+              loading={priorityImage ? undefined : "lazy"}
               className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
           )}
