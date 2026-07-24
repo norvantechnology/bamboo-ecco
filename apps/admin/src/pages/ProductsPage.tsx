@@ -87,7 +87,7 @@ export function ProductsPage() {
       variants: variant
         ? [{ sku: variant.sku, price: variant.price, currency: variant.currency || "INR", stockQty: variant.stockQty }]
         : [{ sku: "", price: 0, currency: "INR", stockQty: 0 }],
-      faqs: (product.faqs ?? []).map((f) => ({ question: f.question, answer: f.answer, sortOrder: f.sortOrder ?? 0 })),
+      faqs: (product.faqs ?? []).map((f: { question: string; answer: string; sortOrder?: number }) => ({ question: f.question, answer: f.answer, sortOrder: f.sortOrder ?? 0 })),
       specs: {
         material: product.specs?.material ?? "",
         dimensions: product.specs?.dimensions ?? "",

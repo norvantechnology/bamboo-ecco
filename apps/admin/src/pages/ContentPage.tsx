@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2, FileText, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, FileText } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { ImageUpload } from "../components/ImageUpload";
 import { useRefetchOnFocus } from "../lib/useRefetchOnFocus";

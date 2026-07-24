@@ -139,6 +139,15 @@ export interface AdminProduct {
   images?: { url: string; alt: string; sortOrder?: number; type?: string }[];
   variants: { sku: string; price: number; currency: string; stockQty: number }[];
   ratingSummary: { avg: number; count: number };
+  faqs?: { question: string; answer: string; sortOrder?: number }[];
+  specs?: {
+    material?: string;
+    dimensions?: string;
+    weight?: string;
+    careInstructions?: string;
+    shippingInfo?: string;
+    warranty?: string;
+  };
 }
 
 export interface CollectionStorySection {
