@@ -176,6 +176,23 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </section>
       )}
+
+      {/* On-Page SEO: Product to Guides Internal Linking */}
+      <section className="mt-12 rounded-2xl border border-border bg-surface/80 p-6 sm:p-8 shadow-warm">
+        <h3 className="font-display text-lg font-semibold text-foreground">Bamboo Decor Styling & Maintenance Guides</h3>
+        <p className="mt-1 text-xs sm:text-sm text-muted">Explore expert tips on maintaining and styling handcrafted Indian bamboo pieces in your living space.</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/journal/bamboo-care-maintenance-india-guide" className="rounded-lg border border-border bg-background px-3.5 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            📖 Bamboo Care & Cleaning Guide →
+          </Link>
+          <Link href="/journal/how-to-decorate-indian-home-bamboo" className="rounded-lg border border-border bg-background px-3.5 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            💡 7 Styling Ideas for Indian Homes →
+          </Link>
+          <Link href="/journal/japandi-interior-design-india-bamboo" className="rounded-lg border border-border bg-background px-3.5 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            🌿 Japandi Design Guide →
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

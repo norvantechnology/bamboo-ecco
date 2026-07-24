@@ -70,6 +70,29 @@ export default async function JournalArticlePage({ params }: Props) {
       ) : null}
 
       <div className="cms-content mt-8" dangerouslySetInnerHTML={{ __html: post.body }} />
+
+      {/* On-Page SEO Internal Link Cluster Widget */}
+      <div className="mt-12 rounded-2xl border border-border bg-surface/80 p-6 sm:p-8 shadow-warm">
+        <h3 className="font-display text-xl font-semibold text-foreground">Explore Handcrafted Collections</h3>
+        <p className="mt-1.5 text-sm text-muted">Discover sustainably sourced, Indian artisan bamboo decor designed to bring warm natural texture into your living spaces.</p>
+        <div className="mt-4 flex flex-wrap gap-2.5">
+          <Link href="/collections/pendant-light" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            Bamboo Pendant Lights →
+          </Link>
+          <Link href="/collections/table-lamp" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            Bamboo Table Lamps →
+          </Link>
+          <Link href="/collections/utility-basket" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            Utility Storage Baskets →
+          </Link>
+          <Link href="/collections/decorative-furnishing" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            Decorative Furnishings →
+          </Link>
+          <Link href="/shop" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
+            Shop All Bamboo Decor →
+          </Link>
+        </div>
+      </div>
     </article>
   );
 }

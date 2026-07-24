@@ -38,6 +38,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={seo.locale.replace("_", "-")} suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className={`${sans.variable} ${cormorant.variable} flex min-h-dvh flex-col overflow-x-hidden font-medium`}>
         <Providers>
           <CartProvider>

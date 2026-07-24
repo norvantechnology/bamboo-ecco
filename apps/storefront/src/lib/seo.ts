@@ -197,10 +197,13 @@ export async function buildProductMetadata(product: {
         ? {
             "product:price:amount": String(variant.price),
             "product:price:currency": variant.currency || "INR",
+            "og:price:amount": String(variant.price),
+            "og:price:currency": variant.currency || "INR",
             "product:availability": inStock
               ? "https://schema.org/InStock"
               : "https://schema.org/OutOfStock",
             "product:brand": seo.name || "Bamboo Eco-Hub",
+            "product:condition": "new",
             ...(variant.sku ? { "product:retailer_item_id": variant.sku } : {}),
             ...(product.categoryName ? { "product:category": product.categoryName } : {}),
           }
