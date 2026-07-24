@@ -78,7 +78,7 @@ export async function GET() {
 
   const now = new Date().toUTCString();
   const feedDescription = escXml(
-    seo.description || `${brandName} — handcrafted bamboo home products`
+    stripPromoText(seo.description || `${brandName} — handcrafted bamboo home products`)
   );
 
   const xml = [
@@ -244,6 +244,11 @@ function stripPromoText(text: string): string {
     .replace(/\boff\s+on\s+all\b/gi, "")
     // Remove "Buy ... online at ₹XXXX on BrandName." pattern from descriptions
     .replace(/buy\s+.{1,60}?online\s+at\s+[₹$€]?\s*[\d,.]+\s*(on\s+[\w\s-]+\.)?/gi, "")
+    // Remove "searching to buy X online in India" or "buyers searching X online"
+    .replace(/\b(searching|looking)\s+to\s+buy\s+([\w\s,-]{1,60}?)\s+online(\s+in\s+India)?/gi, "")
+    .replace(/\bbuyers?\s+searching\s+([\w\s,-]{1,60}?)\s+online(\s+in\s+India)?/gi, "")
+    .replace(/\bshopper[s]?\s+looking\s+to\s+buy\s+([\w\s,-]{1,60}?)\s+online(\s+in\s+India)?/gi, "")
+    .replace(/\bonline\s+in\s+India\b/gi, "in India")
     // Remove "100% handcrafted artisan bamboo decor with free delivery/shipping"
     .replace(/100%\s+handcrafted\s+artisan\s+bamboo\s+decor\s+with\s+free\s+\w+/gi, "")
     // Clean up leftover pipes, double spaces, leading/trailing junk
