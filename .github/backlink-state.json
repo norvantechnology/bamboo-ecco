@@ -87,7 +87,7 @@
     "telegram": "https://t.me/bambooecohub/150"
   },
   "https://bambooecohub.com/product/artisan-bamboo-drum-pendant-bh-1205": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/artisan-bamboo-drum-pendant-bh-1205-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955130011942913",
@@ -96,7 +96,7 @@
     "telegram": "https://t.me/bambooecohub/151"
   },
   "https://bambooecohub.com/product/asian-dome-bamboo-ceiling-light-bh-01306": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/asian-dome-bamboo-ceiling-light-bh-01306-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955153928962048",
@@ -276,7 +276,7 @@
     "telegram": "https://t.me/bambooecohub/171"
   },
   "https://bambooecohub.com/product/mini-bamboo-string-lights-bh-01303": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/mini-bamboo-string-lights-bh-01303-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955617924907008",
@@ -285,7 +285,7 @@
     "telegram": "https://t.me/bambooecohub/172"
   },
   "https://bambooecohub.com/product/natural-bamboo-basket-pendant-bh-1204": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/natural-bamboo-basket-pendant-bh-1204-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955637873967104",
@@ -294,7 +294,7 @@
     "telegram": "https://t.me/bambooecohub/173"
   },
   "https://bambooecohub.com/product/natural-bamboo-cluster-lights-bh-01310": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/natural-bamboo-cluster-lights-bh-01310-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955656349990912",
@@ -303,7 +303,7 @@
     "telegram": "https://t.me/bambooecohub/174"
   },
   "https://bambooecohub.com/product/natural-bamboo-desk-lamp-bh-01402": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/natural-bamboo-desk-lamp-bh-01402-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955674960052224",
@@ -312,7 +312,7 @@
     "telegram": "https://t.me/bambooecohub/175"
   },
   "https://bambooecohub.com/product/natural-bamboo-standing-floor-lamp-bh-01102": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/natural-bamboo-standing-floor-lamp-bh-01102-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955693651968000",
@@ -321,7 +321,7 @@
     "telegram": "https://t.me/bambooecohub/176"
   },
   "https://bambooecohub.com/product/petra-openwork-bamboo-pendant-bh-1208": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/petra-openwork-bamboo-pendant-bh-1208-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955713121927168",
@@ -339,7 +339,7 @@
     "telegram": "https://t.me/bambooecohub/178"
   },
   "https://bambooecohub.com/product/teardrop-bamboo-pendant-lamp-bh-01212": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/teardrop-bamboo-pendant-lamp-bh-01212-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955756939788288",
@@ -348,7 +348,7 @@
     "telegram": "https://t.me/bambooecohub/179"
   },
   "https://bambooecohub.com/product/tulip-bamboo-pendant-light-bh-01217": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/tulip-bamboo-pendant-light-bh-01217-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955782468517888",
@@ -357,7 +357,7 @@
     "telegram": "https://t.me/bambooecohub/180"
   },
   "https://bambooecohub.com/product/welty-rustic-bamboo-rattan-lantern-pendant-bh-01210": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "https://dev.to/norvan_technology_d122131/welty-rustic-bamboo-rattan-lantern-pendant-bh-01210-44d5",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/24/welty-rustic-bamboo-rattan-lantern-pendant-bh-01210-5/",
     "blogger": "error: Blogger API returned 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The caller does not have permission\",\n    \"errors\": [\n      {\n        \"message\": \"The caller does not have permission\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n",
     "tumblr": "https://bambooecohub.tumblr.com/post/822955806774460416",
@@ -411,7 +411,7 @@
     "telegram": "https://t.me/bambooecohub/10"
   },
   "https://bambooecohub.com/journal/bamboo-vs-wood-furniture-india": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/bamboo-vs-wood-furniture-india/",
     "blogger": "https://bambooecohub.blogspot.com/2026/07/bamboo-vs-wood-furniture-india.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822948676425170944",
@@ -420,7 +420,7 @@
     "telegram": "https://t.me/bambooecohub/11"
   },
   "https://bambooecohub.com/journal/how-to-decorate-indian-home-bamboo": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/how-to-decorate-indian-home-bamboo/",
     "blogger": "https://bambooecohub.blogspot.com/2026/07/how-to-decorate-indian-home-bamboo.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822948704901349376",
@@ -429,7 +429,7 @@
     "telegram": "https://t.me/bambooecohub/12"
   },
   "https://bambooecohub.com/journal/bamboo-pendant-lights-india-buyers-guide": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/bamboo-pendant-lights-india-buyers-guide/",
     "blogger": "https://bambooecohub.blogspot.com/2026/07/bamboo-pendant-lights-india-buyers-guide.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822948735234588672",
@@ -456,7 +456,7 @@
     "telegram": "https://t.me/bambooecohub/15"
   },
   "https://bambooecohub.com/guides/bamboo-basket-buying-guide": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 300 seconds\",\"status\":429}",
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Canonical url has already been taken. Email support@dev.to for further details.\",\"status\":422}",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/bamboo-basket-buying-guide/",
     "blogger": "https://bambooecohub.blogspot.com/2026/07/bamboo-basket-buying-guide.html",
     "tumblr": "https://bambooecohub.tumblr.com/post/822948824282759168",
