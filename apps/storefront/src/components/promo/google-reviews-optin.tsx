@@ -56,6 +56,25 @@ export function GoogleReviewsOptIn({
       .filter(Boolean)
       .map((gtin) => ({ gtin }));
 
+    // Inject custom backdrop styling for Google Opt-in Modal
+    const styleId = "gcr-custom-backdrop-style";
+    if (!document.getElementById(styleId)) {
+      const styleEl = document.createElement("style");
+      styleEl.id = styleId;
+      styleEl.innerHTML = `
+        div[id^="gapi_surveyoptin"] {
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
+          border-radius: 16px !important;
+          overflow: hidden !important;
+          border: 1px solid rgba(201, 169, 106, 0.3) !important;
+        }
+        iframe[src*="apis.google.com/u/0/se/"] {
+          border-radius: 16px !important;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
     window.renderOptIn = function () {
       if (window.gapi?.load) {
         window.gapi.load("surveyoptin", function () {
