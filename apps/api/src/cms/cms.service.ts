@@ -342,6 +342,7 @@ export class CmsService {
       homepageSections: resolveHomepageSections(tenant.homepageSections),
       welcomePopup: resolveWelcomePopup(tenant.welcomePopup),
       announcementBar: resolveAnnouncementBar(tenant.announcementBar),
+      googleCustomerReviews: resolveGoogleCustomerReviews(tenant.googleCustomerReviews),
       paymentEnabled: tenant.paymentEnabled !== false,
     };
   }
