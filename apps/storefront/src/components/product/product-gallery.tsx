@@ -49,6 +49,15 @@ export function ProductGallery({ images, title, model3d }: Props) {
     setActive(0);
   }, [imageKey]);
 
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [lightboxOpen]);
+
   const selectImage = useCallback(
     (index: number) => {
       if (count <= 0) return;

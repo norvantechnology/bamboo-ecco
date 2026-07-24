@@ -89,6 +89,16 @@ export function WelcomePopup({ config }: WelcomePopupProps) {
     };
   }, [open, closePopup]);
 
+  // Lock background body scroll when popup is active
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   if (!open || !config.enabled) return null;
 
   const imageBlock = config.imageUrl ? (
