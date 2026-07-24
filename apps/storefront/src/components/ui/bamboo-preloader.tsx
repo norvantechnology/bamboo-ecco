@@ -4,14 +4,15 @@ import { useEffect } from "react";
 
 export function BambooPreloader() {
   useEffect(() => {
-    // Dismiss preloader once page settles
+    // Dismiss preloader safely without removing DOM nodes to prevent React hydration errors
     const dismiss = () => {
       const el = document.getElementById("bamboo-root-preloader");
       if (!el) return;
       el.style.opacity = "0";
       el.style.visibility = "hidden";
+      el.style.pointerEvents = "none";
       setTimeout(() => {
-        el.remove();
+        el.style.display = "none";
       }, 650);
     };
 
