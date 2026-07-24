@@ -17,8 +17,8 @@ export const API_INDEXES: IndexDef[] = [
   // Products — shop / homepage / PDP / search helpers
   {
     collection: 'products',
-    keys: { tenantId: 1, status: 1, slug: 1 },
-    options: { unique: true, name: 'tenantId_1_status_1_slug_1' },
+    keys: { tenantId: 1, slug: 1 },
+    options: { unique: true, name: 'tenantId_1_slug_1' },
   },
   {
     collection: 'products',
@@ -32,8 +32,8 @@ export const API_INDEXES: IndexDef[] = [
   },
   {
     collection: 'products',
-    keys: { tenantId: 1, status: 1, isFeatured: 1, 'ratingSummary.avg': -1 },
-    options: { name: 'tenantId_1_status_1_isFeatured_1_ratingSummary.avg_-1' },
+    keys: { tenantId: 1, status: 1, isFeatured: 1, 'ratingSummary.avg': -1, createdAt: -1 },
+    options: { name: 'tenantId_1_status_1_isFeatured_1_ratingSummary.avg_-1_createdAt_-1' },
   },
   {
     collection: 'products',
@@ -47,13 +47,23 @@ export const API_INDEXES: IndexDef[] = [
   },
   {
     collection: 'products',
-    keys: { tenantId: 1, 'variants.sku': 1 },
-    options: { name: 'tenantId_1_variants.sku_1' },
+    keys: { tenantId: 1, status: 1, 'variants.0.price': 1 },
+    options: { name: 'tenantId_1_status_1_variants.0.price_1' },
   },
   {
     collection: 'products',
-    keys: { tenantId: 1, status: 1, 'variants.stockQty': 1 },
-    options: { name: 'tenantId_1_status_1_variants.stockQty_1' },
+    keys: { tenantId: 1, status: 1, 'variants.0.price': -1 },
+    options: { name: 'tenantId_1_status_1_variants.0.price_-1' },
+  },
+  {
+    collection: 'products',
+    keys: { tenantId: 1, status: 1, 'ratingSummary.avg': -1 },
+    options: { name: 'tenantId_1_status_1_ratingSummary.avg_-1' },
+  },
+  {
+    collection: 'products',
+    keys: { tenantId: 1, 'variants.sku': 1 },
+    options: { name: 'tenantId_1_variants.sku_1' },
   },
   {
     collection: 'products',
