@@ -6,6 +6,7 @@ import { AnnouncementBar } from "@/components/promo/announcement-bar";
 import { CartProvider } from "@/components/cart/cart-context";
 import { WishlistProvider } from "@/components/wishlist/wishlist-context";
 import { Providers } from "@/components/providers";
+import { GoogleReviewsBadge } from "@/components/promo/google-reviews-badge";
 import { OrganizationJsonLd } from "@/components/seo/organization-json-ld";
 import { getLayoutData } from "@/lib/layout-data";
 import { rootMetadataFromSeo } from "@/lib/seo";
@@ -151,6 +152,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </div>
 
         <Providers>
+          <GoogleReviewsBadge config={data?.promotions?.googleCustomerReviews} />
           <CartProvider>
             <WishlistProvider>
               <OrganizationJsonLd name={brand?.name ?? seo.name} tagline={brand?.tagline ?? seo.description} socialLinks={seo.socialLinks} includeWebsite />

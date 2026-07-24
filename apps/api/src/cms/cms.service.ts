@@ -9,6 +9,7 @@ import { DEFAULT_HOMEPAGE_SECTIONS, resolveHomepageSections } from './homepage-s
 import {
   resolveWelcomePopup,
   resolveAnnouncementBar,
+  resolveGoogleCustomerReviews,
 } from './promotions.defaults';
 import { resolveTenantSeo } from './seo.defaults';
 
@@ -205,6 +206,7 @@ export class CmsService {
       homepageSections: resolveHomepageSections(tenant.homepageSections),
       welcomePopup: resolveWelcomePopup(tenant.welcomePopup),
       announcementBar: resolveAnnouncementBar(tenant.announcementBar),
+      googleCustomerReviews: resolveGoogleCustomerReviews(tenant.googleCustomerReviews),
       paymentEnabled: tenant.paymentEnabled !== false,
     };
   }
@@ -259,6 +261,7 @@ export class CmsService {
       homepageSections: Record<string, unknown>;
       welcomePopup: Record<string, unknown>;
       announcementBar: Record<string, unknown>;
+      googleCustomerReviews: Record<string, unknown>;
       paymentEnabled: boolean;
     }>,
   ) {

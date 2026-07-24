@@ -200,6 +200,7 @@ export interface HomepageData {
   promotions?: {
     welcomePopup: WelcomePopupConfig;
     announcementBar: AnnouncementBarConfig;
+    googleCustomerReviews?: GoogleCustomerReviewsConfig;
   };
   sections?: HomepageSections;
   collections: Category[];
@@ -241,6 +242,15 @@ export interface AnnouncementBarConfig {
   textColor: string;
   animation: "marquee" | "pulse" | "slide" | "none";
   dismissible: boolean;
+}
+
+export interface GoogleCustomerReviewsConfig {
+  enabled: boolean;
+  merchantId: string;
+  badgeEnabled: boolean;
+  badgePosition: "BOTTOM_RIGHT" | "BOTTOM_LEFT" | "USER_DEFINED";
+  estimatedDeliveryDays: number;
+  deliveryCountry: string;
 }
 
 export interface PaginatedProducts {

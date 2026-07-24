@@ -270,6 +270,34 @@ export class Tenant {
     dismissible: boolean;
   };
 
+  /** Google Customer Reviews opt-in survey & merchant rating badge config */
+  @Prop({
+    type: {
+      enabled: { type: Boolean, default: true },
+      merchantId: { type: String, default: '5827864300' },
+      badgeEnabled: { type: Boolean, default: true },
+      badgePosition: { type: String, enum: ['BOTTOM_RIGHT', 'BOTTOM_LEFT', 'USER_DEFINED'], default: 'BOTTOM_RIGHT' },
+      estimatedDeliveryDays: { type: Number, default: 5 },
+      deliveryCountry: { type: String, default: 'IN' },
+    },
+    default: () => ({
+      enabled: true,
+      merchantId: '5827864300',
+      badgeEnabled: true,
+      badgePosition: 'BOTTOM_RIGHT',
+      estimatedDeliveryDays: 5,
+      deliveryCountry: 'IN',
+    }),
+  })
+  googleCustomerReviews: {
+    enabled: boolean;
+    merchantId: string;
+    badgeEnabled: boolean;
+    badgePosition: 'BOTTOM_RIGHT' | 'BOTTOM_LEFT' | 'USER_DEFINED';
+    estimatedDeliveryDays: number;
+    deliveryCountry: string;
+  };
+
   /**
    * When false, checkout creates the order and completes without Razorpay
    * (same customer flow, payment step skipped).

@@ -9,7 +9,11 @@ import { ContentPage, ContentPageDocument } from '../schemas/content-page.schema
 import { CustomerPhoto, CustomerPhotoDocument } from '../schemas/customer-photo.schema';
 import { GalleryItem, GalleryItemDocument } from '../schemas/gallery-item.schema';
 import { resolveHomepageSections } from '../cms/homepage-sections.defaults';
-import { resolveWelcomePopup, resolveAnnouncementBar } from '../cms/promotions.defaults';
+import {
+  resolveWelcomePopup,
+  resolveAnnouncementBar,
+  resolveGoogleCustomerReviews,
+} from '../cms/promotions.defaults';
 import { resolveTenantSeo } from '../cms/seo.defaults';
 import { catalogStatusFilter } from '../products/product-status';
 
@@ -197,6 +201,7 @@ export class StorefrontService {
       promotions: {
         welcomePopup: resolveWelcomePopup(tenant?.welcomePopup),
         announcementBar: resolveAnnouncementBar(tenant?.announcementBar),
+        googleCustomerReviews: resolveGoogleCustomerReviews(tenant?.googleCustomerReviews),
       },
     };
   }
@@ -204,7 +209,7 @@ export class StorefrontService {
   async getLayout(tenantId: string) {
     const tid = this.tid(tenantId);
     const [tenant, categories, footerLinks] = await Promise.all([
-      this.tenantModel.findById(tid).select('name tagline theme seo announcementBar').lean().exec(),
+      this.tenantModel.findById(tid).select('name tagline theme seo announcementBar googleCustomerReviews').lean().exec(),
       this.categoryModel
         .find({ tenantId: tid })
         .sort({ name: 1 })
@@ -224,6 +229,7 @@ export class StorefrontService {
       footerLinks,
       promotions: {
         announcementBar: resolveAnnouncementBar(tenant?.announcementBar),
+        googleCustomerReviews: resolveGoogleCustomerReviews(tenant?.googleCustomerReviews),
       },
     };
   }

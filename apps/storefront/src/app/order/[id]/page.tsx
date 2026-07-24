@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle, Package } from "lucide-react";
-import { getOrder } from "@/lib/api";
+import { getOrder, getHomepage } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DownloadInvoiceButton } from "@/components/order/download-invoice-button";
+import { GoogleReviewsOptIn } from "@/components/promo/google-reviews-optin";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -16,7 +17,10 @@ export const metadata: Metadata = {
 
 export default async function OrderConfirmationPage({ params }: Props) {
   const { id } = await params;
-  const order = await getOrder(id).catch(() => null);
+  const [order, homepageData] = await Promise.all([
+    getOrder(id).catch(() => null),
+    getHomepage().catch(() => null),
+  ]);
 
   if (!order) {
     return (
@@ -31,6 +35,15 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
   return (
     <div className="container-page py-12 sm:py-16">
+      {/* Official Google Customer Reviews Order Opt-in Survey Modal */}
+      <GoogleReviewsOptIn
+        config={homepageData?.promotions?.googleCustomerReviews}
+        orderId={order.id}
+        email={order.customerEmail}
+        createdAt={order.createdAt}
+        products={order.items}
+      />
+
       <div className="mx-auto max-w-xl text-center">
         <CheckCircle className="mx-auto h-14 w-14 text-secondary" />
         <h1 className="mt-6 font-display text-3xl sm:text-4xl">Thank you for your order</h1>

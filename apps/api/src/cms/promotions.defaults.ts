@@ -18,6 +18,15 @@ export type AnnouncementBarConfig = {
   dismissible: boolean;
 };
 
+export type GoogleCustomerReviewsConfig = {
+  enabled: boolean;
+  merchantId: string;
+  badgeEnabled: boolean;
+  badgePosition: 'BOTTOM_RIGHT' | 'BOTTOM_LEFT' | 'USER_DEFINED';
+  estimatedDeliveryDays: number;
+  deliveryCountry: string;
+};
+
 export const DEFAULT_WELCOME_POPUP: WelcomePopupConfig = {
   enabled: false,
   mode: 'html',
@@ -33,6 +42,15 @@ export const DEFAULT_ANNOUNCEMENT_BAR: AnnouncementBarConfig = {
   textColor: '#ffffff',
   animation: 'marquee',
   dismissible: true,
+};
+
+export const DEFAULT_GOOGLE_CUSTOMER_REVIEWS: GoogleCustomerReviewsConfig = {
+  enabled: true,
+  merchantId: '5827864300',
+  badgeEnabled: true,
+  badgePosition: 'BOTTOM_RIGHT',
+  estimatedDeliveryDays: 5,
+  deliveryCountry: 'IN',
 };
 
 export function resolveWelcomePopup(
@@ -58,5 +76,21 @@ export function resolveAnnouncementBar(
     ...DEFAULT_ANNOUNCEMENT_BAR,
     ...(stored ?? {}),
     animation: validAnimation,
+  };
+}
+
+export function resolveGoogleCustomerReviews(
+  stored?: Partial<GoogleCustomerReviewsConfig> | null,
+): GoogleCustomerReviewsConfig {
+  const pos = stored?.badgePosition;
+  const validPos = pos === 'BOTTOM_LEFT' || pos === 'USER_DEFINED' ? pos : 'BOTTOM_RIGHT';
+
+  return {
+    ...DEFAULT_GOOGLE_CUSTOMER_REVIEWS,
+    ...(stored ?? {}),
+    merchantId: String(stored?.merchantId || DEFAULT_GOOGLE_CUSTOMER_REVIEWS.merchantId).trim(),
+    badgePosition: validPos,
+    estimatedDeliveryDays: typeof stored?.estimatedDeliveryDays === 'number' ? stored.estimatedDeliveryDays : 5,
+    deliveryCountry: String(stored?.deliveryCountry || 'IN').trim().toUpperCase(),
   };
 }

@@ -679,6 +679,14 @@ export interface TenantSettings {
     animation: "marquee" | "pulse" | "slide" | "none";
     dismissible: boolean;
   };
+  googleCustomerReviews?: {
+    enabled: boolean;
+    merchantId: string;
+    badgeEnabled: boolean;
+    badgePosition: "BOTTOM_RIGHT" | "BOTTOM_LEFT" | "USER_DEFINED";
+    estimatedDeliveryDays: number;
+    deliveryCountry: string;
+  };
 }
 
 export interface HomepageSection {

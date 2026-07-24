@@ -1,4 +1,4 @@
-import type { AnnouncementBarConfig, Category, FooterLinks } from "./api";
+import type { AnnouncementBarConfig, Category, FooterLinks, GoogleCustomerReviewsConfig } from "./api";
 import { getApiUrl, getTenantDomain } from "./api-config";
 import { fetchWithTimeout } from "./fetch-with-timeout";
 
@@ -35,6 +35,7 @@ export interface LayoutData {
   footerLinks?: FooterLinks;
   promotions?: {
     announcementBar: AnnouncementBarConfig;
+    googleCustomerReviews?: GoogleCustomerReviewsConfig;
   };
 }
 
