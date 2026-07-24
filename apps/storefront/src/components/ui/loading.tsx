@@ -17,8 +17,8 @@ export function Spinner({ className, size = "md" }: { className?: string; size?:
 
 export function PageLoader({ label = "Bamboo Eco-Hub" }: { label?: string }) {
   return (
-    <div className="bamboo-loader-container flex h-[55vh] min-h-[55vh] max-h-[60vh] w-full max-w-xs sm:max-w-sm mx-auto items-center justify-center py-6 sm:py-8">
-      <div className="loader-wrap flex flex-col items-center w-full" style={{ gap: "18px" }}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#fbf8f2] dark:bg-[#131210] p-4 text-foreground transition-all duration-500">
+      <div className="loader-wrap flex flex-col items-center w-full max-w-xs text-center" style={{ gap: "18px" }}>
         <div className="glow" />
 
         <svg
