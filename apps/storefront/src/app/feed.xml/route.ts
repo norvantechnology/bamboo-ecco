@@ -250,11 +250,19 @@ function buildFeedItem(
     }
   }
 
-  // Free shipping to India
+  // Direct checkout link for Google Shopping "Buy Now" button
+  lines.push(`      <g:checkout_link_template>${productUrl}</g:checkout_link_template>`);
+  lines.push(`      <g:return_policy_label>30_day_free_returns</g:return_policy_label>`);
+
+  // Free shipping to India with fast handling & transit time for "Fast & Free" badge
   lines.push(`      <g:shipping>`);
   lines.push(`        <g:country>IN</g:country>`);
-  lines.push(`        <g:service>Standard</g:service>`);
+  lines.push(`        <g:service>Standard Fast Shipping</g:service>`);
   lines.push(`        <g:price>0.00 ${currency}</g:price>`);
+  lines.push(`        <g:min_handling_time>1</g:min_handling_time>`);
+  lines.push(`        <g:max_handling_time>2</g:max_handling_time>`);
+  lines.push(`        <g:min_transit_time>3</g:min_transit_time>`);
+  lines.push(`        <g:max_transit_time>7</g:max_transit_time>`);
   lines.push(`      </g:shipping>`);
 
   lines.push(`    </item>`);
