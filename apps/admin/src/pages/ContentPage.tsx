@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2, FileText } from "lucide-react";
+import { Plus, Trash2, FileText, Image as ImageIcon } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
+import { ImageUpload } from "../components/ImageUpload";
 import { useRefetchOnFocus } from "../lib/useRefetchOnFocus";
 import { Field, FieldRow, Panel, Select, TextArea, TextInput } from "../components/ui/form";
 import {
@@ -16,6 +17,8 @@ const emptyForm = {
   title: "",
   body: "",
   type: "static",
+  heroImage: "",
+  imageCredit: "",
   metaTitle: "",
   metaDescription: "",
   footerGroup: "" as "" | "explore" | "help" | "legal",
@@ -69,6 +72,8 @@ export function ContentPage() {
       title: page.title,
       body: page.body,
       type: page.type,
+      heroImage: page.heroImage ?? "",
+      imageCredit: page.imageCredit ?? "",
       metaTitle: page.meta?.title ?? "",
       metaDescription: page.meta?.description ?? "",
       footerGroup: page.footerGroup ?? "",
@@ -92,6 +97,8 @@ export function ContentPage() {
       title: form.title,
       body: form.body,
       type: form.type,
+      heroImage: form.heroImage || undefined,
+      imageCredit: form.imageCredit || undefined,
       meta: {
         title: form.metaTitle || undefined,
         description: form.metaDescription || undefined,
@@ -245,6 +252,49 @@ export function ContentPage() {
                     onChange={(e) => setForm({ ...form, title: e.target.value })}
                   />
                 </Field>
+              </Panel>
+
+              <Panel title="Featured Image / Banner">
+                <div className="space-y-4">
+                  {form.heroImage ? (
+                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-muted/20">
+                      <img src={form.heroImage} alt={form.title} className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, heroImage: "" })}
+                        className="absolute right-2 top-2 rounded-md bg-black/70 px-2 py-1 text-xs text-white hover:bg-black"
+                      >
+                        Remove image
+                      </button>
+                    </div>
+                  ) : null}
+
+                  <FieldRow>
+                    <Field label="Hero Banner Image URL">
+                      <TextInput
+                        placeholder="https://res.cloudinary.com/.../banner.jpg"
+                        value={form.heroImage}
+                        onChange={(e) => setForm({ ...form, heroImage: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Upload banner">
+                      <ImageUpload
+                        folder="content"
+                        slug={form.slug}
+                        label="Upload Hero Image"
+                        onUploaded={(res) => setForm({ ...form, heroImage: res.url })}
+                      />
+                    </Field>
+                  </FieldRow>
+
+                  <Field label="Image Credit / Caption (Optional)">
+                    <TextInput
+                      placeholder="Photo by Tripura Artisan Collective"
+                      value={form.imageCredit}
+                      onChange={(e) => setForm({ ...form, imageCredit: e.target.value })}
+                    />
+                  </Field>
+                </div>
               </Panel>
 
               <Panel title="Content">

@@ -298,10 +298,19 @@ export interface ProductPayload {
   isNewArrival?: boolean;
   images?: { url: string; alt: string; sortOrder?: number; type?: string }[];
   variants: { sku: string; price: number; currency?: string; stockQty: number }[];
+  faqs?: { question: string; answer: string; sortOrder?: number }[];
+  specs?: {
+    material?: string;
+    dimensions?: string;
+    weight?: string;
+    careInstructions?: string;
+    shippingInfo?: string;
+    warranty?: string;
+  };
 }
 
 function cleanProductPayload(data: any): ProductPayload {
-  const { id, _id, __v, createdAt, updatedAt, ratingSummary, reviews, faqs, customerHomes, ...rest } = data;
+  const { id, _id, __v, createdAt, updatedAt, ratingSummary, reviews, customerHomes, ...rest } = data;
   return {
     ...rest,
     images: (rest.images || []).map((img: any) => ({
@@ -318,6 +327,12 @@ function cleanProductPayload(data: any): ProductPayload {
       currency: v.currency || "INR",
       stockQty: Number(v.stockQty) || 0,
     })),
+    faqs: (rest.faqs || []).map((f: any) => ({
+      question: f.question || "",
+      answer: f.answer || "",
+      sortOrder: f.sortOrder ?? 0,
+    })),
+    specs: rest.specs || undefined,
   };
 }
 
@@ -474,6 +489,9 @@ export interface AdminContentPage {
   title: string;
   body: string;
   type: string;
+  heroImage?: string;
+  imageCredit?: string;
+  publishedAt?: string;
   footerGroup?: "explore" | "help" | "legal" | null;
   footerOrder?: number;
   meta?: { title?: string; description?: string };
@@ -489,6 +507,9 @@ export function createContentPage(data: {
   title: string;
   body: string;
   type: string;
+  heroImage?: string;
+  imageCredit?: string;
+  publishedAt?: string;
   meta?: { title?: string; description?: string };
   footerGroup?: "explore" | "help" | "legal" | null;
   footerOrder?: number;
@@ -503,6 +524,9 @@ export function updateContentPage(
     title: string;
     body: string;
     type: string;
+    heroImage: string;
+    imageCredit: string;
+    publishedAt: string;
     meta: { title?: string; description?: string };
     footerGroup: "explore" | "help" | "legal" | null;
     footerOrder: number;

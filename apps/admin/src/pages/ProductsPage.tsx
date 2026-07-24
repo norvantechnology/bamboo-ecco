@@ -25,6 +25,15 @@ const emptyForm = (): ProductPayload & { id?: string } => ({
   isNewArrival: false,
   images: [],
   variants: [{ sku: "", price: 0, currency: "INR", stockQty: 0 }],
+  faqs: [],
+  specs: {
+    material: "",
+    dimensions: "",
+    weight: "",
+    careInstructions: "",
+    shippingInfo: "",
+    warranty: "",
+  },
 });
 
 export function ProductsPage() {
@@ -78,6 +87,15 @@ export function ProductsPage() {
       variants: variant
         ? [{ sku: variant.sku, price: variant.price, currency: variant.currency || "INR", stockQty: variant.stockQty }]
         : [{ sku: "", price: 0, currency: "INR", stockQty: 0 }],
+      faqs: (product.faqs ?? []).map((f) => ({ question: f.question, answer: f.answer, sortOrder: f.sortOrder ?? 0 })),
+      specs: {
+        material: product.specs?.material ?? "",
+        dimensions: product.specs?.dimensions ?? "",
+        weight: product.specs?.weight ?? "",
+        careInstructions: product.specs?.careInstructions ?? "",
+        shippingInfo: product.specs?.shippingInfo ?? "",
+        warranty: product.specs?.warranty ?? "",
+      },
     });
     setFormOpen(true);
   }
@@ -693,6 +711,156 @@ export function ProductsPage() {
                 }}
                 className="w-full rounded-lg border border-border px-3 py-2 text-sm"
               />
+            </div>
+
+            {/* Product Specifications Section */}
+            <div className="mt-6 space-y-3 rounded-lg border border-border p-4">
+              <h4 className="text-sm font-semibold text-foreground">Product Specifications</h4>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-xs text-muted">Material</label>
+                  <input
+                    type="text"
+                    placeholder="Natural bamboo / rattan, handwoven"
+                    value={form.specs?.material ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        specs: { ...(form.specs ?? {}), material: e.target.value },
+                      })
+                    }
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-muted">Dimensions</label>
+                  <input
+                    type="text"
+                    placeholder="35 cm x 35 cm x 45 cm"
+                    value={form.specs?.dimensions ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        specs: { ...(form.specs ?? {}), dimensions: e.target.value },
+                      })
+                    }
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-muted">Weight</label>
+                  <input
+                    type="text"
+                    placeholder="1.2 kg"
+                    value={form.specs?.weight ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        specs: { ...(form.specs ?? {}), weight: e.target.value },
+                      })
+                    }
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-muted">Warranty</label>
+                  <input
+                    type="text"
+                    placeholder="1 year artisan craft warranty"
+                    value={form.specs?.warranty ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        specs: { ...(form.specs ?? {}), warranty: e.target.value },
+                      })
+                    }
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-muted">Care Instructions</label>
+                <input
+                  type="text"
+                  placeholder="Wipe with soft dry cloth; keep away from excessive moisture"
+                  value={form.specs?.careInstructions ?? ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      specs: { ...(form.specs ?? {}), careInstructions: e.target.value },
+                    })
+                  }
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Product FAQs Section */}
+            <div className="mt-6 space-y-3 rounded-lg border border-border p-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-foreground">Product FAQs</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const current = form.faqs ?? [];
+                    setForm({
+                      ...form,
+                      faqs: [...current, { question: "", answer: "", sortOrder: current.length }],
+                    });
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-secondary hover:underline"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add FAQ
+                </button>
+              </div>
+
+              {(!form.faqs || form.faqs.length === 0) && (
+                <p className="text-xs text-muted">No FAQs added yet. Click &quot;Add FAQ&quot; to create product-specific questions and answers.</p>
+              )}
+
+              {(form.faqs ?? []).map((faq, index) => (
+                <div key={index} className="relative space-y-2 rounded-lg border border-border bg-background p-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = (form.faqs ?? []).filter((_, i) => i !== index);
+                      setForm({ ...form, faqs: next });
+                    }}
+                    className="absolute right-2 top-2 text-xs text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-muted">Question #{index + 1}</label>
+                    <input
+                      type="text"
+                      placeholder="Is bulb included?"
+                      value={faq.question}
+                      onChange={(e) => {
+                        const next = [...(form.faqs ?? [])];
+                        next[index] = { ...next[index], question: e.target.value };
+                        setForm({ ...form, faqs: next });
+                      }}
+                      className="w-full rounded-md border border-border px-3 py-1.5 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-muted">Answer</label>
+                    <textarea
+                      rows={2}
+                      placeholder="Standard E27 holder included. Bulb sold separately."
+                      value={faq.answer}
+                      onChange={(e) => {
+                        const next = [...(form.faqs ?? [])];
+                        next[index] = { ...next[index], answer: e.target.value };
+                        setForm({ ...form, faqs: next });
+                      }}
+                      className="w-full rounded-md border border-border px-3 py-1.5 text-sm"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="mt-4 flex gap-3">

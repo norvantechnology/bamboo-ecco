@@ -23,6 +23,9 @@ export class CmsAdminController {
       title: string;
       body: string;
       type: string;
+      heroImage?: string;
+      imageCredit?: string;
+      publishedAt?: string;
       meta?: { title?: string; description?: string };
       footerGroup?: 'explore' | 'help' | 'legal' | null;
       footerOrder?: number;
@@ -41,6 +44,9 @@ export class CmsAdminController {
       title: string;
       body: string;
       type: string;
+      heroImage: string;
+      imageCredit: string;
+      publishedAt: string;
       meta: { title?: string; description?: string };
       footerGroup: 'explore' | 'help' | 'legal' | null;
       footerOrder: number;
