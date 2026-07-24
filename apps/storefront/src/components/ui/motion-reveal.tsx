@@ -17,9 +17,9 @@ export function MotionReveal({
   children,
   className,
   delay = 0,
-  yOffset = 24,
+  yOffset = 16,
   scaleOffset = 1,
-  duration = 0.45,
+  duration = 0.35,
   ...props
 }: MotionRevealProps) {
   const isReduced = prefersReducedMotion();
@@ -32,7 +32,7 @@ export function MotionReveal({
     <motion.div
       initial={{ opacity: 0, y: yOffset, scale: scaleOffset }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: "200px" }}
       transition={{
         duration,
         delay,
@@ -55,7 +55,7 @@ interface MotionStaggerContainerProps extends HTMLMotionProps<"div"> {
 export function MotionStaggerContainer({
   children,
   className,
-  staggerDelay = 0.08,
+  staggerDelay = 0.05,
   ...props
 }: MotionStaggerContainerProps) {
   const isReduced = prefersReducedMotion();
@@ -68,7 +68,7 @@ export function MotionStaggerContainer({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: "200px" }}
       variants={{
         hidden: {},
         visible: {
@@ -88,13 +88,12 @@ export function MotionStaggerContainer({
 export const MotionStaggerChild = motion.div;
 
 export const childFadeUpVariants = {
-  hidden: { opacity: 0, y: 24, scale: 0.98 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    scale: 1,
     transition: {
-      duration: 0.45,
+      duration: 0.35,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },

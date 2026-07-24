@@ -112,18 +112,14 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {/* 3. New Arrivals ("New Bamboo Decor & Furniture") */}
       {sections.newArrivals.enabled && newArrivals.length > 0 && (
         <section className="container-page py-6 sm:py-14">
-          <MotionReveal>
-            <SectionHeader
-              title={sections.newArrivals.title}
-              description={sections.newArrivals.description}
-              href={sections.newArrivals.href}
-            />
-          </MotionReveal>
-          <MotionReveal delay={0.1} yOffset={20}>
-            <div className="mt-4 sm:mt-8">
-              <ProductCarousel products={newArrivals} />
-            </div>
-          </MotionReveal>
+          <SectionHeader
+            title={sections.newArrivals.title}
+            description={sections.newArrivals.description}
+            href={sections.newArrivals.href}
+          />
+          <div className="mt-4 sm:mt-8">
+            <ProductCarousel products={newArrivals} />
+          </div>
         </section>
       )}
 
@@ -131,18 +127,14 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {sections.bestSellers.enabled && bestSellers.length > 0 && (
         <section className="texture-cream relative py-6 sm:py-14">
           <div className="container-page">
-            <MotionReveal>
-              <SectionHeader
-                title={sections.bestSellers.title}
-                description={sections.bestSellers.description}
-                href={sections.bestSellers.href}
-              />
-            </MotionReveal>
-            <MotionReveal delay={0.1} yOffset={20}>
-              <div className="mt-4 sm:mt-8">
-                <ProductCarousel products={bestSellers} />
-              </div>
-            </MotionReveal>
+            <SectionHeader
+              title={sections.bestSellers.title}
+              description={sections.bestSellers.description}
+              href={sections.bestSellers.href}
+            />
+            <div className="mt-4 sm:mt-8">
+              <ProductCarousel products={bestSellers} />
+            </div>
           </div>
         </section>
       )}
