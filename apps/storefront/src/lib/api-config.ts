@@ -54,5 +54,13 @@ export function getTenantDomain(): string {
   if (typeof window !== "undefined" && window.location?.hostname) {
     return window.location.hostname.replace(/^www\./, "").toLowerCase();
   }
-  return "localhost";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (siteUrl) {
+    try {
+      return new URL(siteUrl).hostname.replace(/^www\./, "").toLowerCase();
+    } catch {
+      /* ignore */
+    }
+  }
+  return "bambooecohub.com";
 }

@@ -355,6 +355,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                     <div className="group relative aspect-square overflow-hidden rounded-xl bg-[#e8e2d8]">
                       {item.instagramUrl ? (
                         <a href={item.instagramUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0">
+                          <span className="sr-only">{item.caption || "View on Instagram"}</span>
                           {img}
                         </a>
                       ) : (

@@ -1,32 +1,73 @@
 import type { Metadata } from "next";
 import { HeroBanner } from "@/components/home/hero-banner";
 import { HomePageClient } from "@/components/home/home-page-client";
-import { getHomepage } from "@/lib/api";
+import { getHomepage, type HomepageData } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
+
+const DEFAULT_BRAND_FALLBACK = {
+  name: "Bamboo Eco-Hub",
+  tagline: "Handcrafted Bamboo Furniture & Eco-Friendly Home Decor Online in India",
+  hero: {
+    headline: "Handcrafted Bamboo Furniture & Eco-Friendly Home Decor Online in India",
+    subheading: "Shop sustainable bamboo home decor, space-saving furniture, and natural living accents — delivered across India.",
+    imageUrl: "https://res.cloudinary.com/ddkubtgk0/image/upload/v1783786822/Gemini_Generated_Image_gh71v7gh71v7gh71_ysoamv.png",
+    imageUrls: ["https://res.cloudinary.com/ddkubtgk0/image/upload/v1783786822/Gemini_Generated_Image_gh71v7gh71v7gh71_ysoamv.png"],
+    mobileImageUrls: [],
+    primaryCta: "Shop Bamboo Decor",
+    secondaryCta: "Explore Collections",
+  },
+  theme: {
+    background: "#FAF8F3",
+    primary: "#4B3621",
+    secondary: "#7A8F6B",
+    text: "#2E2E2E",
+    gold: "#C4A962",
+  },
+  brandPillars: [],
+  whyChooseUs: [],
+};
+
+const DEFAULT_HOMEPAGE_FALLBACK: HomepageData = {
+  brand: DEFAULT_BRAND_FALLBACK,
+  sections: {
+    collections: { enabled: true, label: "Collections", title: "Bamboo Home Decor Collections", description: "Explore curated bamboo furniture and natural decor", limit: 8 },
+    lifestyle: { enabled: true, label: "Lifestyle", title: "Bamboo Furniture in Real Indian Homes", description: "Eco-friendly pieces for living rooms and bedrooms", limit: 6 },
+    newArrivals: { enabled: true, label: "Just landed", title: "New Bamboo Decor & Furniture", description: "Fresh handcrafted bamboo pieces", href: "/new-arrivals", limit: 24 },
+    bestSellers: { enabled: true, label: "Popular", title: "Best-Selling Bamboo Home Decor", description: "Our most-loved sustainable furniture and decor", href: "/best-sellers", limit: 24 },
+    whyChooseUs: { enabled: true, label: "Our promise", title: "Why Choose Us" },
+    customerHomes: { enabled: true, label: "Community", title: "Customer Homes", description: "Real Indian homes styled with natural bamboo decor", limit: 8 },
+    reviews: { enabled: true, label: "Reviews", title: "Customer Reviews — Bamboo Furniture & Decor", limit: 6 },
+    journal: { enabled: true, label: "Journal", title: "Bamboo & Sustainable Living Ideas", description: "Tips on eco-friendly home decor and bamboo furniture care", href: "/journal", linkText: "Read all", limit: 4 },
+    gallery: { enabled: true, label: "Instagram", title: "Follow Our Journey", limit: 12 },
+  },
+  collections: [],
+  categoryTree: [],
+  bestSellers: [],
+  lifestyleProducts: [],
+  newArrivals: [],
+  reviews: [],
+  customerHomes: [],
+  gallery: [],
+  blogPosts: [],
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const [data, seo] = await Promise.all([
     getHomepage().catch(() => null),
     resolveSiteSeo(),
   ]);
-  const brand = data?.brand;
+  const brand = data?.brand || DEFAULT_BRAND_FALLBACK;
 
-  // Shortened title to stay under 580px (~55 chars)
-  // Old: "Bamboo Eco-Hub | Handcrafted Bamboo Furniture & Home Decor Online India" (702px)
-  // New: "Bamboo Eco-Hub | Bamboo Furniture & Home Decor India" (~530px)
-  const siteName = seo.name || brand?.name || "Bamboo Eco-Hub";
-  const titleSuffix = seo.defaultTitle || brand?.tagline || "";
-  // Truncate combined title to ~55 chars for safe pixel width
+  const siteName = seo.name || brand.name || "Bamboo Eco-Hub";
+  const titleSuffix = seo.defaultTitle || brand.tagline || "";
   const raw = titleSuffix ? `${siteName} | ${titleSuffix}` : siteName;
-  const fullTitle = raw.length > 58 ? `${siteName} | Bamboo Furniture & Home Decor India` : raw;
+  const fullTitle = raw.length > 58 ? `${siteName} | Handcrafted Furniture & Home Decor India` : raw;
 
-  // Use SEO description from Admin Panel, fall back to tagline
-  const desc = seo.description || brand?.tagline || brand?.hero?.subheading || "";
+  const desc = seo.description || brand.tagline || brand.hero.subheading || "";
 
-  // Use the stored og:image or fall back to all dynamic hero banner images
-  const heroList = (brand?.hero?.imageUrls ?? []).filter((u): u is string => Boolean(u && u.trim()));
-  if (!heroList.length && brand?.hero?.imageUrl?.trim()) {
+  const heroList = (brand.hero.imageUrls ?? []).filter((u): u is string => Boolean(u && u.trim()));
+  if (!heroList.length && brand.hero.imageUrl?.trim()) {
     heroList.push(brand.hero.imageUrl.trim());
   }
   const ogImage = seo.ogImage || heroList[0];
@@ -39,27 +80,19 @@ export async function generateMetadata(): Promise<Metadata> {
     path: "/",
     image: ogImage,
     images: allImages.length ? allImages : undefined,
-    imageAlt: brand?.hero?.headline || fullTitle,
+    imageAlt: brand.hero.headline || fullTitle,
     absoluteTitle: true,
   });
 }
 
 export default async function HomePage() {
-  const data = await getHomepage().catch(() => null);
-
-  if (!data?.brand) {
-    return (
-      <div className="container-page flex min-h-[40vh] flex-col items-center justify-center py-16 text-center">
-        <p className="text-muted">Store content is temporarily unavailable.</p>
-      </div>
-    );
-  }
-
+  const dataRaw = await getHomepage().catch(() => null);
+  const data = dataRaw?.brand ? dataRaw : DEFAULT_HOMEPAGE_FALLBACK;
   const { brand } = data;
 
   return (
     <>
-      {/* Server-rendered H1 for SEO crawlers (visually hidden, hero shows the styled version) */}
+      {/* Server-rendered H1 for SEO crawlers (visually hidden, hero shows styled version) */}
       <h1 className="sr-only">{brand.hero.headline}</h1>
 
       <HeroBanner
