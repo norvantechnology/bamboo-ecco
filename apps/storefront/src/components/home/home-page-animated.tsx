@@ -87,7 +87,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                         <div data-lifestyle-img className="absolute inset-0 will-change-transform">
                           <Image
                             src={lifestyle.url}
-                            alt=""
+                            alt={product.title}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             quality={75}
@@ -146,7 +146,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             <MotionReveal className="flex flex-col items-center text-center mb-10 sm:mb-12">
               <span className="section-label !mb-2">Our Promise</span>
               <h2 className="font-display text-2xl font-semibold sm:text-3xl lg:text-4xl text-foreground relative pb-4">
-                Why Choose Bamboo Eco-Hub
+                Why Choose {brand.name || 'Bamboo Eco-Hub'}
                 <motion.div
                   initial={{ width: 0 }}
                   whileInView={{ width: "80px" }}
@@ -230,7 +230,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                   <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e2d8]">
                     <Image
                       src={photo.imageUrl}
-                      alt=""
+                      alt={`${photo.customerName}'s home with Bamboo Eco-Hub decor${photo.caption ? ` – ${photo.caption}` : ''}`}
                       fill
                       sizes="(max-width: 640px) 50vw, 25vw"
                       quality={75}
@@ -279,7 +279,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                     <footer className="mt-auto pt-5 flex items-center gap-3 border-t border-border mt-4">
                       {review.photos[0] && (
                         <div className="relative h-10 w-10 overflow-hidden rounded-full shrink-0">
-                          <Image src={review.photos[0]} alt="" fill className="object-cover" />
+                          <Image src={review.photos[0]} alt={`${review.reviewerName} review photo`} fill className="object-cover" />
                         </div>
                       )}
                       <cite className="text-base font-semibold not-italic">{review.reviewerName}</cite>
@@ -369,6 +369,48 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
           </div>
         </section>
       )}
+      {/* SEO Content Block — ensures 250+ words and <p> tags for search engine crawlers */}
+      <section className="border-t border-border/60 py-10 sm:py-16">
+        <div className="container-page">
+          <MotionReveal>
+            <div className="mx-auto max-w-3xl">
+              <h2 className="mb-6 font-display text-xl font-semibold text-foreground sm:text-2xl lg:text-3xl">
+                Handcrafted Bamboo Home Decor — Sustainably Made in India
+              </h2>
+              {(data as { seoContent?: string }).seoContent ? (
+                <div
+                  className="prose prose-stone dark:prose-invert max-w-none text-sm leading-relaxed text-muted sm:text-base [&_p]:mb-4"
+                  dangerouslySetInnerHTML={{ __html: (data as { seoContent?: string }).seoContent! }}
+                />
+              ) : (
+                <div className="space-y-4 text-sm leading-relaxed text-muted sm:text-base">
+                  <p>
+                    At Bamboo Eco-Hub, every piece of home decor tells a story of sustainable craftsmanship rooted in the bamboo-rich forests of Tripura, India.
+                    Our artisan families hand-select mature bamboo poles, split them into fine ribbons, and weave each lampshade, storage basket, tray, and organiser
+                    entirely by hand — no machines, no shortcuts. The result is home furnishing that carries the warmth and individuality of genuine handmade craft.
+                  </p>
+                  <p>
+                    Bamboo is one of the fastest-growing renewable resources on the planet, reaching harvest maturity in just 3 to 5 years compared to decades
+                    for hardwood timber. It is naturally antibacterial, lightweight yet remarkably strong, and biodegrades completely at end of life. By choosing bamboo
+                    furniture and home decor, you are making an environmentally responsible choice that reduces plastic waste and supports reforestation.
+                  </p>
+                  <p>
+                    Our curated collections include bamboo pendant lamps, woven wall panels, kitchen organisers, decorative trays, bathroom accessories, and
+                    handwoven furniture — all designed to bring natural elegance to modern Indian homes. Each product ships pan-India with careful eco-friendly
+                    packaging, free standard delivery, and a 30-day easy return policy so you can shop with complete confidence.
+                  </p>
+                  <p>
+                    We work directly with artisan cooperatives across Agartala and Southern Tripura, ensuring fair-trade wages reach the craftspeople who preserve
+                    this centuries-old weaving tradition. When you buy from Bamboo Eco-Hub, you are not just decorating your home — you are supporting a living
+                    heritage of handcraft and helping sustain the livelihoods of India&apos;s skilled bamboo weavers.
+                  </p>
+                </div>
+              )}
+            </div>
+          </MotionReveal>
+        </div>
+      </section>
+
     </HomeMotionRoot>
   );
 }

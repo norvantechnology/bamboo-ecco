@@ -198,6 +198,7 @@ export class StorefrontService {
       gallery,
       blogPosts,
       footerLinks,
+      seoContent: (tenant?.seo as { seoContent?: string })?.seoContent?.trim() || '',
       promotions: {
         welcomePopup: resolveWelcomePopup(tenant?.welcomePopup),
         announcementBar: resolveAnnouncementBar(tenant?.announcementBar),

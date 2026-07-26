@@ -23,7 +23,7 @@ export function CollectionCard3D({ category, index = 0 }: CollectionCard3DProps)
             {category.imageUrl ? (
               <Image
                 src={category.imageUrl}
-                alt=""
+                alt={`${category.name} collection`}
                 fill
                 sizes="(max-width: 640px) 50vw, 25vw"
                 quality={75}

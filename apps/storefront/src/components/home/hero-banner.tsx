@@ -218,12 +218,14 @@ export function HeroBanner({
             </motion.p>
           ) : null}
 
-          <motion.h1
+          <motion.p
+            role="heading"
+            aria-level={1}
             variants={itemVariants}
             className="mb-3 max-w-[20rem] font-display text-3xl font-semibold leading-[1.12] text-white drop-shadow-md sm:mb-4 sm:max-w-2xl sm:text-5xl lg:text-6xl"
           >
             {headline}
-          </motion.h1>
+          </motion.p>
 
           {subheading ? (
             <motion.p

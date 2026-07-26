@@ -9,6 +9,8 @@ interface Props {
   linkText?: string;
   className?: string;
   centered?: boolean;
+  /** Control heading level for proper SEO hierarchy. Defaults to "h2". */
+  as?: "h2" | "h3";
 }
 
 export function SectionHeader({
@@ -19,6 +21,7 @@ export function SectionHeader({
   linkText = "View all",
   className,
   centered,
+  as: Tag = "h2",
 }: Props) {
   return (
     <div
@@ -32,14 +35,14 @@ export function SectionHeader({
     >
       <div className="min-w-0 flex-1">
         {label && <p className={cn("section-label", centered && "section-label--center")}>{label}</p>}
-        <h2
+        <Tag
           className={cn(
             "break-words font-display text-xl font-semibold leading-tight sm:text-3xl lg:text-4xl",
             label && "mt-1.5 sm:mt-2",
           )}
         >
           {title}
-        </h2>
+        </Tag>
         {description && (
           <p className="mt-1.5 max-w-lg break-words text-sm font-medium leading-snug text-muted sm:mt-2 sm:text-base sm:leading-normal">
             {description}

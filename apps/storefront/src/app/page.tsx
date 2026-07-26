@@ -12,13 +12,14 @@ export async function generateMetadata(): Promise<Metadata> {
   ]);
   const brand = data?.brand;
 
-  // Build full keyword-rich homepage title: "Bamboo Eco-Hub | Handcrafted Bamboo Furniture & Home Decor Online India"
-  // We pass seo.defaultTitle as the title so the root layout template produces "defaultTitle | BrandName"
-  // OR if defaultTitle is empty, fall back to brand tagline
+  // Shortened title to stay under 580px (~55 chars)
+  // Old: "Bamboo Eco-Hub | Handcrafted Bamboo Furniture & Home Decor Online India" (702px)
+  // New: "Bamboo Eco-Hub | Bamboo Furniture & Home Decor India" (~530px)
+  const siteName = seo.name || brand?.name || "Bamboo Eco-Hub";
   const titleSuffix = seo.defaultTitle || brand?.tagline || "";
-  const fullTitle = titleSuffix
-    ? `${seo.name || brand?.name} | ${titleSuffix}`
-    : (seo.name || brand?.name || "Home");
+  // Truncate combined title to ~55 chars for safe pixel width
+  const raw = titleSuffix ? `${siteName} | ${titleSuffix}` : siteName;
+  const fullTitle = raw.length > 58 ? `${siteName} | Bamboo Furniture & Home Decor India` : raw;
 
   // Use SEO description from Admin Panel, fall back to tagline
   const desc = seo.description || brand?.tagline || brand?.hero?.subheading || "";
@@ -58,6 +59,9 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* Server-rendered H1 for SEO crawlers (visually hidden, hero shows the styled version) */}
+      <h1 className="sr-only">{brand.hero.headline}</h1>
+
       <HeroBanner
         imageUrl={brand.hero.imageUrl}
         mobileImageUrl={brand.hero.mobileImageUrl}

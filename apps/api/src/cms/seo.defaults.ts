@@ -17,6 +17,8 @@ export type TenantSeoConfig = {
     pinterest?: string;
     twitter?: string;
   };
+  /** Dynamic homepage SEO content block (HTML rich text). */
+  seoContent?: string;
 };
 
 /** Map tenant.seo (+ theme chrome) to a public SEO payload — no marketing copy defaults. */
@@ -43,5 +45,6 @@ export function resolveTenantSeo(
       pinterest: stored?.socialLinks?.pinterest?.trim() || '',
       twitter: stored?.socialLinks?.twitter?.trim() || '',
     },
+    seoContent: stored?.seoContent?.trim() || '',
   };
 }

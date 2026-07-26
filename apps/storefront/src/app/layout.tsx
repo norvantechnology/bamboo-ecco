@@ -40,8 +40,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={seo.locale.replace("_", "-")} suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" sizes="any" />
+        <link rel="icon" href="/brand/icon.svg" type="image/svg+xml" />
         <link rel="shortcut icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -164,7 +166,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               )}
               <Header storeName={storeName} tagline={brand?.tagline} categoryTree={categoryTree} />
               <main className="min-w-0 flex-1">{children}</main>
-              <Footer storeName={storeName} tagline={brand?.tagline ?? ""} categoryTree={categoryTree} footerLinks={data?.footerLinks} />
+              <Footer storeName={storeName} tagline={brand?.tagline ?? ""} categoryTree={categoryTree} footerLinks={data?.footerLinks} socialLinks={seo.socialLinks} />
             </WishlistProvider>
           </CartProvider>
         </Providers>

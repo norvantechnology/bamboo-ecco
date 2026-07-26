@@ -1,0 +1,30 @@
+<svg width="256" height="256" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stalkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E9C988"/>
+      <stop offset="100%" stop-color="#C99A46"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="80" cy="80" r="80" fill="#1F2A17"/>
+
+  <!-- left stalk -->
+  <rect x="36" y="58" width="13" height="72" rx="6.5" fill="url(#stalkGrad)"/>
+  <rect x="34" y="76" width="17" height="4" rx="2" fill="#1F2A17"/>
+  <rect x="34" y="98" width="17" height="4" rx="2" fill="#1F2A17"/>
+  <path d="M42 58 C 24 50, 14 56, 10 68 C 26 70, 38 66, 42 58 Z" fill="#9CBB74"/>
+
+  <!-- right stalk -->
+  <rect x="111" y="62" width="13" height="68" rx="6.5" fill="url(#stalkGrad)"/>
+  <rect x="109" y="80" width="17" height="4" rx="2" fill="#1F2A17"/>
+  <rect x="109" y="102" width="17" height="4" rx="2" fill="#1F2A17"/>
+  <path d="M118 62 C 136 54, 146 60, 150 72 C 134 74, 122 70, 118 62 Z" fill="#9CBB74"/>
+
+  <!-- center stalk (tallest, in front) -->
+  <rect x="73" y="32" width="15" height="98" rx="7.5" fill="url(#stalkGrad)"/>
+  <rect x="71" y="52" width="19" height="4.5" rx="2.25" fill="#1F2A17"/>
+  <rect x="71" y="76" width="19" height="4.5" rx="2.25" fill="#1F2A17"/>
+  <rect x="71" y="100" width="19" height="4.5" rx="2.25" fill="#1F2A17"/>
+  <path d="M80 32 C 58 22, 44 30, 38 44 C 58 46, 74 40, 80 32 Z" fill="#D9AE5F"/>
+  <path d="M81 32 C 103 22, 117 30, 123 44 C 103 46, 87 40, 81 32 Z" fill="#D9AE5F"/>
+</svg>

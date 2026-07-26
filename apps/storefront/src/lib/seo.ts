@@ -288,7 +288,10 @@ export function rootMetadataFromSeo(seo: {
     publisher: brandName || undefined,
     formatDetection: { email: false, address: false, telephone: false },
     icons: {
-      icon: [{ url: BRAND_ASSETS.icon, type: "image/svg+xml" }],
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+        { url: BRAND_ASSETS.icon, type: "image/svg+xml" },
+      ],
       apple: [{ url: BRAND_ASSETS.icon, type: "image/svg+xml" }],
       shortcut: BRAND_ASSETS.icon,
     },

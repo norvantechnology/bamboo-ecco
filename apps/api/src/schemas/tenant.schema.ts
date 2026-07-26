@@ -194,6 +194,10 @@ export class TenantSeo {
     pinterest?: string;
     twitter?: string;
   };
+
+  /** Dynamic homepage SEO content block (HTML rich text). Rendered at the bottom of the homepage for crawlers. */
+  @Prop({ default: '' })
+  seoContent: string;
 }
 
 @Schema({ timestamps: true })
