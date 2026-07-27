@@ -60,7 +60,6 @@ export async function buildPageMetadata({
   const siteName = seo.name;
   const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
-  const localeTag = (seo.locale || "en_IN").replace("_", "-");
 
   let ogImages: { url: string; width?: number; height?: number; alt?: string }[] = [];
 
@@ -83,15 +82,7 @@ export async function buildPageMetadata({
     title: absoluteTitle ? { absolute: title } : title,
     description: desc || undefined,
     keywords: keywords || undefined,
-    alternates: canonical
-      ? {
-          canonical,
-          languages: {
-            [localeTag]: canonical,
-            "x-default": canonical,
-          },
-        }
-      : undefined,
+    alternates: canonical ? { canonical } : undefined,
     openGraph: {
       type: ogType,
       siteName: siteName || undefined,
@@ -276,7 +267,6 @@ export function rootMetadataFromSeo(seo: {
 }): Metadata {
   const siteUrl = getSiteUrl();
   const brandName = seo.name;
-  const localeTag = (seo.locale || "en_IN").replace("_", "-");
   const fullTitle =
     seo.name && seo.defaultTitle
       ? `${seo.name} | ${seo.defaultTitle}`
@@ -341,13 +331,7 @@ export function rootMetadataFromSeo(seo: {
         "max-video-preview": -1,
       },
     },
-    alternates: {
-      canonical: siteUrl,
-      languages: {
-        [localeTag]: siteUrl,
-        "x-default": siteUrl,
-      },
-    },
+    alternates: { canonical: siteUrl },
     manifest: "/manifest.webmanifest",
     verification: {
       google: normalizeGscVerification(seo.gscVerification) || undefined,

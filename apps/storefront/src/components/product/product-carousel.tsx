@@ -153,7 +153,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
               key={product._id}
               className="w-[240px] sm:w-[270px] md:w-[290px] lg:w-[310px] shrink-0 snap-start"
             >
-              <ProductCard product={product} reveal={false} priorityImage={index < 4} />
+              <ProductCard product={product} reveal={false} priorityImage={index === 0} />
             </div>
           ))}
         </div>
