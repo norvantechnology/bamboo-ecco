@@ -4,7 +4,9 @@ import { CategoryToolbar } from "@/components/category/category-toolbar";
 import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import { getShopProducts } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
-import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, buildPageMetadata, productItemListJsonLd } from "@/lib/seo";
+import { resolveSiteSeo } from "@/lib/site";
 
 const VALID_SORTS = ["newest", "price-asc", "price-desc", "rating"] as const;
 
@@ -28,13 +30,36 @@ export default async function ShopPage({ searchParams }: Props) {
     ? (sortParam as (typeof VALID_SORTS)[number])
     : "newest";
 
-  const result = await getShopProducts(1, sort).catch(() => null);
+  const [result, seo] = await Promise.all([
+    getShopProducts(1, sort).catch(() => null),
+    resolveSiteSeo(),
+  ]);
   const products = result?.data ?? [];
   const total = result?.total ?? 0;
   const totalPages = result?.totalPages ?? 1;
 
   return (
     <div className="container-page py-5 sm:py-14">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Shop Bamboo Furniture & Home Decor",
+          url: absoluteUrl("/shop"),
+          mainEntity: productItemListJsonLd(
+            products.map((product) => ({
+              slug: product.slug,
+              title: product.title,
+              description: product.description,
+              status: product.status,
+              images: product.images,
+              variants: product.variants,
+              ratingSummary: product.ratingSummary,
+            })),
+            { total, brandName: seo.name },
+          ),
+        }}
+      />
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: absoluteUrl("/") },

@@ -9,7 +9,8 @@ import { InfiniteProductGrid } from "@/components/product/infinite-product-grid"
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCategory, getProductsByCategorySlug } from "@/lib/api";
-import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata, collectionPageJsonLd } from "@/lib/seo";
+import { resolveSiteSeo } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -57,9 +58,10 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   const parentSlug = category.parent?.slug;
 
-  const [result, parentCategory] = await Promise.all([
+  const [result, parentCategory, seo] = await Promise.all([
     getProductsByCategorySlug(slug, 1, sort).catch(() => null),
     parentSlug ? getCategory(parentSlug).catch(() => null) : Promise.resolve(null),
+    resolveSiteSeo(),
   ]);
 
   const products = result?.data ?? [];
@@ -89,23 +91,23 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   return (
     <>
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
+        data={collectionPageJsonLd({
           name: category.name,
           description: intro || undefined,
           url,
-          mainEntity: {
-            "@type": "ItemList",
-            numberOfItems: products.length,
-            itemListElement: products.map((product, index) => ({
-              "@type": "ListItem",
-              position: index + 1,
-              url: absoluteUrl(`/product/${product.slug}`),
-              name: product.title,
-            })),
-          },
-        }}
+          total,
+          brandName: seo.name,
+          products: products.map((product) => ({
+            slug: product.slug,
+            title: product.title,
+            description: product.description,
+            status: product.status,
+            images: product.images,
+            variants: product.variants,
+            categoryName: category.name,
+            ratingSummary: product.ratingSummary,
+          })),
+        })}
       />
       <BreadcrumbJsonLd items={crumbs} />
 

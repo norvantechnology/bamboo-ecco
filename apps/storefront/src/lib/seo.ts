@@ -533,13 +533,216 @@ export function articleJsonLd(post: {
   };
 }
 
+/** Strip SEO suffixes from product titles for schema.org (Google requires clean product names). */
+export function cleanSchemaProductName(name: string): string {
+  return name
+    .replace(/\s*\|\s*[^|]+$/, "")
+    .replace(/\s*-\s*(Buy|Shop|Handcrafted)[^|]*/i, "")
+    .trim();
+}
+
+export type ProductSchemaInput = {
+  slug: string;
+  title: string;
+  description?: string;
+  status?: string;
+  images: { url: string; alt?: string; type?: string }[];
+  variants: {
+    sku?: string;
+    price?: number;
+    compareAtPrice?: number;
+    currency?: string;
+    stockQty?: number;
+  }[];
+  categoryName?: string;
+  material?: string;
+  ratingSummary?: { avg: number; count: number };
+};
+
+function productGalleryImages(images: { url: string; alt?: string; type?: string }[]) {
+  const gallery = images.filter((i) => i.type !== "lifestyle");
+  return productImageJsonLd(gallery.length ? gallery : images);
+}
+
+function productOfferJsonLd(opts: {
+  price: number;
+  compareAtPrice?: number;
+  currency?: string;
+  url: string;
+  inStock?: boolean;
+  brandName?: string;
+}) {
+  const currency = opts.currency ?? "INR";
+  const onSale = opts.compareAtPrice != null && opts.compareAtPrice > opts.price;
+
+  return {
+    "@type": "Offer",
+    price: opts.price,
+    priceCurrency: currency,
+    ...(onSale
+      ? {
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            price: opts.price,
+            priceCurrency: currency,
+            referencePrice: {
+              "@type": "UnitPriceSpecification",
+              price: opts.compareAtPrice,
+              priceCurrency: currency,
+            },
+          },
+        }
+      : {}),
+    priceValidUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString().slice(0, 10),
+    availability:
+      opts.inStock === false
+        ? "https://schema.org/OutOfStock"
+        : "https://schema.org/InStock",
+    url: opts.url,
+    itemCondition: "https://schema.org/NewCondition",
+    seller: {
+      "@type": "Organization",
+      name: opts.brandName || "Bamboo Eco-Hub",
+    },
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "IN",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnPeriod",
+      merchantReturnDays: 30,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/FreeReturn",
+      refundType: "https://schema.org/FullRefund",
+    },
+    shippingDetails: {
+      "@type": "OfferShippingDetails",
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "IN",
+      },
+      shippingRate: {
+        "@type": "MonetaryAmount",
+        value: 0,
+        currency,
+      },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: {
+          "@type": "QuantitativeValue",
+          minValue: 1,
+          maxValue: 2,
+          unitCode: "DAY",
+        },
+        transitTime: {
+          "@type": "QuantitativeValue",
+          minValue: 3,
+          maxValue: 7,
+          unitCode: "DAY",
+        },
+      },
+    },
+  };
+}
+
+/** Compact Product schema for ItemList carousels on collection/shop pages. */
+export function productSummaryJsonLd(
+  product: ProductSchemaInput,
+  brandName?: string,
+) {
+  const variant = product.variants[0];
+  const images = productGalleryImages(product.images);
+  const url = absoluteUrl(`/product/${product.slug}`);
+  const inStock =
+    product.status !== "out_of_stock" && (variant?.stockQty == null || variant.stockQty > 0);
+
+  return {
+    "@type": "Product",
+    name: cleanSchemaProductName(product.title),
+    ...(product.description
+      ? { description: product.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 500) }
+      : {}),
+    image: images.length === 1 ? images[0] : images.slice(0, 5),
+    sku: variant?.sku || undefined,
+    ...(product.categoryName ? { category: product.categoryName } : {}),
+    brand: {
+      "@type": "Brand",
+      name: brandName || "Bamboo Eco-Hub",
+    },
+    ...(variant?.price
+      ? {
+          offers: productOfferJsonLd({
+            price: variant.price,
+            compareAtPrice: variant.compareAtPrice,
+            currency: variant.currency,
+            url,
+            inStock,
+            brandName,
+          }),
+        }
+      : {}),
+    ...(product.ratingSummary && product.ratingSummary.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(product.ratingSummary.avg.toFixed(1)),
+            reviewCount: product.ratingSummary.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
+  };
+}
+
+/** ItemList with nested Product items — powers Google product carousels in organic search. */
+export function productItemListJsonLd(
+  products: ProductSchemaInput[],
+  opts?: { total?: number; brandName?: string; maxItems?: number },
+) {
+  const limit = opts?.maxItems ?? 20;
+  const slice = products.slice(0, limit);
+
+  return {
+    "@type": "ItemList",
+    numberOfItems: opts?.total ?? products.length,
+    itemListOrder: "https://schema.org/ItemListOrderDescending",
+    itemListElement: slice.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(`/product/${product.slug}`),
+      item: productSummaryJsonLd(product, opts?.brandName),
+    })),
+  };
+}
+
+/** Collection / category page schema with product carousel data. */
+export function collectionPageJsonLd(opts: {
+  name: string;
+  description?: string;
+  url: string;
+  products: ProductSchemaInput[];
+  total?: number;
+  brandName?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: opts.name,
+    description: opts.description || undefined,
+    url: opts.url,
+    mainEntity: productItemListJsonLd(opts.products, {
+      total: opts.total,
+      brandName: opts.brandName,
+    }),
+  };
+}
+
 export function productJsonLd(product: {
   name: string;
   description?: string;
   images: { url: string; alt?: string }[];
   sku?: string;
   price?: number;
-  compareAtPrice?: number;  // original price before sale — enables crossed-out price in Google
+  compareAtPrice?: number;
   currency?: string;
   url: string;
   inStock?: boolean;
@@ -551,17 +754,18 @@ export function productJsonLd(product: {
   videoUrl?: string;
 }) {
   const images = productImageJsonLd(product.images);
-  const ratingAvg = product.rating?.avg && product.rating.avg > 0 ? product.rating.avg : 4.9;
-  const ratingCount = product.rating?.count && product.rating.count > 0 ? product.rating.count : 14;
+  const cleanName = cleanSchemaProductName(product.name);
+  const hasRealReviews = (product.reviews?.length ?? 0) > 0;
+  const hasRealRating = (product.rating?.count ?? 0) > 0;
 
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
+    name: cleanName,
     description: product.description,
     image: images.length === 1 ? images[0] : images,
-    sku: product.sku || "N/A",
-    mpn: product.sku || "N/A",
+    sku: product.sku || undefined,
+    mpn: product.sku || undefined,
     category: product.categoryName,
     material: product.material,
     brand: {
@@ -572,96 +776,40 @@ export function productJsonLd(product: {
       ? {
           subjectOf: {
             "@type": "VideoObject",
-            name: `${product.name} Showcase Video`,
-            description: product.description || product.name,
+            name: `${cleanName} Showcase Video`,
+            description: product.description || cleanName,
             thumbnailUrl: images[0] || undefined,
             contentUrl: product.videoUrl,
             uploadDate: new Date().toISOString().slice(0, 10),
           },
         }
       : {}),
-    offers: product.price
+    ...(product.price
       ? {
-          "@type": "Offer",
-          // When compareAtPrice exists: product is on sale.
-          // Google shows the sale price and the original crossed-out.
-          ...(product.compareAtPrice && product.compareAtPrice > product.price
-            ? {
-                priceSpecification: {
-                  "@type": "PriceSpecification",
-                  price: product.price,
-                  priceCurrency: product.currency ?? "INR",
-                },
-                // schema.org Offer.price must still be the current (lower) price
-                price: product.price,
-              }
-            : { price: product.price }),
-          priceCurrency: product.currency ?? "INR",
-          priceValidUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)
-            .toISOString()
-            .slice(0, 10),
-          validFrom: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
-            .toISOString()
-            .slice(0, 10),
-          availability:
-            product.inStock === false
-              ? "https://schema.org/OutOfStock"
-              : "https://schema.org/InStock",
-          url: product.url,
-          itemCondition: "https://schema.org/NewCondition",
-          seller: {
-            "@type": "Organization",
-            name: product.brandName || "Bamboo Eco-Hub",
-          },
-          hasMerchantReturnPolicy: {
-            "@type": "MerchantReturnPolicy",
-            applicableCountry: "IN",
-            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnPeriod",
-            merchantReturnDays: 30,
-            returnMethod: "https://schema.org/ReturnByMail",
-            returnFees: "https://schema.org/FreeReturn",
-            refundType: "https://schema.org/FullRefund",
-            feesParagraph: "Free returns within 30 days",
-          },
-          shippingDetails: {
-            "@type": "OfferShippingDetails",
-            shippingDestination: {
-              "@type": "DefinedRegion",
-              addressCountry: "IN",
-            },
-            shippingRate: {
-              "@type": "MonetaryAmount",
-              value: 0,
-              currency: product.currency ?? "INR",
-            },
-            deliveryTime: {
-              "@type": "ShippingDeliveryTime",
-              handlingTime: {
-                "@type": "QuantitativeValue",
-                minValue: 1,
-                maxValue: 2,
-                unitCode: "DAY",
-              },
-              transitTime: {
-                "@type": "QuantitativeValue",
-                minValue: 3,
-                maxValue: 7,
-                unitCode: "DAY",
-              },
-            },
+          offers: productOfferJsonLd({
+            price: product.price,
+            compareAtPrice: product.compareAtPrice,
+            currency: product.currency,
+            url: product.url,
+            inStock: product.inStock,
+            brandName: product.brandName,
+          }),
+        }
+      : {}),
+    ...(hasRealRating
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(product.rating!.avg.toFixed(1)),
+            reviewCount: product.rating!.count,
+            bestRating: 5,
+            worstRating: 1,
           },
         }
-      : undefined,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: Number(ratingAvg.toFixed(1)),
-      reviewCount: ratingCount,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review:
-      product.reviews && product.reviews.length > 0
-        ? product.reviews.map((r) => ({
+      : {}),
+    ...(hasRealReviews
+      ? {
+          review: product.reviews!.map((r) => ({
             "@type": "Review",
             reviewRating: {
               "@type": "Rating",
@@ -675,24 +823,9 @@ export function productJsonLd(product: {
             },
             reviewBody: r.body || undefined,
             ...(r.createdAt ? { datePublished: new Date(r.createdAt).toISOString().slice(0, 10) } : {}),
-          }))
-        : [
-            {
-              "@type": "Review",
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: 5,
-                bestRating: 5,
-                worstRating: 1,
-              },
-              author: {
-                "@type": "Person",
-                name: "Verified Buyer",
-              },
-              reviewBody: `Beautiful handcrafted ${product.name}. Premium bamboo weave and safe delivery.`,
-              datePublished: "2026-07-01",
-            },
-          ],
+          })),
+        }
+      : {}),
   };
 }
 

@@ -70,8 +70,8 @@ export default async function ProductPage({ params }: Props) {
   return (
     <div className="container-page min-w-0 overflow-x-hidden py-4 sm:py-10">
       <ProductJsonLd
-        name={product.meta?.title || product.title}
-        description={product.meta?.description || product.description}
+        name={product.title}
+        description={product.description}
         images={product.images.map((i) => ({ url: i.url, alt: i.alt }))}
         sku={product.variants[0]?.sku}
         price={product.variants[0]?.price}

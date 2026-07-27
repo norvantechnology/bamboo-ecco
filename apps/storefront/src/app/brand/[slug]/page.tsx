@@ -6,7 +6,7 @@ import { getCategory, getProductsByCategorySlug } from "@/lib/api";
 import { ProductCard } from "@/components/product/product-card";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
-import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata, collectionPageJsonLd } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 
 interface Props {
@@ -50,13 +50,23 @@ export default async function BrandPage({ params }: Props) {
   return (
     <div className="container-page py-10 sm:py-14">
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Brand",
-          name: siteName ? `${siteName} ${category.name}` : category.name,
+        data={collectionPageJsonLd({
+          name: category.name,
           description: intro,
           url: pageUrl,
-        }}
+          total: products.total,
+          brandName: siteName,
+          products: products.data.map((product) => ({
+            slug: product.slug,
+            title: product.title,
+            description: product.description,
+            status: product.status,
+            images: product.images,
+            variants: product.variants,
+            categoryName: category.name,
+            ratingSummary: product.ratingSummary,
+          })),
+        })}
       />
       <BreadcrumbJsonLd
         items={[

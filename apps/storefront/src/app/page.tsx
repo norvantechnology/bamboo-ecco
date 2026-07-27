@@ -3,7 +3,7 @@ import { HeroBanner } from "@/components/home/hero-banner";
 import { HomePageClient } from "@/components/home/home-page-client";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getHomepage, type HomepageData } from "@/lib/api";
-import { buildPageMetadata, homePageJsonLd } from "@/lib/seo";
+import { buildPageMetadata, homePageJsonLd, productItemListJsonLd } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 
 const DEFAULT_BRAND_FALLBACK = {
@@ -95,14 +95,40 @@ export default async function HomePage() {
     heroImages.push(brand.hero.imageUrl.trim());
   }
 
+  const featuredProducts = [...data.bestSellers, ...data.newArrivals].filter(
+    (product, index, list) => list.findIndex((p) => p._id === product._id) === index,
+  );
+
   return (
     <>
       <JsonLd
-        data={homePageJsonLd({
-          name: brand.name,
-          description: brand.tagline || brand.hero.subheading,
-          image: heroImages[0],
-        })}
+        data={[
+          homePageJsonLd({
+            name: brand.name,
+            description: brand.tagline || brand.hero.subheading,
+            image: heroImages[0],
+          }),
+          ...(featuredProducts.length
+            ? [
+                {
+                  "@context": "https://schema.org",
+                  name: `${brand.name} Featured Products`,
+                  ...productItemListJsonLd(
+                    featuredProducts.map((product) => ({
+                      slug: product.slug,
+                      title: product.title,
+                      description: product.description,
+                      status: product.status,
+                      images: product.images,
+                      variants: product.variants,
+                      ratingSummary: product.ratingSummary,
+                    })),
+                    { brandName: brand.name, maxItems: 12 },
+                  ),
+                },
+              ]
+            : []),
+        ]}
       />
       {/* Server-rendered H1 for SEO crawlers (visually hidden, hero shows styled version) */}
       <h1 className="sr-only">{brand.hero.headline}</h1>
