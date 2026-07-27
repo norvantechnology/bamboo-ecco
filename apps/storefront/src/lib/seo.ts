@@ -60,6 +60,7 @@ export async function buildPageMetadata({
   const siteName = seo.name;
   const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
+  const localeTag = (seo.locale || "en_IN").replace("_", "-");
 
   let ogImages: { url: string; width?: number; height?: number; alt?: string }[] = [];
 
@@ -82,7 +83,15 @@ export async function buildPageMetadata({
     title: absoluteTitle ? { absolute: title } : title,
     description: desc || undefined,
     keywords: keywords || undefined,
-    alternates: canonical ? { canonical } : undefined,
+    alternates: canonical
+      ? {
+          canonical,
+          languages: {
+            [localeTag]: canonical,
+            "x-default": canonical,
+          },
+        }
+      : undefined,
     openGraph: {
       type: ogType,
       siteName: siteName || undefined,
@@ -267,6 +276,7 @@ export function rootMetadataFromSeo(seo: {
 }): Metadata {
   const siteUrl = getSiteUrl();
   const brandName = seo.name;
+  const localeTag = (seo.locale || "en_IN").replace("_", "-");
   const fullTitle =
     seo.name && seo.defaultTitle
       ? `${seo.name} | ${seo.defaultTitle}`
@@ -329,6 +339,13 @@ export function rootMetadataFromSeo(seo: {
         "max-image-preview": "large",
         "max-snippet": -1,
         "max-video-preview": -1,
+      },
+    },
+    alternates: {
+      canonical: siteUrl,
+      languages: {
+        [localeTag]: siteUrl,
+        "x-default": siteUrl,
       },
     },
     manifest: "/manifest.webmanifest",
@@ -405,6 +422,43 @@ export function websiteJsonLd(brand: { name?: string; description?: string }) {
         urlTemplate: `${siteUrl}/search?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export function homePageJsonLd(page: {
+  name?: string;
+  description?: string;
+  image?: string;
+}) {
+  const siteUrl = getSiteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: page.name || undefined,
+    description: page.description || undefined,
+    url: siteUrl,
+    primaryImageOfPage: page.image
+      ? {
+          "@type": "ImageObject",
+          url: page.image,
+        }
+      : undefined,
+    isPartOf: {
+      "@type": "WebSite",
+      url: siteUrl,
+      name: page.name || undefined,
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: siteUrl,
+        },
+      ],
     },
   };
 }

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { HeroBanner } from "@/components/home/hero-banner";
 import { HomePageClient } from "@/components/home/home-page-client";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getHomepage, type HomepageData } from "@/lib/api";
-import { buildPageMetadata } from "@/lib/seo";
+import { buildPageMetadata, homePageJsonLd } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 
 const DEFAULT_BRAND_FALLBACK = {
@@ -89,9 +90,20 @@ export default async function HomePage() {
   const dataRaw = await getHomepage().catch(() => null);
   const data = dataRaw?.brand ? dataRaw : DEFAULT_HOMEPAGE_FALLBACK;
   const { brand } = data;
+  const heroImages = (brand.hero.imageUrls ?? []).filter((u): u is string => Boolean(u && u.trim()));
+  if (!heroImages.length && brand.hero.imageUrl?.trim()) {
+    heroImages.push(brand.hero.imageUrl.trim());
+  }
 
   return (
     <>
+      <JsonLd
+        data={homePageJsonLd({
+          name: brand.name,
+          description: brand.tagline || brand.hero.subheading,
+          image: heroImages[0],
+        })}
+      />
       {/* Server-rendered H1 for SEO crawlers (visually hidden, hero shows styled version) */}
       <h1 className="sr-only">{brand.hero.headline}</h1>
 

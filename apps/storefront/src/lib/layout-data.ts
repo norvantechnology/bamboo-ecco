@@ -2,8 +2,6 @@ import type { AnnouncementBarConfig, Category, FooterLinks, GoogleCustomerReview
 import { getApiUrl, getTenantDomain } from "./api-config";
 import { fetchWithTimeout } from "./fetch-with-timeout";
 
-const IS_DEV = process.env.NODE_ENV === "development";
-
 export interface LayoutSeo {
   description: string;
   defaultTitle: string;

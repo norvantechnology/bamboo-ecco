@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { createElement, useEffect, useRef, useState } from "react";
 import { Box, ImageIcon } from "lucide-react";
 
@@ -79,8 +80,13 @@ export function ProductModelViewer({ model3d, alt, fallbackImage, showToggle = t
 
       {mode === "image" && poster ? (
         <div className="relative aspect-square overflow-hidden rounded-lg bg-background">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={poster} alt={alt} className="h-full w-full object-contain object-center" loading="lazy" />
+          <Image
+            src={poster}
+            alt={alt}
+            fill
+            sizes="(max-width: 1024px) 100vw, 640px"
+            className="object-contain object-center"
+          />
         </div>
       ) : null}
 

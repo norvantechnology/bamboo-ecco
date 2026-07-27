@@ -135,7 +135,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         <section className="relative border-b border-border bg-[#1c1816] h-[180px] sm:h-[240px] lg:h-[300px] w-full overflow-hidden">
           <Image
             src={category.imageUrl}
-            alt=""
+            alt={`${category.name} collection banner`}
             fill
             priority
             sizes="100vw"

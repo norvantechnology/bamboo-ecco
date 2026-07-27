@@ -46,7 +46,7 @@ function CategoryColumn({
           >
             <Image
               src={root.imageUrl}
-              alt=""
+              alt={`${root.name} collection icon`}
               width={32}
               height={32}
               className="h-full w-full object-cover"

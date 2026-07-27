@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { BRAND_ASSETS } from "@/lib/brand";
 
@@ -47,19 +48,17 @@ export function BrandLogo({
   priority,
 }: Props) {
   const s = SIZE[size];
-  const fetchPriority = priority ? ("high" as const) : undefined;
 
   if (variant === "mark") {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={BRAND_ASSETS.icon}
         alt={storeName}
         className={cn(s.icon, "shrink-0 rounded-full", className)}
         width={64}
         height={64}
-        decoding="async"
-        fetchPriority={fetchPriority}
+        priority={priority}
+        unoptimized
       />
     );
   }
@@ -73,16 +72,14 @@ export function BrandLogo({
 
   return (
     <span className={cn("inline-flex max-w-full items-center", s.gap, className)}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={BRAND_ASSETS.icon}
-        alt=""
-        aria-hidden
+        alt={`${storeName} logo`}
         className={cn(s.icon, "shrink-0 rounded-full")}
         width={64}
         height={64}
-        decoding="async"
-        fetchPriority={fetchPriority}
+        priority={priority}
+        unoptimized
       />
       <span
         className={cn(

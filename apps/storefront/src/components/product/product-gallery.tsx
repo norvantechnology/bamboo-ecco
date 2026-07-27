@@ -276,7 +276,7 @@ export function ProductGallery({ images, title, model3d }: Props) {
                 >
                   <Image
                     src={img.url}
-                    alt=""
+                    alt={`${img.alt || title} thumbnail ${index + 1}`}
                     fill
                     sizes="72px"
                     className="pointer-events-none object-contain object-center p-1"
@@ -367,7 +367,13 @@ export function ProductGallery({ images, title, model3d }: Props) {
                     index === active ? "border-gold ring-2 ring-gold/40" : "border-transparent opacity-60 hover:opacity-100"
                   )}
                 >
-                  <Image src={img.url} alt="" fill sizes="56px" className="object-contain p-1" />
+                  <Image
+                    src={img.url}
+                    alt={`${img.alt || title} preview ${index + 1}`}
+                    fill
+                    sizes="56px"
+                    className="object-contain p-1"
+                  />
                 </button>
               ))}
             </div>

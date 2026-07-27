@@ -60,9 +60,6 @@ export async function GET() {
   const allProducts = productsResult.status === "fulfilled" ? productsResult.value : [];
   const allCategories = categoriesResult.status === "fulfilled" ? categoriesResult.value : [];
 
-  // Build a category name lookup
-  const catMap = new Map(allCategories.map((c) => [c._id, c.name]));
-
   const lines: string[] = [];
 
   lines.push(`# ${brand.name} — Complete Product Catalog`);
