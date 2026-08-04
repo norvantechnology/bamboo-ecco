@@ -158,8 +158,14 @@ export function ProductCard({ product, className, reveal = false, priorityImage 
             />
           )}
 
+          {hasDiscount && !outOfStock && (
+            <span className="absolute left-2.5 top-2.5 z-[2] rounded-full bg-[#b8863a] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur-xs sm:left-3 sm:top-3 sm:px-3 sm:text-xs">
+              {discountPercent}% OFF
+            </span>
+          )}
+
           {outOfStock && (
-            <span className="absolute left-2 top-2 z-[2] rounded-full bg-background/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted backdrop-blur-sm sm:left-3 sm:top-3 sm:px-3 sm:text-xs">
+            <span className="absolute left-2.5 top-2.5 z-[2] rounded-full bg-background/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted backdrop-blur-sm sm:left-3 sm:top-3 sm:px-3 sm:text-xs">
               Sold out
             </span>
           )}
@@ -170,44 +176,46 @@ export function ProductCard({ product, className, reveal = false, priorityImage 
               e.preventDefault();
               handleWishlistToggle();
             }}
-            className="absolute right-2.5 top-2.5 z-[2] flex h-9 w-9 items-center justify-center rounded-full bg-surface/95 text-muted shadow-warm backdrop-blur-sm transition-all duration-300 ease-out hover:scale-110 hover:text-secondary active:scale-95 sm:right-3 sm:top-3 sm:h-11 sm:w-11"
+            className="absolute right-2.5 top-2.5 z-[2] flex h-9 w-9 items-center justify-center rounded-full bg-surface/95 text-muted shadow-warm backdrop-blur-sm transition-all duration-300 ease-out hover:scale-110 hover:text-red-500 active:scale-95 sm:right-3 sm:top-3 sm:h-10 sm:w-10"
             aria-label="Add to wishlist"
           >
             <Heart
               className={cn(
                 "h-4 w-4 transition-colors duration-300 ease-out sm:h-[18px] sm:w-[18px]",
-                wishlisted ? "fill-secondary text-secondary" : "fill-none",
+                wishlisted ? "fill-red-500 text-red-500" : "fill-none",
                 heartPop && "heart-pop",
               )}
             />
           </button>
         </Link>
 
-        <div className="flex flex-1 flex-col gap-0.5 p-2 sm:gap-1.5 sm:p-4">
-          {product.ratingSummary.count > 0 ? (
-            <div className="flex items-center gap-0.5 text-[11px] font-medium text-muted sm:gap-1 sm:text-sm">
-              <Star className="h-3 w-3 fill-gold text-gold sm:h-3.5 sm:w-3.5" />
-              <span className="text-foreground">{product.ratingSummary.avg.toFixed(1)}</span>
-              <span className="text-muted">({product.ratingSummary.count})</span>
-            </div>
-          ) : null}
+        <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-5">
+          <div className="space-y-1">
+            {product.ratingSummary.count > 0 ? (
+              <div className="flex items-center gap-1 text-xs font-semibold text-muted">
+                <Star className="h-3.5 w-3.5 fill-[#C9A24B] text-[#C9A24B]" />
+                <span className="text-foreground">{product.ratingSummary.avg.toFixed(1)}</span>
+                <span className="text-muted/80">({product.ratingSummary.count})</span>
+              </div>
+            ) : null}
 
-          <Link href={`/product/${product.slug}`} className="block">
-            <h3 className="line-clamp-2 min-h-[2.5rem] font-sans text-sm font-bold leading-snug tracking-tight text-foreground transition-colors sm:min-h-[2.75rem] sm:text-base lg:group-hover:text-[#b8863a]">
-              {product.title}
-            </h3>
-          </Link>
+            <Link href={`/product/${product.slug}`} className="block">
+              <h3 className="line-clamp-2 min-h-[2.5rem] font-sans text-sm font-bold leading-snug tracking-tight text-foreground transition-colors sm:min-h-[2.75rem] sm:text-base group-hover:text-[#b8863a]">
+                {product.title}
+              </h3>
+            </Link>
 
-          {subtitle && (
-            <p className="hidden sm:block line-clamp-1 break-words text-xs font-medium leading-snug text-muted/90 sm:line-clamp-2 sm:text-sm">
-              {subtitle}
-            </p>
-          )}
+            {subtitle && (
+              <p className="line-clamp-1 text-xs font-medium text-muted/80 sm:text-sm">
+                {subtitle}
+              </p>
+            )}
+          </div>
 
-          <div className="mt-auto pt-2 sm:pt-3">
+          <div className="mt-3 pt-2 sm:pt-3 border-t border-border/40">
             {variant && (
-              <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
-                <span className="font-numeric text-base font-bold leading-none text-foreground sm:text-xl">
+              <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2 mb-2.5">
+                <span className="font-numeric text-base font-extrabold leading-none text-foreground sm:text-xl">
                   {formatPrice(variant.price, variant.currency)}
                 </span>
                 {hasDiscount && (
@@ -228,7 +236,7 @@ export function ProductCard({ product, className, reveal = false, priorityImage 
               disabled={outOfStock}
               onClick={handleQuickAdd}
               className={cn(
-                "mt-2.5 inline-flex w-full h-9 sm:h-10 items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-semibold tracking-wide transition-all duration-300 ease-out active:scale-[0.97] shadow-xs cursor-pointer",
+                "group/btn inline-flex w-full h-9 sm:h-10 items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-semibold tracking-wide transition-all duration-300 ease-out active:scale-[0.97] shadow-xs cursor-pointer",
                 added
                   ? "bg-[#4A5D3E] text-white animate-add-pop shadow-md"
                   : "bg-[#1c2416] text-[#FAF8F3] hover:bg-[#26331f] hover:shadow-md hover:shadow-[#1c2416]/15 lg:opacity-0 lg:group-hover:opacity-100",
@@ -244,6 +252,7 @@ export function ProductCard({ product, className, reveal = false, priorityImage 
                 <>
                   <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                   <span>Add to Cart</span>
+                  <span className="font-sans transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
                 </>
               )}
             </button>
