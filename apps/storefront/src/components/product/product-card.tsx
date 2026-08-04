@@ -193,29 +193,29 @@ export function ProductCard({ product, className, reveal = false, priorityImage 
           ) : null}
 
           <Link href={`/product/${product.slug}`} className="block">
-            <h3 className="line-clamp-2 min-h-[2.25rem] font-display text-[0.8125rem] font-semibold leading-snug transition-colors sm:min-h-[2.75rem] sm:text-base lg:group-hover:text-wood">
+            <h3 className="line-clamp-2 min-h-[2.5rem] font-sans text-sm font-bold leading-snug tracking-tight text-foreground transition-colors sm:min-h-[2.75rem] sm:text-base lg:group-hover:text-[#b8863a]">
               {product.title}
             </h3>
           </Link>
 
           {subtitle && (
-            <p className="hidden sm:block line-clamp-1 break-words text-[11px] font-medium leading-snug text-muted sm:line-clamp-2 sm:text-sm">
+            <p className="hidden sm:block line-clamp-1 break-words text-xs font-medium leading-snug text-muted/90 sm:line-clamp-2 sm:text-sm">
               {subtitle}
             </p>
           )}
 
           <div className="mt-auto pt-2 sm:pt-3">
             {variant && (
-              <div className="flex flex-wrap items-baseline gap-1 sm:gap-1.5">
-                <span className="font-numeric text-sm font-semibold leading-none text-foreground sm:text-lg">
+              <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+                <span className="font-numeric text-base font-bold leading-none text-foreground sm:text-xl">
                   {formatPrice(variant.price, variant.currency)}
                 </span>
                 {hasDiscount && (
                   <>
-                    <span className="font-numeric text-[11px] text-muted line-through sm:text-xs">
+                    <span className="font-numeric text-xs text-muted line-through sm:text-sm">
                       {formatPrice(compareAtPrice, variant.currency)}
                     </span>
-                    <span className="text-[10px] font-bold text-[#8c321d] dark:text-[#c47c6e] sm:text-xs">
+                    <span className="text-xs font-bold text-[#8c321d] dark:text-[#c47c6e]">
                       ({discountPercent}% Off)
                     </span>
                   </>

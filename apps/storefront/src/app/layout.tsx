@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Cormorant_Garamond } from "next/font/google";
+import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { AnnouncementBar } from "@/components/promo/announcement-bar";
@@ -13,16 +13,16 @@ import { rootMetadataFromSeo } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 import "./globals.css";
 
-const sans = DM_Sans({
+const sans = Plus_Jakarta_Sans({
   variable: "--font-inter",
-  subsets: ["latin", "latin-ext"],
-  weight: ["500", "700"],
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
-const cormorant = Cormorant_Garamond({
+const playfair = Playfair_Display({
   variable: "--font-cormorant",
-  subsets: ["latin", "latin-ext"],
-  weight: ["500", "600"],
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${sans.variable} ${cormorant.variable} flex min-h-dvh flex-col overflow-x-hidden font-medium`}>
+      <body className={`${sans.variable} ${playfair.variable} flex min-h-dvh flex-col overflow-x-hidden font-medium`}>
         {/* Instant Scroll-to-Top Reset on Page Refresh */}
         <script dangerouslySetInnerHTML={{ __html: `if('scrollRestoration' in history){history.scrollRestoration='manual'}window.scrollTo(0,0);` }} />
 

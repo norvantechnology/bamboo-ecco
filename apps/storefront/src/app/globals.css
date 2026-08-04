@@ -69,12 +69,12 @@
   --color-footer-fg: var(--footer-fg);
   --color-footer-muted: var(--footer-muted);
   --color-footer-border: var(--footer-border);
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-inter), "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-cormorant), "Playfair Display", Georgia, serif;
 }
 
 @utility font-numeric {
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), "Plus Jakarta Sans", system-ui, sans-serif;
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
 }
@@ -86,7 +86,7 @@
 
   html {
     @apply scroll-smooth;
-    font-size: 15px;
+    font-size: 16px;
     -webkit-tap-highlight-color: transparent;
     overflow-x: hidden;
     max-width: 100vw;
