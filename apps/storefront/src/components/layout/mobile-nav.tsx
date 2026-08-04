@@ -19,6 +19,7 @@ import {
   Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 import { MotionOverlay, MotionDrawer } from "@/components/ui/motion";
 import { CategoryMobileSection } from "@/components/layout/category-nav";
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -52,16 +53,15 @@ export function MobileNav({
 }: MobileNavProps) {
   const pathname = usePathname();
 
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    document.body.style.overflow = "hidden";
-
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
   }, [open, onClose]);

@@ -278,7 +278,7 @@ export default function CheckoutPage() {
   const grandTotal = subtotal + shippingCost;
 
   return (
-    <div className="container-page max-w-[1440px] mx-auto py-6 sm:py-12 relative">
+    <div className="container-page max-w-[1440px] mx-auto py-6 pb-28 sm:py-12 sm:pb-12 relative">
       <AnimatePresence>
         {isSuccess && (
           <motion.div
@@ -600,6 +600,38 @@ export default function CheckoutPage() {
             </div>
           </div>
         </aside>
+
+        {/* Sticky Mobile Checkout Bar (visible on phones / lg:hidden) */}
+        <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-3 border-t border-border/80 bg-surface/95 p-3 shadow-warm-xl backdrop-blur-lg lg:hidden">
+          <div className="min-w-0 pl-1">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-muted">
+              Total ({items.length} {items.length === 1 ? "item" : "items"})
+            </span>
+            <span className="font-numeric text-lg font-bold text-foreground leading-none">
+              {formatPrice(grandTotal)}
+            </span>
+            <span className="block text-[10px] text-emerald-600 font-semibold">Free Delivery</span>
+          </div>
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="group flex-1 max-w-[210px] h-12 rounded-xl bg-[#1c2416] text-[#FAF8F3] hover:bg-[#26331f] text-xs font-semibold shadow-md active:scale-[0.97] border border-[#1c2416] cursor-pointer inline-flex items-center justify-center gap-1.5"
+          >
+            {loading ? (
+              <>
+                <Spinner className="h-4 w-4 border-white text-transparent" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                <ShieldCheck className="h-4 w-4 shrink-0 text-[#C9A24B]" />
+                <span>{skipPayment ? "Place Order" : `Pay ${formatPrice(grandTotal)}`}</span>
+                <span className="font-sans transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </div>
   );

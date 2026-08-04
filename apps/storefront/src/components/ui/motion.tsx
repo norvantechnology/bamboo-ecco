@@ -4,6 +4,7 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { MOTION } from "@/lib/motion";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 /** Mount/unmount with exit animation */
 export function useMotionPresence(open: boolean, duration = MOTION.base) {
@@ -65,8 +66,9 @@ export function MotionOverlay({
 }) {
   return (
     <div
-      className={cn("motion-overlay", visible && "motion-overlay--in", className)}
+      className={cn("motion-overlay touch-none", visible && "motion-overlay--in", className)}
       onClick={onClick}
+      onTouchMove={(e) => e.preventDefault()}
       aria-hidden
     />
   );
@@ -144,14 +146,8 @@ export function MotionDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  useEffect(() => {
-    if (!mounted) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [mounted]);
+  // Lock background body & html scroll while dialog is mounted
+  useBodyScrollLock(mounted);
 
   if (!mounted || typeof document === "undefined") return null;
 

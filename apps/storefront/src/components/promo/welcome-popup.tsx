@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
 import type { WelcomePopupConfig } from "@/lib/api";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 type WelcomePopupProps = {
   config: WelcomePopupConfig;
@@ -89,15 +90,8 @@ export function WelcomePopup({ config }: WelcomePopupProps) {
     };
   }, [open, closePopup]);
 
-  // Lock background body scroll when popup is active
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
+  // Lock background body & html scroll when popup is active
+  useBodyScrollLock(open);
 
   if (!open || !config.enabled) return null;
 
@@ -115,8 +109,9 @@ export function WelcomePopup({ config }: WelcomePopupProps) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <button
         type="button"
-        className="absolute inset-0 bg-[#1a1816]/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#1a1816]/75 backdrop-blur-sm touch-none"
         onClick={closePopup}
+        onTouchMove={(e) => e.preventDefault()}
         aria-label="Close welcome popup"
       />
       <div
