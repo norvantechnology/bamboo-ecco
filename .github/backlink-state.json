@@ -50,15 +50,55 @@
     "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/guides.md",
     "telegram": "https://t.me/bambooecohub/6"
   },
-  "https://bambooecohub.com/pages/return-shipping": {},
-  "https://bambooecohub.com/artisan-stories": {},
-  "https://bambooecohub.com/pages/terms": {},
-  "https://bambooecohub.com/pages/privacy": {},
+  "https://bambooecohub.com/pages/return-shipping": {
+    "devto": "https://dev.to/norvan_technology_d122131/return-shipping-433i",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/08/04/return-shipping/",
+    "blogger": "error: Blogger OAuth token refresh failed (400): {\n  \"error\": \"invalid_grant\",\n  \"error_description\": \"Token has been expired or revoked.\"\n}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824016922605682688",
+    "mastodon": "https://mastodon.social/@bambooecohub/117037057855101785",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/return-shipping.md",
+    "telegram": "https://t.me/bambooecohub/183"
+  },
+  "https://bambooecohub.com/artisan-stories": {
+    "devto": "https://dev.to/norvan_technology_d122131/artisan-stories-1m88",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/08/04/artisan-stories/",
+    "blogger": "error: Blogger OAuth token refresh failed (400): {\n  \"error\": \"invalid_grant\",\n  \"error_description\": \"Token has been expired or revoked.\"\n}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824016946559418368",
+    "mastodon": "https://mastodon.social/@bambooecohub/117037059335116731",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/artisan-stories.md",
+    "telegram": "https://t.me/bambooecohub/184"
+  },
+  "https://bambooecohub.com/pages/terms": {
+    "devto": "https://dev.to/norvan_technology_d122131/terms-4ljo",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/08/04/terms/",
+    "blogger": "error: Blogger OAuth token refresh failed (400): {\n  \"error\": \"invalid_grant\",\n  \"error_description\": \"Token has been expired or revoked.\"\n}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824016969737142272",
+    "mastodon": "https://mastodon.social/@bambooecohub/117037060767796132",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/terms.md",
+    "telegram": "https://t.me/bambooecohub/185"
+  },
+  "https://bambooecohub.com/pages/privacy": {
+    "devto": "https://dev.to/norvan_technology_d122131/privacy-4n2p",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/08/04/privacy/",
+    "blogger": "error: Blogger OAuth token refresh failed (400): {\n  \"error\": \"invalid_grant\",\n  \"error_description\": \"Token has been expired or revoked.\"\n}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824016992144179200",
+    "mastodon": "https://mastodon.social/@bambooecohub/117037062165062688",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/privacy.md",
+    "telegram": "https://t.me/bambooecohub/186"
+  },
   "https://bambooecohub.com/pages/returns": {},
   "https://bambooecohub.com/pages/shipping": {},
   "https://bambooecohub.com/pages/contact": {},
   "https://bambooecohub.com/pages/sustainability": {},
-  "https://bambooecohub.com/pages/about": {},
+  "https://bambooecohub.com/pages/about": {
+    "devto": "https://dev.to/norvan_technology_d122131/about-1m9l",
+    "wordpress": "https://bambooecohub.wordpress.com/2026/08/04/about/",
+    "blogger": "error: Blogger OAuth token refresh failed (400): {\n  \"error\": \"invalid_grant\",\n  \"error_description\": \"Token has been expired or revoked.\"\n}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824017014751363072",
+    "mastodon": "https://mastodon.social/@bambooecohub/117037063607126706",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/about.md",
+    "telegram": "https://t.me/bambooecohub/187"
+  },
   "https://bambooecohub.com/collections/lamp-lights": {},
   "https://bambooecohub.com/collections/utility-basket": {},
   "https://bambooecohub.com/collections/bags-accessories": {},
