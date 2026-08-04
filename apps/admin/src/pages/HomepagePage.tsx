@@ -32,6 +32,7 @@ import {
   Toggle,
 } from "../components/ui/form";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 type SectionKey = keyof HomepageSections;
 type PillarItem = { icon: string; title: string; description: string };
@@ -547,15 +548,37 @@ export function HomepagePage() {
       <PageHeader
         title="Homepage"
         action={
-          <a
-            href={storefrontUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm hover:bg-background"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Preview
-          </a>
+          <div className="flex items-center gap-2">
+            <JsonEditorButton
+              data={{
+                tagline,
+                hero,
+                brandPillars,
+                whyChooseUs,
+                homepageSections: sections,
+              }}
+              onApply={(parsed: any) => {
+                if (parsed.tagline !== undefined) setTagline(parsed.tagline);
+                if (parsed.hero) setHero(normalizeHero(parsed.hero));
+                if (parsed.brandPillars) setBrandPillars(parsed.brandPillars);
+                if (parsed.whyChooseUs) setWhyChooseUs(parsed.whyChooseUs);
+                if (parsed.homepageSections) setSections(parsed.homepageSections);
+                markDirty();
+              }}
+              lastUpdatedAt={lastSavedAt}
+              label="Homepage JSON"
+              onDirty={markDirty}
+            />
+            <a
+              href={storefrontUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm hover:bg-background"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Preview
+            </a>
+          </div>
         }
       />
 

@@ -11,6 +11,7 @@ import { PageLoader } from "../components/Loading";
 import { HubCard, PageHeader } from "../components/PageHeader";
 import { navGroups } from "../lib/admin-nav";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 export function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -69,6 +70,14 @@ export function DashboardPage() {
             <span>Your store at a glance. Use the sections below to jump anywhere — or search in the top bar.</span>
             <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
           </span>
+        }
+        action={
+          <JsonEditorButton
+            data={{ stats, ordersCount: orders.length }}
+            lastUpdatedAt={fetchedAt}
+            label="Dashboard Stats JSON"
+            readOnly
+          />
         }
       />
 

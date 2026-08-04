@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ReviewManager } from "../components/ReviewManager";
 import { PageHeader } from "../components/PageHeader";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 export function ReviewsPage() {
   const [fetchedAt] = useState<string>(new Date().toISOString());
@@ -15,6 +16,14 @@ export function ReviewsPage() {
             <span>Add and approve customer reviews. Approved reviews appear on the homepage in “What Our Customers Say”.</span>
             <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
           </span>
+        }
+        action={
+          <JsonEditorButton
+            data={{ statusFilter: "approved" }}
+            lastUpdatedAt={fetchedAt}
+            label="Reviews Page JSON"
+            readOnly
+          />
         }
       />
       <ReviewManager title="" description="" defaultFilter="approved" />

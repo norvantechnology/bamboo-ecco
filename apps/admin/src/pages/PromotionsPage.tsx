@@ -4,6 +4,7 @@ import { PageLoader } from "../components/Loading";
 import { PageHeader } from "../components/PageHeader";
 import { Field, FieldRow, Panel, SaveBar, Select, TextArea, TextInput, Toggle, ColorInput } from "../components/ui/form";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 export function PromotionsPage() {
   const [settings, setSettings] = useState<TenantSettings | null>(null);
@@ -77,6 +78,27 @@ export function PromotionsPage() {
       <PageHeader
         title="Promotions"
         description="Welcome popup on the homepage and the announcement bar at the top of the site."
+        action={
+          <JsonEditorButton
+            data={{
+              welcomePopup: popup,
+              announcementBar: bar,
+              googleCustomerReviews: gcr,
+            }}
+            onApply={(parsed: any) => {
+              setSettings({
+                ...settings,
+                welcomePopup: parsed.welcomePopup ?? popup,
+                announcementBar: parsed.announcementBar ?? bar,
+                googleCustomerReviews: parsed.googleCustomerReviews ?? gcr,
+              });
+              markDirty();
+            }}
+            lastUpdatedAt={lastSavedAt}
+            label="Promotions JSON"
+            onDirty={markDirty}
+          />
+        }
       />
 
       {error && (

@@ -6,6 +6,7 @@ import { useRefetchOnFocus } from "../lib/useRefetchOnFocus";
 import { Field, FieldRow, Panel, Select, TextArea, TextInput } from "../components/ui/form";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 import {
   getAdminContent,
   createContentPage,
@@ -139,14 +140,23 @@ export function ContentPage() {
         title="Site pages"
         description={<LastUpdatedAt date={lastSavedAt} />}
         action={
-          <button
-            type="button"
-            onClick={startNew}
-            className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface"
-          >
-            <Plus className="h-4 w-4" />
-            New page
-          </button>
+          <div className="flex items-center gap-2">
+            <JsonEditorButton
+              data={showEditor ? form : pages}
+              onApply={showEditor ? (parsed) => setForm({ ...emptyForm, ...parsed }) : undefined}
+              lastUpdatedAt={lastSavedAt}
+              label={showEditor ? "Page Form JSON" : "Pages List JSON"}
+              readOnly={!showEditor}
+            />
+            <button
+              type="button"
+              onClick={startNew}
+              className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface"
+            >
+              <Plus className="h-4 w-4" />
+              New page
+            </button>
+          </div>
         }
       />
 

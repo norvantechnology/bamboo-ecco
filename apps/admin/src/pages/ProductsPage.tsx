@@ -16,6 +16,7 @@ import { ImageUpload } from "../components/ImageUpload";
 import { MotionFade } from "../components/ui/motion";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 const emptyForm = (): ProductPayload & { id?: string } => ({
   categoryId: "",
@@ -296,14 +297,23 @@ export function ProductsPage() {
             <LastUpdatedAt date={lastSavedAt} />
           </div>
         </div>
-        <button
-          type="button"
-          onClick={openCreate}
-          className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface"
-        >
-          <Plus className="h-4 w-4" />
-          Add product
-        </button>
+        <div className="flex items-center gap-2">
+          <JsonEditorButton
+            data={formOpen ? form : products}
+            onApply={formOpen ? (parsed) => setForm({ ...emptyForm(), ...parsed }) : undefined}
+            lastUpdatedAt={lastSavedAt}
+            label={formOpen ? "Product Form JSON" : "Products List JSON"}
+            readOnly={!formOpen}
+          />
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface"
+          >
+            <Plus className="h-4 w-4" />
+            Add product
+          </button>
+        </div>
       </div>
 
       {error && (

@@ -5,6 +5,7 @@ import { PageLoader } from "../components/Loading";
 import { Field, Panel, TextInput, Toggle } from "../components/ui/form";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 export function SettingsPage() {
   const [settings, setSettings] = useState<TenantSettings | null>(null);
@@ -46,16 +47,31 @@ export function SettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold sm:text-2xl">Store Settings</h1>
-        <p className="text-sm text-muted">
-          General store identity and checkout. Search listing and Google verification are in{" "}
-          <Link to="/seo" className="font-medium text-secondary hover:underline">
-            SEO
-          </Link>
-          .
-        </p>
-        <LastUpdatedAt date={lastSavedAt} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold sm:text-2xl">Store Settings</h1>
+          <p className="text-sm text-muted">
+            General store identity and checkout. Search listing and Google verification are in{" "}
+            <Link to="/seo" className="font-medium text-secondary hover:underline">
+              SEO
+            </Link>
+            .
+          </p>
+          <LastUpdatedAt date={lastSavedAt} />
+        </div>
+        <JsonEditorButton
+          data={{ name: settings.name, paymentEnabled: settings.paymentEnabled !== false }}
+          onApply={(parsed: any) => {
+            setSettings({
+              ...settings,
+              name: parsed.name ?? settings.name,
+              paymentEnabled: parsed.paymentEnabled ?? settings.paymentEnabled,
+            });
+            setSaved(false);
+          }}
+          lastUpdatedAt={lastSavedAt}
+          label="Settings JSON"
+        />
       </div>
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>

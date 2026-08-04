@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getAdminCustomers, type AdminCustomer } from "../lib/api";
 import { PageLoader } from "../components/Loading";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 export function CustomersPage() {
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);
@@ -23,12 +24,20 @@ export function CustomersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold sm:text-2xl">Customers</h1>
-        <div className="flex items-center gap-3">
-          <p className="text-sm text-muted">{customers.length} registered customers</p>
-          <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold sm:text-2xl">Customers</h1>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted">{customers.length} registered customers</p>
+            <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
+          </div>
         </div>
+        <JsonEditorButton
+          data={customers}
+          lastUpdatedAt={fetchedAt}
+          label="Customers JSON"
+          readOnly
+        />
       </div>
 
       {error && (

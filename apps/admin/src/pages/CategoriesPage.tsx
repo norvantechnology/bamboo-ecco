@@ -13,6 +13,7 @@ import { ImageUpload } from "../components/ImageUpload";
 import { MotionFade } from "../components/ui/motion";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 function slugify(name: string) {
   return name
@@ -141,7 +142,14 @@ export function CategoriesPage() {
             <LastUpdatedAt date={lastSavedAt} />
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
+          <JsonEditorButton
+            data={formOpen ? form : categories}
+            onApply={formOpen ? (parsed) => setForm({ slug: "", name: "", imageUrl: "", parentId: null, meta: { title: "", description: "" }, ...parsed }) : undefined}
+            lastUpdatedAt={lastSavedAt}
+            label={formOpen ? "Category Form JSON" : "Categories List JSON"}
+            readOnly={!formOpen}
+          />
           <button
             type="button"
             onClick={() => openCreate(null)}

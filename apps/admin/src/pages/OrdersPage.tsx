@@ -8,6 +8,7 @@ import {
 } from "../lib/api";
 import { PageLoader, Spinner } from "../components/Loading";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 const STATUSES = ["pending", "paid", "fulfilled", "shipped", "delivered", "cancelled", "refunded"] as const;
 
@@ -49,12 +50,20 @@ export function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold sm:text-2xl">Orders</h1>
-        <div className="flex items-center gap-3">
-          <p className="text-sm text-muted">{orders.length} orders</p>
-          <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold sm:text-2xl">Orders</h1>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted">{orders.length} orders</p>
+            <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
+          </div>
         </div>
+        <JsonEditorButton
+          data={orders}
+          lastUpdatedAt={fetchedAt}
+          label="Orders JSON"
+          readOnly
+        />
       </div>
 
       {error && (

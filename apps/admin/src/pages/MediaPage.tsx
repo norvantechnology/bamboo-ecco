@@ -4,6 +4,7 @@ import { getAdminGallery, createGalleryItem, deleteGalleryItem, getMediaConfig, 
 import { ImageUpload } from "../components/ImageUpload";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 export function MediaPage() {
   const [items, setItems] = useState<AdminGalleryItem[]>([]);
@@ -39,12 +40,20 @@ export function MediaPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold sm:text-2xl">Media Library</h1>
-        <div className="flex items-center gap-3">
-          <p className="text-sm text-muted">Instagram gallery (“Follow Our Journey”) — upload images via Cloudinary</p>
-          <LastUpdatedAt date={lastSavedAt} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold sm:text-2xl">Media Library</h1>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted">Instagram gallery (“Follow Our Journey”) — upload images via Cloudinary</p>
+            <LastUpdatedAt date={lastSavedAt} />
+          </div>
         </div>
+        <JsonEditorButton
+          data={items}
+          lastUpdatedAt={lastSavedAt}
+          label="Media Library JSON"
+          readOnly
+        />
       </div>
 
       {cloudinaryReady === false && (

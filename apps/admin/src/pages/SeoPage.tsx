@@ -84,6 +84,7 @@ import {
 } from "../lib/api";
 import { JsonEditorPanel } from "../components/JsonEditorPanel";
 import { LastUpdatedAt } from "../components/LastUpdatedAt";
+import { JsonEditorButton } from "../components/JsonEditorModal";
 
 const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || "http://localhost:3000";
 
@@ -445,6 +446,17 @@ export function SeoPage() {
             <span>Control how your store appears in Google, social previews, and AI search tools.</span>
             <LastUpdatedAt date={lastSavedAt} />
           </span>
+        }
+        action={
+          <JsonEditorButton
+            data={{ storeName, seo }}
+            onApply={(parsed: any) => {
+              if (parsed.storeName !== undefined) setStoreName(parsed.storeName);
+              if (parsed.seo) setSeo({ ...EMPTY_SEO, ...parsed.seo });
+            }}
+            lastUpdatedAt={lastSavedAt}
+            label="SEO Settings JSON"
+          />
         }
       />
 
