@@ -192,10 +192,10 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       )}
 
       {/* 5b. Impact Stats Bar */}
-      {sections.impact?.enabled && (
+      {(sections.impact?.enabled ?? true) && (
         <ImpactStatsSection
-          title={sections.impact.title}
-          description={sections.impact.description}
+          title={sections.impact?.title}
+          description={sections.impact?.description}
         />
       )}
 
@@ -303,10 +303,10 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       )}
 
       {/* 8b. Meet the Artisans Teaser */}
-      {sections.artisansTeaser?.enabled && (
+      {(sections.artisansTeaser?.enabled ?? true) && (
         <ArtisansTeaserSection
-          title={sections.artisansTeaser.title}
-          description={sections.artisansTeaser.description}
+          title={sections.artisansTeaser?.title}
+          description={sections.artisansTeaser?.description}
         />
       )}
 

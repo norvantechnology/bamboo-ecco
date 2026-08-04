@@ -15,5 +15,16 @@ export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSections = {
 };
 
 export function withHomepageSections<T extends { sections?: HomepageSections }>(data: T): T & { sections: HomepageSections } {
-  return { ...data, sections: data.sections ?? DEFAULT_HOMEPAGE_SECTIONS };
+  const mergedSections = { ...DEFAULT_HOMEPAGE_SECTIONS };
+  if (data.sections) {
+    for (const key of Object.keys(DEFAULT_HOMEPAGE_SECTIONS) as (keyof HomepageSections)[]) {
+      if (data.sections[key]) {
+        mergedSections[key] = {
+          ...DEFAULT_HOMEPAGE_SECTIONS[key],
+          ...data.sections[key],
+        };
+      }
+    }
+  }
+  return { ...data, sections: mergedSections };
 }

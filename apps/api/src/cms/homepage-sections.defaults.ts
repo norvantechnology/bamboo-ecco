@@ -14,8 +14,10 @@ export type HomepageSectionsMap = {
   newArrivals: HomepageSectionConfig;
   bestSellers: HomepageSectionConfig;
   whyChooseUs: HomepageSectionConfig;
+  impact: HomepageSectionConfig;
   customerHomes: HomepageSectionConfig;
   reviews: HomepageSectionConfig;
+  artisansTeaser: HomepageSectionConfig;
   journal: HomepageSectionConfig;
   gallery: HomepageSectionConfig;
 };
@@ -56,6 +58,12 @@ export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionsMap = {
     label: 'Our promise',
     title: 'Why Choose Us',
   },
+  impact: {
+    enabled: true,
+    label: 'Our Impact',
+    title: "Preserving Tripura's Bamboo Lineage",
+    description: 'Rooted in the lush hills of Tripura — home to 21 native bamboo species and generations of master artisan heritage',
+  },
   customerHomes: {
     enabled: true,
     label: 'Community',
@@ -68,6 +76,12 @@ export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionsMap = {
     label: 'Reviews',
     title: 'What Our Customers Say',
     limit: 6,
+  },
+  artisansTeaser: {
+    enabled: true,
+    label: 'Artisan Heritage',
+    title: 'Meet the Weavers of Agartala',
+    description: 'Discover the real people and craft lineage behind every piece of handcrafted bamboo decor',
   },
   journal: {
     enabled: true,
