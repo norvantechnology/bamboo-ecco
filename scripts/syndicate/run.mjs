@@ -254,10 +254,13 @@ async function main() {
 
         if (result.status === "skipped") {
           console.log(`  ⚠️  [${name}] Skipped: ${result.reason}`);
+          if (result.alreadyExists) {
+            state[canonicalUrl][key] = result.url || canonicalUrl;
+          }
           summaryResults.push({
             url: canonicalUrl,
             platform: name,
-            status: "⚠️ Skipped",
+            status: "⏩ Skipped",
             detail: result.reason,
           });
         } else {

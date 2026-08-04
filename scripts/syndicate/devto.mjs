@@ -46,6 +46,14 @@ export async function syndicateDevTo(article, canonicalUrl) {
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
+    if (res.status === 422 && errorText.includes("Canonical url has already been taken")) {
+      return {
+        status: "skipped",
+        alreadyExists: true,
+        reason: "Already published on Dev.to (canonical URL match)",
+        url: canonicalUrl,
+      };
+    }
     throw new Error(`Dev.to API returned ${res.status}: ${errorText}`);
   }
 

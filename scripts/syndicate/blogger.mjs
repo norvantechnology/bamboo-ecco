@@ -29,6 +29,12 @@ export async function syndicateBlogger(article, canonicalUrl) {
 
   if (!tokenRes.ok) {
     const errorText = await tokenRes.text().catch(() => "");
+    if (tokenRes.status === 400 && (errorText.includes("invalid_grant") || errorText.includes("expired") || errorText.includes("revoked"))) {
+      return {
+        status: "skipped",
+        reason: "Blogger OAuth refresh token expired/revoked. Please update BLOGGER_REFRESH_TOKEN in GitHub secrets.",
+      };
+    }
     throw new Error(`Blogger OAuth token refresh failed (${tokenRes.status}): ${errorText}`);
   }
 
