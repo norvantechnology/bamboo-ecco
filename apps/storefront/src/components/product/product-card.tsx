@@ -228,22 +228,22 @@ export function ProductCard({ product, className, reveal = false, priorityImage 
               disabled={outOfStock}
               onClick={handleQuickAdd}
               className={cn(
-                "mt-2 inline-flex w-full h-8 sm:h-10 items-center justify-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold uppercase tracking-wider transition-all duration-300 ease-out active:scale-[0.97]",
+                "mt-2.5 inline-flex w-full h-9 sm:h-10 items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-semibold tracking-wide transition-all duration-300 ease-out active:scale-[0.97] shadow-xs cursor-pointer",
                 added
-                  ? "bg-secondary text-white animate-add-pop"
-                  : "bg-[#8b5e34] text-white hover:bg-[#a0713f] lg:opacity-0 lg:group-hover:opacity-100",
-                outOfStock && "cursor-not-allowed opacity-40",
+                  ? "bg-[#4A5D3E] text-white animate-add-pop shadow-md"
+                  : "bg-[#1c2416] text-[#FAF8F3] hover:bg-[#26331f] hover:shadow-md hover:shadow-[#1c2416]/15 lg:opacity-0 lg:group-hover:opacity-100",
+                outOfStock && "cursor-not-allowed opacity-50 bg-muted text-muted-foreground",
               )}
             >
               {added ? (
                 <>
-                  <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-check" />
-                  <span>Added</span>
+                  <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-check shrink-0 text-[#FAF8F3]" />
+                  <span>Added to Cart</span>
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span>Add to cart</span>
+                  <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                  <span>Add to Cart</span>
                 </>
               )}
             </button>

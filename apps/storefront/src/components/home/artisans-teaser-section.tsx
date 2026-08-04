@@ -82,10 +82,10 @@ export function ArtisansTeaserSection({
             <div className="pt-2">
               <Link
                 href="/artisan-stories"
-                className="inline-flex items-center gap-2 rounded-full bg-[#1c2416] px-6 py-3 font-sans text-xs sm:text-sm font-semibold text-[#e4c98f] shadow-warm transition-all duration-300 hover:bg-[#283320] hover:shadow-warm-lg active:scale-[0.98]"
+                className="group inline-flex items-center gap-2 rounded-full bg-[#1c2416] px-6 py-3 font-sans text-xs sm:text-sm font-semibold text-[#e4c98f] shadow-md border border-[#e4c98f]/30 transition-all duration-300 hover:bg-[#283320] hover:border-[#e4c98f]/60 hover:shadow-lg hover:shadow-[#1c2416]/20 active:scale-[0.97]"
               >
                 <span>Read Their Story</span>
-                <span className="text-base leading-none">→</span>
+                <span className="text-base font-sans transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
             </div>
           </motion.div>

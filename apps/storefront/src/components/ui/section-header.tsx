@@ -51,15 +51,20 @@ export function SectionHeader({
         {href && (
           <Link
             href={href}
-            className="link-premium mt-2 inline-block text-sm font-semibold sm:hidden"
+            className="group mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/90 px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-xs transition-all duration-300 hover:border-[#b8863a]/40 hover:bg-surface-elevated hover:text-[#b8863a] hover:shadow-warm active:scale-95 sm:hidden"
           >
-            {linkText} →
+            <span>{linkText}</span>
+            <span className="transition-transform duration-300 group-hover:translate-x-1 font-sans">→</span>
           </Link>
         )}
       </div>
       {href && (
-        <Link href={href} className="link-premium hidden shrink-0 text-sm font-semibold sm:block">
-          {linkText} →
+        <Link
+          href={href}
+          className="group hidden shrink-0 sm:inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/90 px-4 py-2 text-xs sm:text-sm font-semibold text-foreground shadow-xs transition-all duration-300 hover:border-[#b8863a]/40 hover:bg-surface-elevated hover:text-[#b8863a] hover:shadow-warm active:scale-95"
+        >
+          <span>{linkText}</span>
+          <span className="transition-transform duration-300 group-hover:translate-x-1 font-sans">→</span>
         </Link>
       )}
     </div>

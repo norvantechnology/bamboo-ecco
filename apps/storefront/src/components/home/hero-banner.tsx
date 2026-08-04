@@ -242,15 +242,16 @@ export function HeroBanner({
           >
             <Link
               href="/shop"
-              className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[#4A5D3E] px-6 text-sm font-semibold text-white shadow-warm transition-all duration-200 hover:bg-[#3D4D33] active:scale-[0.96] sm:h-14 sm:w-auto sm:px-9 sm:text-base"
+              className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#b8863a] px-6 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-[#a07430] hover:shadow-lg hover:shadow-[#b8863a]/25 active:scale-[0.97] sm:h-14 sm:w-auto sm:px-8 sm:text-base"
             >
-              {primaryCta}
+              <span>{primaryCta}</span>
+              <span className="transition-transform duration-300 group-hover:translate-x-1 font-sans">→</span>
             </Link>
             <Link
-              href="/pages/about"
-              className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-white/35 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 active:scale-[0.96] sm:h-14 sm:w-auto sm:px-9 sm:text-base"
+              href="/artisan-stories"
+              className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/40 bg-black/30 px-6 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:bg-black/50 hover:border-white/70 active:scale-[0.97] sm:h-14 sm:w-auto sm:px-8 sm:text-base"
             >
-              {secondaryCta}
+              <span>{secondaryCta}</span>
             </Link>
           </motion.div>
         </div>

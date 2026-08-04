@@ -226,10 +226,10 @@ export function JsonEditorModal({
                     setTimeout(() => onClose(), 400);
                   }
                 }}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-semibold shadow-md transition-all ${
+                className={`inline-flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-semibold shadow-md transition-all active:scale-[0.97] cursor-pointer ${
                   applied
                     ? "bg-emerald-600 text-white"
-                    : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-95"
+                    : "bg-[#1c2416] text-[#FAF8F3] hover:bg-[#26331f] border border-[#1c2416]"
                 }`}
               >
                 {applied ? (
@@ -237,7 +237,10 @@ export function JsonEditorModal({
                     <Check className="h-4 w-4" /> Applied to form!
                   </>
                 ) : (
-                  "Apply & Update JSON"
+                  <>
+                    <span>Apply & Update JSON</span>
+                    <span className="font-sans">→</span>
+                  </>
                 )}
               </button>
             )}

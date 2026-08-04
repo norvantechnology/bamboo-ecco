@@ -130,10 +130,10 @@ export function SeoStorySection({ seoContent }: SeoStorySectionProps) {
                 <button
                   type="button"
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#e4c98f]/40 bg-[#e4c98f]/10 px-6 py-2.5 font-sans text-xs sm:text-sm font-semibold text-[#e4c98f] shadow-sm transition-all duration-300 hover:bg-[#e4c98f]/20 hover:border-[#e4c98f]/60 active:scale-95"
+                  className="group inline-flex items-center gap-2 rounded-full border border-[#e4c98f]/40 bg-[#e4c98f]/10 px-6 py-2.5 font-sans text-xs sm:text-sm font-semibold text-[#e4c98f] shadow-md transition-all duration-300 hover:bg-[#e4c98f]/20 hover:border-[#e4c98f]/70 hover:shadow-lg hover:shadow-[#e4c98f]/15 active:scale-[0.97] cursor-pointer"
                 >
                   <span>{isExpanded ? "Show Less" : "Read Full Sustainability Story"}</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"}`} />
                 </button>
               </div>
             )}

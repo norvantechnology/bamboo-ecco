@@ -577,15 +577,20 @@ export default function CheckoutPage() {
 
             <Button
               type="submit"
-              className="mt-6 w-full h-12 rounded-xl bg-gradient-to-r from-[#4A5D3E] to-[#C9A24B] text-sm font-semibold text-white shadow-md hover:shadow-lg transition-shadow duration-300"
-              disabled={loading || razorpayEnabled === null}
+              disabled={loading}
+              className="mt-6 w-full h-13 rounded-xl bg-[#1c2416] text-[#FAF8F3] hover:bg-[#26331f] text-sm sm:text-base font-semibold shadow-md hover:shadow-lg hover:shadow-[#1c2416]/20 transition-all duration-300 active:scale-[0.97] border border-[#1c2416] group cursor-pointer inline-flex items-center justify-center gap-2"
             >
               {loading ? (
-                <span className="inline-flex items-center gap-2">
-                  <Spinner size="sm" className="border-white/30 border-t-white" /> Placing order…
-                </span>
+                <>
+                  <Spinner className="h-5 w-5 border-white text-transparent" />
+                  <span>Processing Order...</span>
+                </>
               ) : (
-                paymentLabel
+                <>
+                  <ShieldCheck className="h-5 w-5 shrink-0 text-[#C9A24B] transition-transform duration-300 group-hover:scale-110" />
+                  <span>{skipPayment ? "Place Order" : `Pay ${formatPrice(grandTotal)}`}</span>
+                  <span className="font-sans transition-transform duration-300 group-hover:translate-x-1">→</span>
+                </>
               )}
             </Button>
 

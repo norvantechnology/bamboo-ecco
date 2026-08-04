@@ -146,10 +146,10 @@ export function JsonEditorPanel({
             <button
               type="button"
               onClick={handleApply}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-semibold transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-semibold shadow-xs transition-all active:scale-[0.97] cursor-pointer ${
                 applied
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  : "bg-foreground text-surface hover:opacity-90"
+                  ? "bg-emerald-600 text-white border border-emerald-600"
+                  : "bg-[#1c2416] text-[#FAF8F3] hover:bg-[#26331f] border border-[#1c2416]"
               }`}
             >
               {applied ? (
@@ -158,7 +158,10 @@ export function JsonEditorPanel({
                   Applied!
                 </>
               ) : (
-                "Apply JSON"
+                <>
+                  <span>Apply JSON</span>
+                  <span className="font-sans">→</span>
+                </>
               )}
             </button>
           </div>
