@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Code2, Copy, Check, AlertCircle, X, Sparkles } from "lucide-react";
 import { LastUpdatedAt } from "./LastUpdatedAt";
+import { enrichJsonWithTimestamps } from "../lib/jsonTimestamps";
 
 interface JsonEditorModalProps {
   isOpen: boolean;
@@ -36,13 +37,14 @@ export function JsonEditorModal({
   useEffect(() => {
     if (isOpen) {
       try {
-        setDraft(JSON.stringify(data, null, 2));
+        const enriched = enrichJsonWithTimestamps(data, lastUpdatedAt);
+        setDraft(JSON.stringify(enriched, null, 2));
         setError("");
       } catch {
         setDraft("// Could not serialize data");
       }
     }
-  }, [isOpen, data]);
+  }, [isOpen, data, lastUpdatedAt]);
 
   if (!isOpen) return null;
 
@@ -82,7 +84,8 @@ export function JsonEditorModal({
 
   function handleRefresh() {
     try {
-      setDraft(JSON.stringify(data, null, 2));
+      const enriched = enrichJsonWithTimestamps(data, lastUpdatedAt);
+      setDraft(JSON.stringify(enriched, null, 2));
       setError("");
     } catch {
       setDraft("// Could not serialize data");

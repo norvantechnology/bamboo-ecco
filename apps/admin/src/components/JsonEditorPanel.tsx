@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Code2, Copy, Check, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { LastUpdatedAt } from "./LastUpdatedAt";
+import { enrichJsonWithTimestamps } from "../lib/jsonTimestamps";
 
 interface JsonEditorPanelProps {
   /** Current data object — will be serialised as pretty-printed JSON. */
@@ -32,13 +33,14 @@ export function JsonEditorPanel({
   useEffect(() => {
     if (open) {
       try {
-        setDraft(JSON.stringify(data, null, 2));
+        const enriched = enrichJsonWithTimestamps(data, lastUpdatedAt);
+        setDraft(JSON.stringify(enriched, null, 2));
         setError("");
       } catch {
         setDraft("// Could not serialize data");
       }
     }
-  }, [open, data]);
+  }, [open, data, lastUpdatedAt]);
 
   function handleApply() {
     setError("");
@@ -55,7 +57,9 @@ export function JsonEditorPanel({
 
   async function handleCopy() {
     try {
-      const text = open ? draft : JSON.stringify(data, null, 2);
+      const text = open
+        ? draft
+        : JSON.stringify(enrichJsonWithTimestamps(data, lastUpdatedAt), null, 2);
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -66,7 +70,8 @@ export function JsonEditorPanel({
 
   function handleRefresh() {
     try {
-      setDraft(JSON.stringify(data, null, 2));
+      const enriched = enrichJsonWithTimestamps(data, lastUpdatedAt);
+      setDraft(JSON.stringify(enriched, null, 2));
       setError("");
     } catch {
       setDraft("// Could not serialize data");
