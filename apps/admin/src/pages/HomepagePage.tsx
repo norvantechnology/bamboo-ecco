@@ -110,8 +110,10 @@ const SECTION_ORDER: SectionKey[] = [
   "newArrivals",
   "bestSellers",
   "whyChooseUs",
+  "impact",
   "customerHomes",
   "reviews",
+  "artisansTeaser",
   "journal",
   "gallery",
 ];
@@ -159,6 +161,13 @@ const SECTION_META: Record<
     countKey: "whyChooseUsItems",
     fields: {},
   },
+  impact: {
+    name: "Impact Stats Bar",
+    manageLink: "/content",
+    manageLabel: "Artisan Stories",
+    countKey: "whyChooseUsItems",
+    fields: { description: true },
+  },
   customerHomes: {
     name: "Customer Homes",
     countKey: "publishedPhotos",
@@ -170,6 +179,13 @@ const SECTION_META: Record<
     manageLabel: "Reviews",
     countKey: "approvedReviews",
     fields: { limit: true },
+  },
+  artisansTeaser: {
+    name: "Meet the Artisans Teaser",
+    manageLink: "/content",
+    manageLabel: "Artisan Stories",
+    countKey: "whyChooseUsItems",
+    fields: { description: true },
   },
   journal: {
     name: "Journal",

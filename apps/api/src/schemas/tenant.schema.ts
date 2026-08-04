@@ -127,10 +127,16 @@ export class HomepageSections {
   whyChooseUs: HomepageSectionConfig;
 
   @Prop({ type: HomepageSectionConfig, default: () => ({}) })
+  impact: HomepageSectionConfig;
+
+  @Prop({ type: HomepageSectionConfig, default: () => ({}) })
   customerHomes: HomepageSectionConfig;
 
   @Prop({ type: HomepageSectionConfig, default: () => ({}) })
   reviews: HomepageSectionConfig;
+
+  @Prop({ type: HomepageSectionConfig, default: () => ({}) })
+  artisansTeaser: HomepageSectionConfig;
 
   @Prop({ type: HomepageSectionConfig, default: () => ({}) })
   journal: HomepageSectionConfig;

@@ -705,8 +705,10 @@ export type HomepageSections = {
   newArrivals: HomepageSection;
   bestSellers: HomepageSection;
   whyChooseUs: HomepageSection;
+  impact: HomepageSection;
   customerHomes: HomepageSection;
   reviews: HomepageSection;
+  artisansTeaser: HomepageSection;
   journal: HomepageSection;
   gallery: HomepageSection;
 };

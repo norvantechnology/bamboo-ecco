@@ -9,6 +9,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { CollectionCard3D } from "@/components/home/collection-card-3d";
 import { HomeMotionRoot } from "@/components/home/home-motion";
 import { MotionReveal, MotionStaggerContainer, MotionStaggerChild, childFadeUpVariants } from "@/components/ui/motion-reveal";
+import { ImpactStatsSection } from "@/components/home/impact-stats-section";
+import { ArtisansTeaserSection } from "@/components/home/artisans-teaser-section";
 import type { getHomepage } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { pickBestImage } from "@/lib/pick-best-image";
@@ -189,6 +191,14 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
         </section>
       )}
 
+      {/* 5b. Impact Stats Bar */}
+      {sections.impact?.enabled && (
+        <ImpactStatsSection
+          title={sections.impact.title}
+          description={sections.impact.description}
+        />
+      )}
+
       {/* 6. Brand Pillars */}
       {brand.brandPillars.length > 0 && (
         <section className="texture-bamboo relative overflow-hidden py-6 sm:py-14">
@@ -290,6 +300,14 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             </MotionStaggerContainer>
           </div>
         </section>
+      )}
+
+      {/* 8b. Meet the Artisans Teaser */}
+      {sections.artisansTeaser?.enabled && (
+        <ArtisansTeaserSection
+          title={sections.artisansTeaser.title}
+          description={sections.artisansTeaser.description}
+        />
       )}
 
       {/* 9. Journal / Blog Posts */}
