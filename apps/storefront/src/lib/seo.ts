@@ -5,13 +5,28 @@ import { getSiteUrl, resolveSiteSeo } from "./site";
 
 export { getSiteUrl, resolveSiteSeo };
 
+export function ensureAbsoluteUrl(url?: string): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  const base = getSiteUrl().replace(/\/$/, "");
+  return `${base}${url.startsWith("/") ? url : `/${url}`}`;
+}
+
 function defaultOgImages(alt: string) {
   return [
     {
-      url: BRAND_ASSETS.icon,
+      url: ensureAbsoluteUrl("/brand/og-default.png"),
+      width: 1200,
+      height: 630,
+      alt,
+      type: "image/png",
+    },
+    {
+      url: ensureAbsoluteUrl(BRAND_ASSETS.icon),
       width: 512,
       height: 512,
       alt,
+      type: "image/svg+xml",
     },
   ];
 }
@@ -48,7 +63,7 @@ export async function buildPageMetadata({
   description?: string;
   path?: string;
   image?: string;
-  images?: (string | { url: string; width?: number; height?: number; alt?: string })[];
+  images?: (string | { url: string; width?: number; height?: number; alt?: string; type?: string })[];
   imageAlt?: string;
   noIndex?: boolean;
   ogType?: "website" | "article";
@@ -61,22 +76,40 @@ export async function buildPageMetadata({
   const desc = (description || seo.description).slice(0, 160);
   const canonical = path ? absoluteUrl(path) : undefined;
 
-  let ogImages: { url: string; width?: number; height?: number; alt?: string }[] = [];
+  let ogImages: { url: string; width?: number; height?: number; alt?: string; type?: string }[] = [];
 
   if (images && images.length > 0) {
-    ogImages = images.map((img) =>
-      typeof img === "string"
-        ? { url: img, width: 1200, height: 630, alt: imageAlt || title }
-        : { width: 1200, height: 630, alt: imageAlt || title, ...img },
-    );
+    ogImages = images.map((img) => {
+      const rawUrl = typeof img === "string" ? img : img.url;
+      const absUrl = ensureAbsoluteUrl(rawUrl);
+      const isPng = absUrl.endsWith(".png");
+      const isWebp = absUrl.endsWith(".webp");
+      const isSvg = absUrl.endsWith(".svg");
+      const mimeType = isPng ? "image/png" : isWebp ? "image/webp" : isSvg ? "image/svg+xml" : "image/jpeg";
+
+      if (typeof img === "string") {
+        return { url: absUrl, width: 1200, height: 630, alt: imageAlt || title, type: mimeType };
+      }
+      return {
+        width: 1200,
+        height: 630,
+        alt: imageAlt || title,
+        type: mimeType,
+        ...img,
+        url: absUrl,
+      };
+    });
   } else if (image || seo.ogImage) {
-    const single = image || seo.ogImage || "";
-    ogImages = [{ url: single, width: 1200, height: 630, alt: imageAlt || title }];
+    const single = ensureAbsoluteUrl(image || seo.ogImage || "");
+    const isPng = single.endsWith(".png");
+    const isWebp = single.endsWith(".webp");
+    const mimeType = isPng ? "image/png" : isWebp ? "image/webp" : "image/jpeg";
+    ogImages = [{ url: single, width: 1200, height: 630, alt: imageAlt || title, type: mimeType }];
   } else {
     ogImages = defaultOgImages(imageAlt || siteName || title);
   }
 
-  const primaryImage = ogImages[0]?.url;
+  const primaryImage = ogImages[0]?.url ? ensureAbsoluteUrl(ogImages[0].url) : ensureAbsoluteUrl("/brand/og-default.png");
 
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -93,10 +126,10 @@ export async function buildPageMetadata({
       images: ogImages,
     },
     twitter: {
-      card: primaryImage ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description: desc || undefined,
-      images: ogImages.map((i) => i.url),
+      images: ogImages.map((i) => ensureAbsoluteUrl(i.url)),
       ...(seo.twitterHandle ? { site: `@${seo.twitterHandle}`, creator: `@${seo.twitterHandle}` } : {}),
     },
     robots: noIndex
@@ -112,6 +145,11 @@ export async function buildPageMetadata({
             "max-video-preview": -1,
           },
         },
+    other: {
+      "og:image:secure_url": primaryImage,
+      "twitter:image:src": primaryImage,
+      image: primaryImage,
+    },
   };
 }
 
@@ -129,9 +167,6 @@ export async function buildProductMetadata(product: {
   const seo = await resolveSiteSeo();
   const { optimizeImageUrl } = await import("./cloudinary");
 
-  // Google Merchant Center compliant title — NO prices, NO "Free Shipping", NO promotions.
-  // If meta.title is set, use it as-is (admin can customise). Otherwise build:
-  // "Product Name - Category | Brand"
   const brandName = seo.name || "Bamboo Eco-Hub";
   const { categoryName } = product;
   const catSuffix = categoryName ? ` - ${categoryName}` : "";
@@ -141,7 +176,6 @@ export async function buildProductMetadata(product: {
 
   const variant = product.variants?.[0];
 
-  // Google Merchant Center compliant description — NO "Buy...online at ₹XXXX", NO promotional text.
   const description = (
     product.meta?.description ||
     `${product.title} — premium handcrafted bamboo decor for Indian homes. Made by skilled artisans using sustainable bamboo. Shop at ${brandName}.`
@@ -164,8 +198,8 @@ export async function buildProductMetadata(product: {
       : null) || scored[0];
 
   const ogSrc = primary?.url
-    ? optimizeImageUrl(primary.url, { width: 1200, height: 1200, crop: "limit" })
-    : undefined;
+    ? ensureAbsoluteUrl(optimizeImageUrl(primary.url, { width: 1200, height: 1200, crop: "limit" }))
+    : ensureAbsoluteUrl("/brand/og-default.png");
   const imageAlt = primary && "alt" in primary && primary.alt ? primary.alt : product.title;
   const inStock =
     product.status !== "out_of_stock" && (variant?.stockQty == null || variant.stockQty > 0);
@@ -175,11 +209,12 @@ export async function buildProductMetadata(product: {
       .filter(Boolean)
       .join(", ");
 
-  const allImages = scored.map((img) => ({
-    url: optimizeImageUrl(img.url, { width: 1200, height: 1200, crop: "limit" }),
+  const allImages = scored.slice(0, 6).map((img) => ({
+    url: ensureAbsoluteUrl(optimizeImageUrl(img.url, { width: 1200, height: 1200, crop: "limit" })),
     width: 1200,
     height: 1200,
     alt: ("alt" in img && img.alt) ? img.alt : product.title,
+    type: "image/jpeg",
   }));
 
   const base = await buildPageMetadata({
@@ -207,6 +242,9 @@ export async function buildProductMetadata(product: {
     },
     other: {
       ...(seo.themeColor ? { "theme-color": seo.themeColor } : {}),
+      "og:image:secure_url": ogSrc,
+      "twitter:image:src": ogSrc,
+      image: ogSrc,
       ...(variant?.price != null
         ? {
             "product:price:amount": String(variant.price),
@@ -272,7 +310,9 @@ export function rootMetadataFromSeo(seo: {
       ? `${seo.name} | ${seo.defaultTitle}`
       : seo.name || seo.defaultTitle || "";
 
-  const displayImage = seo.ogImage || BRAND_ASSETS.icon;
+  const displayImage = ensureAbsoluteUrl(seo.ogImage || "/brand/og-default.png");
+  const iconUrl = ensureAbsoluteUrl("/icon.svg");
+  const brandIconUrl = ensureAbsoluteUrl(BRAND_ASSETS.icon);
 
   return {
     metadataBase: new URL(siteUrl),
@@ -289,11 +329,11 @@ export function rootMetadataFromSeo(seo: {
     formatDetection: { email: false, address: false, telephone: false },
     icons: {
       icon: [
-        { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
-        { url: BRAND_ASSETS.icon, type: "image/svg+xml" },
+        { url: iconUrl, type: "image/svg+xml", sizes: "any" },
+        { url: brandIconUrl, type: "image/svg+xml" },
       ],
-      apple: [{ url: BRAND_ASSETS.icon, type: "image/svg+xml" }],
-      shortcut: BRAND_ASSETS.icon,
+      apple: [{ url: brandIconUrl, type: "image/svg+xml" }],
+      shortcut: brandIconUrl,
     },
     openGraph: {
       type: "website",
@@ -305,16 +345,17 @@ export function rootMetadataFromSeo(seo: {
       images: seo.ogImage
         ? [
             {
-              url: seo.ogImage,
+              url: ensureAbsoluteUrl(seo.ogImage),
               width: 1200,
               height: 630,
               alt: fullTitle || brandName || "",
+              type: seo.ogImage.endsWith(".png") ? "image/png" : "image/jpeg",
             },
           ]
         : defaultOgImages(fullTitle || brandName || ""),
     },
     twitter: {
-      card: seo.ogImage ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: fullTitle || undefined,
       description: seo.description || undefined,
       images: [displayImage],
@@ -345,7 +386,12 @@ export function rootMetadataFromSeo(seo: {
           }
         : {}),
     },
-    ...(seo.themeColor ? { other: { "theme-color": seo.themeColor } } : {}),
+    other: {
+      "og:image:secure_url": displayImage,
+      "twitter:image:src": displayImage,
+      image: displayImage,
+      ...(seo.themeColor ? { "theme-color": seo.themeColor } : {}),
+    },
   };
 }
 
@@ -381,12 +427,15 @@ export function organizationJsonLd(brand: {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: brand.name || undefined,
-    description: brand.tagline || undefined,
+    name: brand.name || "Bamboo Eco-Hub",
+    description: brand.tagline || "Handcrafted bamboo furniture & eco-friendly home decor",
     url: siteUrl,
-    logo: brandAssetUrl("icon", siteUrl),
-    image: brandAssetUrl("icon", siteUrl),
-    email: "info@bambooecohub.com",
+    logo: ensureAbsoluteUrl("/icon.svg"),
+    image: [
+      ensureAbsoluteUrl("/brand/og-default.png"),
+      ensureAbsoluteUrl("/icon.svg"),
+    ],
+    email: "support@bambooecohub.com",
     ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
@@ -396,8 +445,8 @@ export function websiteJsonLd(brand: { name?: string; description?: string }) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: brand.name || undefined,
-    description: brand.description || undefined,
+    name: brand.name || "Bamboo Eco-Hub",
+    description: brand.description || "Handcrafted Bamboo Home Decor & Eco-Friendly Furniture",
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",
@@ -416,22 +465,23 @@ export function homePageJsonLd(page: {
   image?: string;
 }) {
   const siteUrl = getSiteUrl();
+  const primaryImg = page.image ? ensureAbsoluteUrl(page.image) : ensureAbsoluteUrl("/brand/og-default.png");
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: page.name || undefined,
-    description: page.description || undefined,
+    name: page.name || "Bamboo Eco-Hub",
+    description: page.description || "Handcrafted Bamboo Furniture & Eco-Friendly Home Decor Online in India",
     url: siteUrl,
-    primaryImageOfPage: page.image
-      ? {
-          "@type": "ImageObject",
-          url: page.image,
-        }
-      : undefined,
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: primaryImg,
+      width: 1200,
+      height: 630,
+    },
     isPartOf: {
       "@type": "WebSite",
       url: siteUrl,
-      name: page.name || undefined,
+      name: page.name || "Bamboo Eco-Hub",
     },
     breadcrumb: {
       "@type": "BreadcrumbList",
@@ -476,8 +526,11 @@ export function localBusinessJsonLd(brand: {
     name: brand.name || "Bamboo Eco-Hub",
     description: brand.tagline || "Handcrafted bamboo furniture, lamps & eco-friendly home decor. Pan-India delivery.",
     url: siteUrl,
-    logo: brandAssetUrl("icon", siteUrl),
-    image: brandAssetUrl("icon", siteUrl),
+    logo: ensureAbsoluteUrl("/icon.svg"),
+    image: [
+      ensureAbsoluteUrl("/brand/og-default.png"),
+      ensureAbsoluteUrl("/icon.svg"),
+    ],
     email: brand.email || "support@bambooecohub.com",
     ...(brand.phone ? { telephone: brand.phone } : {}),
     priceRange: "₹₹",
@@ -514,18 +567,22 @@ export function articleJsonLd(post: {
   slug: string;
   description?: string;
   publishedAt?: string;
+  heroImage?: string;
   pathPrefix?: "journal" | "guides";
   publisherName?: string;
 }) {
   const prefix = post.pathPrefix ?? "journal";
   const org = post.publisherName
     ? { "@type": "Organization" as const, name: post.publisherName }
-    : undefined;
+    : { "@type": "Organization" as const, name: "Bamboo Eco-Hub", logo: { "@type": "ImageObject", url: ensureAbsoluteUrl("/icon.svg") } };
+  const imgUrl = ensureAbsoluteUrl(post.heroImage || "/brand/og-default.png");
+
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    image: [imgUrl],
     datePublished: post.publishedAt,
     url: absoluteUrl(`/${prefix}/${post.slug}`),
     author: org,
