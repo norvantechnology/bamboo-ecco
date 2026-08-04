@@ -73,8 +73,16 @@ export async function generateMetadata(): Promise<Metadata> {
   if (!heroList.length && brand.hero.imageUrl?.trim()) {
     heroList.push(brand.hero.imageUrl.trim());
   }
+
+  const collectionImages = (data?.collections ?? []).map((c) => c.imageUrl).filter((u): u is string => Boolean(u && u.trim()));
+  const productImages = (data?.bestSellers ?? []).flatMap((p) => (p.images ?? []).map((i) => i.url)).filter(Boolean);
+  const homeImages = (data?.customerHomes ?? []).map((ch) => ch.imageUrl).filter((u): u is string => Boolean(u && u.trim()));
+  const blogImages = (data?.blogPosts ?? []).map((b) => b.heroImage).filter((u): u is string => Boolean(u && u.trim()));
+
   const ogImage = seo.ogImage || heroList[0];
-  const allImages = [seo.ogImage, ...heroList].filter((u): u is string => Boolean(u && u.trim()));
+  const allImages = Array.from(
+    new Set([seo.ogImage, ...heroList, ...collectionImages, ...productImages, ...homeImages, ...blogImages].filter((u): u is string => Boolean(u && u.trim())))
+  ).slice(0, 16);
 
   return buildPageMetadata({
     title: fullTitle,

@@ -209,7 +209,7 @@ export async function buildProductMetadata(product: {
       .filter(Boolean)
       .join(", ");
 
-  const allImages = scored.slice(0, 6).map((img) => ({
+  const allImages = scored.slice(0, 16).map((img) => ({
     url: ensureAbsoluteUrl(optimizeImageUrl(img.url, { width: 1200, height: 1200, crop: "limit" })),
     width: 1200,
     height: 1200,

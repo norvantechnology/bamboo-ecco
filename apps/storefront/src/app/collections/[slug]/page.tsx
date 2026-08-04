@@ -31,15 +31,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = category.meta?.description || undefined;
   const keywords = category.meta?.keywords || undefined;
 
-  const topProductImage = productsResult?.data?.[0]?.images?.[0]?.url;
-  const categoryImages = [category.imageUrl, topProductImage].filter((u): u is string => Boolean(u && u.trim()));
+  const productImages = (productsResult?.data ?? []).flatMap((p) => (p.images ?? []).map((i) => i.url)).filter(Boolean);
+  const categoryImages = Array.from(
+    new Set([category.imageUrl, ...productImages].filter((u): u is string => Boolean(u && u.trim())))
+  ).slice(0, 16);
 
   return buildPageMetadata({
     title,
     description,
     keywords,
     path: `/collections/${slug}`,
-    image: category.imageUrl || topProductImage,
+    image: category.imageUrl || productImages[0],
     images: categoryImages.length ? categoryImages : undefined,
     imageAlt: category.name,
   });
