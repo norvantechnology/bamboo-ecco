@@ -7,6 +7,7 @@ import {
   type AdminOrder,
 } from "../lib/api";
 import { PageLoader, Spinner } from "../components/Loading";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 const STATUSES = ["pending", "paid", "fulfilled", "shipped", "delivered", "cancelled", "refunded"] as const;
 
@@ -15,13 +16,17 @@ export function OrdersPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
     getAdminOrders()
       .then(setOrders)
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load orders"))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setFetchedAt(new Date().toISOString());
+      });
   }
 
   useEffect(() => {
@@ -46,7 +51,10 @@ export function OrdersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold sm:text-2xl">Orders</h1>
-        <p className="text-sm text-muted">{orders.length} orders</p>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-muted">{orders.length} orders</p>
+          <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
+        </div>
       </div>
 
       {error && (

@@ -14,6 +14,8 @@ import {
 import { PageLoader } from "../components/Loading";
 import { ImageUpload } from "../components/ImageUpload";
 import { MotionFade } from "../components/ui/motion";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 const emptyForm = (): ProductPayload & { id?: string } => ({
   categoryId: "",
@@ -46,6 +48,7 @@ export function ProductsPage() {
   const [saving, setSaving] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkUpdating, setBulkUpdating] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
@@ -260,6 +263,7 @@ export function ProductsPage() {
         await createProduct(form);
       }
       setFormOpen(false);
+      setLastSavedAt(new Date().toISOString());
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
@@ -287,7 +291,10 @@ export function ProductsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold sm:text-2xl">Products</h1>
-          <p className="text-sm text-muted">{products.length} products</p>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted">{products.length} products</p>
+            <LastUpdatedAt date={lastSavedAt} />
+          </div>
         </div>
         <button
           type="button"
@@ -861,6 +868,16 @@ export function ProductsPage() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* JSON Editor */}
+            <div className="mt-6">
+              <JsonEditorPanel
+                data={form}
+                onApply={(parsed) => setForm({ ...emptyForm(), ...parsed })}
+                lastUpdatedAt={lastSavedAt}
+                label="Product JSON"
+              />
             </div>
 
             <div className="mt-4 flex gap-3">

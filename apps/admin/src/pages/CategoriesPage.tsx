@@ -11,6 +11,8 @@ import {
 import { PageLoader } from "../components/Loading";
 import { ImageUpload } from "../components/ImageUpload";
 import { MotionFade } from "../components/ui/motion";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 function slugify(name: string) {
   return name
@@ -33,6 +35,7 @@ export function CategoriesPage() {
     meta: { title: "", description: "" },
   });
   const [saving, setSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
@@ -104,6 +107,7 @@ export function CategoriesPage() {
         await createCategory(payload);
       }
       setFormOpen(false);
+      setLastSavedAt(new Date().toISOString());
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
@@ -129,10 +133,13 @@ export function CategoriesPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold sm:text-2xl">Categories</h1>
-          <p className="text-sm text-muted">
-            {categories.length} total · {roots.length} top-level · {categories.length - roots.length}{" "}
-            sub-categories
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted">
+              {categories.length} total · {roots.length} top-level · {categories.length - roots.length}{" "}
+              sub-categories
+            </p>
+            <LastUpdatedAt date={lastSavedAt} />
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -296,6 +303,17 @@ export function CategoriesPage() {
                 </label>
               </div>
             </div>
+
+            {/* JSON Editor */}
+            <div className="mt-4">
+              <JsonEditorPanel
+                data={form}
+                onApply={(parsed) => setForm({ slug: "", name: "", imageUrl: "", parentId: null, meta: { title: "", description: "" }, ...parsed })}
+                lastUpdatedAt={lastSavedAt}
+                label="Category JSON"
+              />
+            </div>
+
             <div className="mt-4 flex gap-3">
               <button
                 type="submit"

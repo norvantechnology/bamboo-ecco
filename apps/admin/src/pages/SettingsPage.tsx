@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import { getAdminSettings, updateAdminSettings, type TenantSettings } from "../lib/api";
 import { PageLoader } from "../components/Loading";
 import { Field, Panel, TextInput, Toggle } from "../components/ui/form";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 export function SettingsPage() {
   const [settings, setSettings] = useState<TenantSettings | null>(null);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
     getAdminSettings()
@@ -29,6 +32,7 @@ export function SettingsPage() {
       });
       setSettings(updated);
       setSaved(true);
+      setLastSavedAt(new Date().toISOString());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -51,6 +55,7 @@ export function SettingsPage() {
           </Link>
           .
         </p>
+        <LastUpdatedAt date={lastSavedAt} />
       </div>
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
@@ -101,6 +106,21 @@ export function SettingsPage() {
             />
           </div>
         </Panel>
+
+        {/* JSON Editor */}
+        <JsonEditorPanel
+          data={{ name: settings.name, paymentEnabled: settings.paymentEnabled !== false }}
+          onApply={(parsed: any) => {
+            setSettings({
+              ...settings,
+              name: parsed.name ?? settings.name,
+              paymentEnabled: parsed.paymentEnabled ?? settings.paymentEnabled,
+            });
+            setSaved(false);
+          }}
+          lastUpdatedAt={lastSavedAt}
+          label="Settings JSON"
+        />
 
         <button
           type="submit"

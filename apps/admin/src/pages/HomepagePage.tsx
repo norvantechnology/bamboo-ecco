@@ -31,6 +31,7 @@ import {
   TextInput,
   Toggle,
 } from "../components/ui/form";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
 
 type SectionKey = keyof HomepageSections;
 type PillarItem = { icon: string; title: string; description: string };
@@ -374,6 +375,7 @@ export function HomepagePage() {
     caption: "",
     published: true,
   });
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   /** Sync lock — file picker focus must not refetch and wipe in-flight banner uploads. */
   const suppressFocusRefetchRef = useRef(false);
@@ -474,6 +476,7 @@ export function HomepagePage() {
         brandPillarsItems: (updated.brandPillars ?? []).filter((i) => i.title).length,
       }));
       setSaved(true);
+      setLastSavedAt(new Date().toISOString());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -904,6 +907,28 @@ export function HomepagePage() {
           </Panel>
         );
       })}
+
+      {/* JSON Editor — edit all homepage data at once */}
+      <JsonEditorPanel
+        data={{
+          tagline,
+          hero,
+          brandPillars,
+          whyChooseUs,
+          homepageSections: sections,
+        }}
+        onApply={(parsed: any) => {
+          if (parsed.tagline !== undefined) setTagline(parsed.tagline);
+          if (parsed.hero) setHero(normalizeHero(parsed.hero));
+          if (parsed.brandPillars) setBrandPillars(parsed.brandPillars);
+          if (parsed.whyChooseUs) setWhyChooseUs(parsed.whyChooseUs);
+          if (parsed.homepageSections) setSections(parsed.homepageSections);
+          markDirty();
+        }}
+        lastUpdatedAt={lastSavedAt}
+        label="Homepage JSON"
+        onDirty={markDirty}
+      />
 
       <SaveBar onSave={saveAll} saving={saving} saved={saved} label="Save homepage" />
     </div>

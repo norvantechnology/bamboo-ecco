@@ -4,6 +4,8 @@ import { PageHeader } from "../components/PageHeader";
 import { ImageUpload } from "../components/ImageUpload";
 import { useRefetchOnFocus } from "../lib/useRefetchOnFocus";
 import { Field, FieldRow, Panel, Select, TextArea, TextInput } from "../components/ui/form";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 import {
   getAdminContent,
   createContentPage,
@@ -45,6 +47,7 @@ export function ContentPage() {
   const [editing, setEditing] = useState<AdminContentPage | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [showEditor, setShowEditor] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   function load() {
     getAdminContent(filter || undefined)
@@ -116,6 +119,7 @@ export function ContentPage() {
         await createContentPage(payload);
       }
       closeEditor();
+      setLastSavedAt(new Date().toISOString());
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
@@ -133,6 +137,7 @@ export function ContentPage() {
     <div className="space-y-5">
       <PageHeader
         title="Site pages"
+        description={<LastUpdatedAt date={lastSavedAt} />}
         action={
           <button
             type="button"
@@ -356,6 +361,14 @@ export function ContentPage() {
                   </FieldRow>
                 </Panel>
               )}
+
+              {/* JSON Editor */}
+              <JsonEditorPanel
+                data={form}
+                onApply={(parsed) => setForm({ ...emptyForm, ...parsed })}
+                lastUpdatedAt={lastSavedAt}
+                label="Page JSON"
+              />
 
               <div className="flex items-center gap-2">
                 <button

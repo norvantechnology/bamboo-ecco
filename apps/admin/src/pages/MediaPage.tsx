@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { getAdminGallery, createGalleryItem, deleteGalleryItem, getMediaConfig, type AdminGalleryItem } from "../lib/api";
 import { ImageUpload } from "../components/ImageUpload";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 export function MediaPage() {
   const [items, setItems] = useState<AdminGalleryItem[]>([]);
   const [error, setError] = useState("");
   const [cloudinaryReady, setCloudinaryReady] = useState<boolean | null>(null);
   const [form, setForm] = useState({ imageUrl: "", caption: "", instagramUrl: "" });
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   function load() {
     getAdminGallery()
@@ -27,6 +30,7 @@ export function MediaPage() {
     try {
       await createGalleryItem({ ...form, sortOrder: items.length });
       setForm({ imageUrl: "", caption: "", instagramUrl: "" });
+      setLastSavedAt(new Date().toISOString());
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add");
@@ -37,7 +41,10 @@ export function MediaPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold sm:text-2xl">Media Library</h1>
-        <p className="text-sm text-muted">Instagram gallery (“Follow Our Journey”) — upload images via Cloudinary</p>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-muted">Instagram gallery (“Follow Our Journey”) — upload images via Cloudinary</p>
+          <LastUpdatedAt date={lastSavedAt} />
+        </div>
       </div>
 
       {cloudinaryReady === false && (
@@ -83,6 +90,14 @@ export function MediaPage() {
         <button type="submit" className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-surface">
           <Plus className="h-4 w-4" /> Add to gallery
         </button>
+
+        {/* JSON Editor */}
+        <JsonEditorPanel
+          data={form}
+          onApply={(parsed) => setForm({ imageUrl: "", caption: "", instagramUrl: "", ...parsed })}
+          lastUpdatedAt={lastSavedAt}
+          label="Gallery Item JSON"
+        />
       </form>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

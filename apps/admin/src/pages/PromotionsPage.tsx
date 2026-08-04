@@ -3,12 +3,14 @@ import { getAdminSettings, updateAdminSettings, type TenantSettings } from "../l
 import { PageLoader } from "../components/Loading";
 import { PageHeader } from "../components/PageHeader";
 import { Field, FieldRow, Panel, SaveBar, Select, TextArea, TextInput, Toggle, ColorInput } from "../components/ui/form";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
 
 export function PromotionsPage() {
   const [settings, setSettings] = useState<TenantSettings | null>(null);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
     getAdminSettings()
@@ -32,6 +34,7 @@ export function PromotionsPage() {
       });
       setSettings(updated);
       setSaved(true);
+      setLastSavedAt(new Date().toISOString());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -340,6 +343,27 @@ export function PromotionsPage() {
           </Field>
         </FieldRow>
       </Panel>
+
+      {/* JSON Editor */}
+      <JsonEditorPanel
+        data={{
+          welcomePopup: popup,
+          announcementBar: bar,
+          googleCustomerReviews: gcr,
+        }}
+        onApply={(parsed: any) => {
+          setSettings({
+            ...settings,
+            welcomePopup: parsed.welcomePopup ?? popup,
+            announcementBar: parsed.announcementBar ?? bar,
+            googleCustomerReviews: parsed.googleCustomerReviews ?? gcr,
+          });
+          markDirty();
+        }}
+        lastUpdatedAt={lastSavedAt}
+        label="Promotions JSON"
+        onDirty={markDirty}
+      />
 
       <SaveBar onSave={handleSave} saving={saving} saved={saved} label="Save promotions" />
     </div>

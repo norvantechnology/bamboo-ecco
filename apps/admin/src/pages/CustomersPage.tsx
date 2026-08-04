@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import { getAdminCustomers, type AdminCustomer } from "../lib/api";
 import { PageLoader } from "../components/Loading";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 export function CustomersPage() {
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
 
   useEffect(() => {
     getAdminCustomers()
       .then(setCustomers)
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setFetchedAt(new Date().toISOString());
+      });
   }, []);
 
   if (loading) return <PageLoader label="Loading customers…" />;
@@ -20,7 +25,10 @@ export function CustomersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold sm:text-2xl">Customers</h1>
-        <p className="text-sm text-muted">{customers.length} registered customers</p>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-muted">{customers.length} registered customers</p>
+          <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
+        </div>
       </div>
 
       {error && (

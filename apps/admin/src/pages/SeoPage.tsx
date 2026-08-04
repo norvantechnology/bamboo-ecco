@@ -82,6 +82,8 @@ import {
   type TenantSeoSettings,
   type TenantSettings,
 } from "../lib/api";
+import { JsonEditorPanel } from "../components/JsonEditorPanel";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || "http://localhost:3000";
 
@@ -348,6 +350,7 @@ export function SeoPage() {
   const [form, setForm] = useState({ fromPath: "", toPath: "", statusCode: 301 });
   const [savingRedirect, setSavingRedirect] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   function load() {
     setError("");
@@ -398,6 +401,7 @@ export function SeoPage() {
       setStoreName(updated.name);
       setSeo({ ...EMPTY_SEO, ...(updated.seo ?? {}) });
       setSaved(true);
+      setLastSavedAt(new Date().toISOString());
       savedTimer.current = setTimeout(() => setSaved(false), 4000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save SEO settings");
@@ -436,7 +440,12 @@ export function SeoPage() {
     <div className="mx-auto max-w-3xl space-y-4 pb-10">
       <PageHeader
         title="SEO"
-        description="Control how your store appears in Google, social previews, and AI search tools."
+        description={
+          <span className="flex items-center gap-3">
+            <span>Control how your store appears in Google, social previews, and AI search tools.</span>
+            <LastUpdatedAt date={lastSavedAt} />
+          </span>
+        }
       />
 
       {/* Status banners */}
@@ -781,6 +790,17 @@ export function SeoPage() {
           ))}
         </ul>
       </div>
+
+      {/* JSON Editor for SEO data */}
+      <JsonEditorPanel
+        data={{ storeName, seo }}
+        onApply={(parsed: any) => {
+          if (parsed.storeName !== undefined) setStoreName(parsed.storeName);
+          if (parsed.seo) setSeo({ ...EMPTY_SEO, ...parsed.seo });
+        }}
+        lastUpdatedAt={lastSavedAt}
+        label="SEO JSON"
+      />
 
       {/* ── 7. URL Redirects ──────────────────────────────────────────── */}
       <div id="redirects" className="rounded-2xl border border-border bg-surface overflow-hidden shadow-sm">

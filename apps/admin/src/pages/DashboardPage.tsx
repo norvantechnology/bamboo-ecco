@@ -10,12 +10,14 @@ import {
 import { PageLoader } from "../components/Loading";
 import { HubCard, PageHeader } from "../components/PageHeader";
 import { navGroups } from "../lib/admin-nav";
+import { LastUpdatedAt } from "../components/LastUpdatedAt";
 
 export function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([getDashboardStats(), getAdminOrders()])
@@ -24,7 +26,10 @@ export function DashboardPage() {
         setOrders(recentOrders);
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load dashboard"))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setFetchedAt(new Date().toISOString());
+      });
   }, []);
 
   if (loading) {
@@ -59,7 +64,12 @@ export function DashboardPage() {
     <div className="space-y-8">
       <PageHeader
         title="Dashboard"
-        description="Your store at a glance. Use the sections below to jump anywhere — or search in the top bar."
+        description={
+          <span className="flex items-center gap-3">
+            <span>Your store at a glance. Use the sections below to jump anywhere — or search in the top bar.</span>
+            <LastUpdatedAt date={fetchedAt} prefix="Data as of" />
+          </span>
+        }
       />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
