@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { AdminNav } from "./AdminNav";
 import { AdminSearch } from "./AdminSearch";
 import { findNavItem } from "../lib/admin-nav";
@@ -9,11 +9,20 @@ import { MotionDrawer, MotionOverlay, useMotionPresence } from "./ui/motion";
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    return localStorage.getItem("admin_sidebar_collapsed") === "true";
+  });
   const { mounted: sidebarMounted, visible: sidebarVisible } = useMotionPresence(sidebarOpen);
   const navigate = useNavigate();
   const location = useLocation();
   const user = getStoredUser();
   const currentPage = findNavItem(location.pathname);
+
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem("admin_sidebar_collapsed", String(next));
+  }
 
   function logout() {
     clearStoredAuth();
@@ -22,32 +31,49 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-dvh bg-background">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface lg:flex">
-        <div className="border-b border-border px-5 py-4">
-          <div className="flex items-center gap-2.5">
+      <aside
+        className={`hidden shrink-0 flex-col border-r border-border bg-surface transition-all duration-300 ease-in-out lg:flex ${
+          collapsed ? "w-16" : "w-52"
+        }`}
+      >
+        <div className="border-b border-border px-3 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 min-w-0">
             <img
               src="/brand/icon.svg"
               alt=""
               aria-hidden
-              className="h-9 w-9 shrink-0 rounded-full"
+              className="h-8 w-8 shrink-0 rounded-full"
             />
-            <div className="min-w-0">
-              <p className="truncate text-base font-semibold tracking-tight">Bamboo Eco-Hub</p>
-              <p className="text-xs text-muted">Admin · manage your store</p>
-            </div>
+            {!collapsed && (
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold tracking-tight">Bamboo Eco-Hub</p>
+                <p className="text-[10px] text-muted leading-none">Admin Panel</p>
+              </div>
+            )}
           </div>
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="p-1 rounded-md text-muted hover:text-foreground hover:bg-background/80 transition-colors"
+          >
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </button>
         </div>
-        <nav className="flex-1 overflow-y-auto">
-          <AdminNav />
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden">
+          <AdminNav collapsed={collapsed} />
         </nav>
-        <div className="border-t border-border p-3">
+        <div className="border-t border-border p-2">
           <button
             type="button"
             onClick={logout}
-            className="motion-pop flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm text-muted hover:bg-background hover:text-foreground"
+            title="Sign out"
+            className={`motion-pop flex h-9 w-full items-center gap-2.5 rounded-lg text-xs text-muted hover:bg-background hover:text-foreground transition-all ${
+              collapsed ? "justify-center px-0" : "px-2.5"
+            }`}
           >
-            <LogOut className="h-4 w-4" />
-            Sign out
+            <LogOut className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>Sign out</span>}
           </button>
         </div>
       </aside>

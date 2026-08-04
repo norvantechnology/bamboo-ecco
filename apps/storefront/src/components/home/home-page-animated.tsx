@@ -146,7 +146,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
       {sections.whyChooseUs.enabled && brand.whyChooseUs.length > 0 && (
         <section className="texture-bamboo border-y border-border py-8 sm:py-16">
           <div className="container-page">
-            <MotionReveal className="flex flex-col items-center text-center mb-10 sm:mb-12">
+            <MotionReveal className="flex flex-col items-center text-center mb-8 sm:mb-12">
               <span className="section-label !mb-2">Our Promise</span>
               <h2 className="font-display text-2xl font-semibold sm:text-3xl lg:text-4xl text-foreground relative pb-4">
                 Why Choose {brand.name || 'Bamboo Eco-Hub'}
@@ -158,31 +158,31 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
                   className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] bg-gradient-to-r from-[#4A5D3E] to-[#C9A24B] rounded-full"
                 />
               </h2>
-              <p className="mt-3.5 max-w-xl text-xs sm:text-sm text-muted">
+              <p className="mt-3 max-w-xl text-xs sm:text-sm text-muted leading-relaxed">
                 Sustainably crafted home decor designed to bring natural warmth, elegance, and durability to your living space.
               </p>
             </MotionReveal>
 
             <MotionStaggerContainer
               staggerDelay={0.09}
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3"
             >
               {brand.whyChooseUs.map((item) => (
                 <MotionStaggerChild
                   key={item.title}
                   variants={childFadeUpVariants}
-                  className="group relative flex flex-col items-center text-center rounded-2xl border border-border/60 dark:border-border bg-surface/85 dark:bg-surface-elevated/90 p-6 sm:p-8 shadow-warm hover:shadow-warm-lg transition-all duration-300 hover:-translate-y-1.5"
+                  className="group relative flex flex-col items-center text-center rounded-2xl border border-border/60 dark:border-border bg-surface/90 dark:bg-surface-elevated/90 p-4.5 sm:p-7 shadow-warm hover:shadow-warm-lg transition-all duration-300 hover:border-[#C9A24B]/40 hover:-translate-y-1"
                 >
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4A5D3E] to-[#C9A24B] shadow-sm transition-transform duration-300 group-hover:scale-110">
+                  <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4A5D3E] to-[#C9A24B] shadow-sm transition-transform duration-300 group-hover:scale-105">
                     <BrandIcon
                       name={item.icon}
-                      className="h-6 w-6 text-[#FAF8F5] transition-transform duration-300 group-hover:rotate-6"
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-[#FAF8F5] transition-transform duration-300 group-hover:rotate-6"
                     />
                   </div>
-                  <h3 className="mt-4 text-base font-semibold text-foreground sm:text-lg">
+                  <h3 className="mt-3.5 text-base font-semibold text-foreground sm:text-lg">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-muted sm:text-sm">
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted sm:text-sm max-w-[280px]">
                     {item.description}
                   </p>
                 </MotionStaggerChild>
@@ -313,7 +313,7 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
 
       {/* 9. Journal / Blog Posts */}
       {sections.journal.enabled && blogPosts.length > 0 && (
-        <section className="container-page py-6 sm:py-14">
+        <section className="container-page py-8 sm:py-16">
           <MotionReveal>
             <SectionHeader
               title={sections.journal.title}
@@ -324,19 +324,33 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
           </MotionReveal>
           <MotionStaggerContainer
             staggerDelay={0.08}
-            className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-4 lg:grid-cols-4"
+            className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:mt-8 sm:gap-5 lg:grid-cols-4"
           >
             {blogPosts.map((post) => (
               <MotionStaggerChild key={post._id} variants={childFadeUpVariants}>
                 <Link
                   href={`/journal/${post.slug}`}
-                  className="group flex h-full flex-col rounded-xl border border-border bg-surface p-4 shadow-warm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-warm-lg sm:p-5"
+                  className="group flex h-full flex-col justify-between rounded-2xl border border-border/70 bg-surface p-5 shadow-warm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#C9A24B]/40 hover:shadow-warm-lg"
                 >
-                  <h3 className="journal-card-title font-display text-base sm:text-lg">{post.title}</h3>
-                  <p className="hidden sm:block mt-2 line-clamp-2 flex-1 text-sm text-muted">{post.meta?.description}</p>
-                  <span className="mt-4 text-xs font-medium text-secondary opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
-                    Read article →
-                  </span>
+                  <div>
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#b8863a] bg-[#b8863a]/10 px-2.5 py-1 rounded-full mb-3">
+                      Sustainable Living
+                    </span>
+                    <h3 className="journal-card-title font-display text-base font-semibold text-foreground sm:text-lg leading-snug group-hover:text-[#b8863a] transition-colors">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-xs sm:text-sm text-muted leading-relaxed font-sans">
+                      {post.meta?.description}
+                    </p>
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-border/40 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[#b8863a] group-hover:underline">
+                      Read story
+                    </span>
+                    <span className="text-sm font-semibold text-[#b8863a] transition-transform duration-300 group-hover:translate-x-1">
+                      →
+                    </span>
+                  </div>
                 </Link>
               </MotionStaggerChild>
             ))}
