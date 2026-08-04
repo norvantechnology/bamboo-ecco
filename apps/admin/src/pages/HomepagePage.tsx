@@ -203,6 +203,31 @@ const SECTION_META: Record<
   },
 };
 
+const DEFAULT_HOMEPAGE_SECTIONS: HomepageSections = {
+  collections: { enabled: true, label: "Collections", title: "Bamboo Home Decor Collections", description: "Explore curated bamboo furniture and natural decor for every room", limit: 8 },
+  lifestyle: { enabled: true, label: "Lifestyle", title: "Bamboo Furniture in Real Indian Homes", description: "See how our eco-friendly pieces look in living rooms, bedrooms, and apartments", limit: 6 },
+  newArrivals: { enabled: true, label: "Just landed", title: "New Bamboo Decor & Furniture", description: "Fresh handcrafted bamboo pieces — just added to our online store", href: "/new-arrivals", limit: 24 },
+  bestSellers: { enabled: true, label: "Popular", title: "Best-Selling Bamboo Home Decor", description: "Our most-loved sustainable furniture and decor, chosen by customers across India", href: "/best-sellers", limit: 24 },
+  whyChooseUs: { enabled: true, label: "Our promise", title: "Why Choose Us" },
+  impact: { enabled: true, label: "Our Impact", title: "Preserving Tripura's Bamboo Lineage", description: "Rooted in the lush hills of Tripura — home to 21 native bamboo species and generations of master artisan heritage" },
+  customerHomes: { enabled: true, label: "Community", title: "Customer Homes", description: "Real Indian homes styled with natural bamboo decor", limit: 8 },
+  reviews: { enabled: true, label: "Reviews", title: "Customer Reviews — Bamboo Furniture & Decor", limit: 6 },
+  artisansTeaser: { enabled: true, label: "Artisan Heritage", title: "Meet the Weavers of Agartala", description: "Discover the real people and craft lineage behind every piece of handcrafted bamboo decor" },
+  journal: { enabled: true, label: "Journal", title: "Bamboo & Sustainable Living Ideas", description: "Tips on eco-friendly home decor, bamboo furniture care, and mindful interiors", href: "/journal", linkText: "Read all", limit: 4 },
+  gallery: { enabled: true, label: "Instagram", title: "Follow Our Journey", limit: 12 },
+};
+
+function normalizeSections(rawSections?: Partial<HomepageSections> | null): HomepageSections {
+  const normalized = { ...DEFAULT_HOMEPAGE_SECTIONS };
+  if (!rawSections) return normalized;
+  for (const k of SECTION_ORDER) {
+    if (rawSections[k]) {
+      normalized[k] = { ...DEFAULT_HOMEPAGE_SECTIONS[k], ...rawSections[k] };
+    }
+  }
+  return normalized;
+}
+
 interface HomepageCounts {
   categoriesWithImage: number;
   featuredProducts: number;
@@ -446,7 +471,7 @@ export function HomepagePage() {
   useEffect(() => {
     getAdminSettings()
       .then((s) => {
-        setSections(s.homepageSections ?? null);
+        setSections(normalizeSections(s.homepageSections));
         setHero(normalizeHero(s.hero));
         setTagline(s.tagline);
         setBrandPillars(s.brandPillars ?? []);
@@ -466,7 +491,8 @@ export function HomepagePage() {
 
   function updateSection(key: SectionKey, patch: Partial<HomepageSection>) {
     if (!sections) return;
-    setSections({ ...sections, [key]: { ...sections[key], ...patch } });
+    const current = sections[key] ?? DEFAULT_HOMEPAGE_SECTIONS[key];
+    setSections({ ...sections, [key]: { ...current, ...patch } });
     markDirty();
   }
 
@@ -483,7 +509,7 @@ export function HomepagePage() {
         whyChooseUs: whyChooseUs.filter((p) => p.title.trim()),
         homepageSections: sections,
       });
-      setSections(updated.homepageSections ?? sections);
+      setSections(normalizeSections(updated.homepageSections ?? sections));
       setHero(preferHeroImages(hero, updated.hero ?? hero));
       setBrandPillars(updated.brandPillars ?? brandPillars);
       setWhyChooseUs(updated.whyChooseUs ?? whyChooseUs);
@@ -578,7 +604,7 @@ export function HomepagePage() {
                 if (parsed.hero) setHero(normalizeHero(parsed.hero));
                 if (parsed.brandPillars) setBrandPillars(parsed.brandPillars);
                 if (parsed.whyChooseUs) setWhyChooseUs(parsed.whyChooseUs);
-                if (parsed.homepageSections) setSections(parsed.homepageSections);
+                if (parsed.homepageSections) setSections(normalizeSections(parsed.homepageSections));
                 markDirty();
               }}
               lastUpdatedAt={lastSavedAt}
@@ -815,7 +841,7 @@ export function HomepagePage() {
 
       {/* Homepage sections */}
       {SECTION_ORDER.map((key) => {
-        const section = sections[key];
+        const section = sections[key] ?? DEFAULT_HOMEPAGE_SECTIONS[key];
         const meta = SECTION_META[key];
         const itemCount =
           key === "whyChooseUs"
