@@ -283,6 +283,24 @@ export function ProductsPage() {
     }
   }
 
+  async function handleBulkApplyJson(parsedData: any) {
+    setError("");
+    try {
+      const list = Array.isArray(parsedData) ? parsedData : [parsedData];
+      for (const item of list) {
+        if (item._id) {
+          await updateProduct(item._id, item);
+        } else {
+          await createProduct(item);
+        }
+      }
+      setLastSavedAt(new Date().toISOString());
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bulk JSON update failed");
+    }
+  }
+
   if (loading) return <PageLoader label="Loading products…" />;
 
   const isAllSelected = selectedIds.length > 0 && selectedIds.length === products.length;
@@ -300,10 +318,14 @@ export function ProductsPage() {
         <div className="flex items-center gap-2">
           <JsonEditorButton
             data={formOpen ? form : products}
-            onApply={formOpen ? (parsed) => setForm({ ...emptyForm(), ...parsed }) : undefined}
+            onApply={
+              formOpen
+                ? (parsed) => setForm({ ...emptyForm(), ...parsed })
+                : (parsed) => handleBulkApplyJson(parsed)
+            }
             lastUpdatedAt={lastSavedAt}
-            label={formOpen ? "Product Form JSON" : "Products List JSON"}
-            readOnly={!formOpen}
+            label={formOpen ? "Product Form JSON" : "Products Bulk JSON Editor"}
+            readOnly={false}
           />
           <button
             type="button"

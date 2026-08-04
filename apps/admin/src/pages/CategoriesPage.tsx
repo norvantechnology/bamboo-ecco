@@ -127,6 +127,34 @@ export function CategoriesPage() {
     }
   }
 
+  async function handleBulkApplyJson(parsedData: any) {
+    setError("");
+    try {
+      const list = Array.isArray(parsedData) ? parsedData : [parsedData];
+      for (const item of list) {
+        const payload: CategoryPayload = {
+          slug: item.slug,
+          name: item.name,
+          imageUrl: item.imageUrl || undefined,
+          parentId: item.parentId || null,
+          meta: {
+            title: item.meta?.title?.trim() || "",
+            description: item.meta?.description?.trim() || "",
+          },
+        };
+        if (item._id) {
+          await updateCategory(item._id, payload);
+        } else {
+          await createCategory(payload);
+        }
+      }
+      setLastSavedAt(new Date().toISOString());
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bulk JSON update failed");
+    }
+  }
+
   if (loading) return <PageLoader label="Loading categories…" />;
 
   return (
@@ -145,10 +173,14 @@ export function CategoriesPage() {
         <div className="flex flex-wrap gap-2 items-center">
           <JsonEditorButton
             data={formOpen ? form : categories}
-            onApply={formOpen ? (parsed) => setForm({ slug: "", name: "", imageUrl: "", parentId: null, meta: { title: "", description: "" }, ...parsed }) : undefined}
+            onApply={
+              formOpen
+                ? (parsed) => setForm({ slug: "", name: "", imageUrl: "", parentId: null, meta: { title: "", description: "" }, ...parsed })
+                : (parsed) => handleBulkApplyJson(parsed)
+            }
             lastUpdatedAt={lastSavedAt}
-            label={formOpen ? "Category Form JSON" : "Categories List JSON"}
-            readOnly={!formOpen}
+            label={formOpen ? "Category Form JSON" : "Categories Bulk JSON Editor"}
+            readOnly={false}
           />
           <button
             type="button"

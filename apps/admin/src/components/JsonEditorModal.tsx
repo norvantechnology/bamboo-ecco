@@ -237,7 +237,7 @@ export function JsonEditorModal({
                     <Check className="h-4 w-4" /> Applied to form!
                   </>
                 ) : (
-                  "Apply JSON to Page"
+                  "Apply & Update JSON"
                 )}
               </button>
             )}

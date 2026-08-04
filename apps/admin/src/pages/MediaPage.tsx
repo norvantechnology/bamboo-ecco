@@ -38,6 +38,35 @@ export function MediaPage() {
     }
   }
 
+  async function handleBulkApplyJson(parsedData: any) {
+    setError("");
+    try {
+      const list = Array.isArray(parsedData) ? parsedData : [parsedData];
+      for (const item of list) {
+        if (item._id) {
+          // Update item if exists or create
+          await createGalleryItem({
+            imageUrl: item.imageUrl,
+            caption: item.caption,
+            instagramUrl: item.instagramUrl,
+            sortOrder: item.sortOrder ?? items.length,
+          });
+        } else if (item.imageUrl) {
+          await createGalleryItem({
+            imageUrl: item.imageUrl,
+            caption: item.caption,
+            instagramUrl: item.instagramUrl,
+            sortOrder: item.sortOrder ?? items.length,
+          });
+        }
+      }
+      setLastSavedAt(new Date().toISOString());
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bulk JSON update failed");
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -50,9 +79,10 @@ export function MediaPage() {
         </div>
         <JsonEditorButton
           data={items}
+          onApply={(parsed) => handleBulkApplyJson(parsed)}
           lastUpdatedAt={lastSavedAt}
-          label="Media Library JSON"
-          readOnly
+          label="Media Library Bulk JSON Editor"
+          readOnly={false}
         />
       </div>
 

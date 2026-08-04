@@ -134,6 +134,39 @@ export function ContentPage() {
     load();
   }
 
+  async function handleBulkApplyJson(parsedData: any) {
+    setError("");
+    try {
+      const list = Array.isArray(parsedData) ? parsedData : [parsedData];
+      for (const item of list) {
+        const payload = {
+          slug: item.slug,
+          title: item.title,
+          body: item.body,
+          type: item.type || "static",
+          heroImage: item.heroImage || undefined,
+          imageCredit: item.imageCredit || undefined,
+          meta: {
+            title: item.metaTitle || item.meta?.title || undefined,
+            description: item.metaDescription || item.meta?.description || undefined,
+          },
+          footerGroup: item.footerGroup || item.footerGroup === null ? item.footerGroup : null,
+          footerOrder: item.footerOrder ?? 0,
+        };
+
+        if (item._id) {
+          await updateContentPage(item._id, payload);
+        } else {
+          await createContentPage(payload);
+        }
+      }
+      setLastSavedAt(new Date().toISOString());
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bulk JSON update failed");
+    }
+  }
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -143,10 +176,14 @@ export function ContentPage() {
           <div className="flex items-center gap-2">
             <JsonEditorButton
               data={showEditor ? form : pages}
-              onApply={showEditor ? (parsed) => setForm({ ...emptyForm, ...parsed }) : undefined}
+              onApply={
+                showEditor
+                  ? (parsed) => setForm({ ...emptyForm, ...parsed })
+                  : (parsed) => handleBulkApplyJson(parsed)
+              }
               lastUpdatedAt={lastSavedAt}
-              label={showEditor ? "Page Form JSON" : "Pages List JSON"}
-              readOnly={!showEditor}
+              label={showEditor ? "Page Form JSON" : "Pages Bulk JSON Editor"}
+              readOnly={false}
             />
             <button
               type="button"
