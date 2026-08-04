@@ -15,9 +15,16 @@ export default async function GuidesPage() {
   const posts = await getJournalPosts("guide").catch(() => []);
 
   return (
-    <div className="container-page py-5 sm:py-14">
-      <h1 className="font-display text-2xl text-primary sm:text-4xl">Buying Guides</h1>
-      <p className="mt-1 text-sm text-muted sm:mt-2">Expert advice, size guides, and eco-friendly shopping tips</p>
+    <div className="container-page py-6 sm:py-14">
+      <div className="max-w-2xl">
+        <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#b8863a] bg-[#b8863a]/10 px-3.5 py-1 rounded-full border border-[#b8863a]/25 mb-3">
+          💡 Expert Knowledge
+        </span>
+        <h1 className="font-display text-3xl text-foreground sm:text-5xl font-semibold tracking-tight">Buying & Care Guides</h1>
+        <p className="mt-2 text-xs sm:text-base text-muted font-sans leading-relaxed">
+          Expert advice, dimension guides, humidity care, and eco-friendly home decor styling.
+        </p>
+      </div>
       <GuidesGrid posts={posts} />
     </div>
   );
