@@ -11,6 +11,7 @@ import { HomeMotionRoot } from "@/components/home/home-motion";
 import { MotionReveal, MotionStaggerContainer, MotionStaggerChild, childFadeUpVariants } from "@/components/ui/motion-reveal";
 import { ImpactStatsSection } from "@/components/home/impact-stats-section";
 import { ArtisansTeaserSection } from "@/components/home/artisans-teaser-section";
+import { SeoStorySection } from "@/components/home/seo-story-section";
 import type { getHomepage } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { pickBestImage } from "@/lib/pick-best-image";
@@ -388,47 +389,8 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
           </div>
         </section>
       )}
-      {/* SEO Content Block — ensures 250+ words and <p> tags for search engine crawlers */}
-      <section className="border-t border-border/60 py-10 sm:py-16">
-        <div className="container-page">
-          <MotionReveal>
-            <div className="mx-auto max-w-3xl">
-              <h2 className="mb-6 font-display text-xl font-semibold text-foreground sm:text-2xl lg:text-3xl">
-                Handcrafted Bamboo Home Decor — Sustainably Made in India
-              </h2>
-              {(data as { seoContent?: string }).seoContent ? (
-                <div
-                  className="prose prose-stone dark:prose-invert max-w-none text-sm leading-relaxed text-muted sm:text-base [&_p]:mb-4"
-                  dangerouslySetInnerHTML={{ __html: (data as { seoContent?: string }).seoContent! }}
-                />
-              ) : (
-                <div className="space-y-4 text-sm leading-relaxed text-muted sm:text-base">
-                  <p>
-                    At Bamboo Eco-Hub, every piece of home decor tells a story of sustainable craftsmanship rooted in the bamboo-rich forests of Tripura, India.
-                    Our artisan families hand-select mature bamboo poles, split them into fine ribbons, and weave each lampshade, storage basket, tray, and organiser
-                    entirely by hand — no machines, no shortcuts. The result is home furnishing that carries the warmth and individuality of genuine handmade craft.
-                  </p>
-                  <p>
-                    Bamboo is one of the fastest-growing renewable resources on the planet, reaching harvest maturity in just 3 to 5 years compared to decades
-                    for hardwood timber. It is naturally antibacterial, lightweight yet remarkably strong, and biodegrades completely at end of life. By choosing bamboo
-                    furniture and home decor, you are making an environmentally responsible choice that reduces plastic waste and supports reforestation.
-                  </p>
-                  <p>
-                    Our curated collections include bamboo pendant lamps, woven wall panels, kitchen organisers, decorative trays, bathroom accessories, and
-                    handwoven furniture — all designed to bring natural elegance to modern Indian homes. Each product ships pan-India with careful eco-friendly
-                    packaging, free standard delivery, and a 30-day easy return policy so you can shop with complete confidence.
-                  </p>
-                  <p>
-                    We work directly with artisan cooperatives across Agartala and Southern Tripura, ensuring fair-trade wages reach the craftspeople who preserve
-                    this centuries-old weaving tradition. When you buy from Bamboo Eco-Hub, you are not just decorating your home — you are supporting a living
-                    heritage of handcraft and helping sustain the livelihoods of India&apos;s skilled bamboo weavers.
-                  </p>
-                </div>
-              )}
-            </div>
-          </MotionReveal>
-        </div>
-      </section>
+      {/* SEO Content Block — Luxury Editorial Presentation */}
+      <SeoStorySection seoContent={(data as { seoContent?: string }).seoContent} />
 
     </HomeMotionRoot>
   );
