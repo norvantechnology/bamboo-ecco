@@ -218,6 +218,33 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           source={{ type: "category", slug, sort }}
           emptyMessage="No products in this category yet."
         />
+
+        {/* On-Page SEO Internal Link Cluster Widget */}
+        <section className="mt-12 rounded-2xl border border-border/80 bg-surface/80 p-6 sm:p-8 shadow-warm">
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b8863a]">Explore Bamboo Home Decor</span>
+          <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground mt-1">Discover Other Handcrafted Bamboo Categories</h3>
+          <p className="mt-1.5 text-xs sm:text-sm text-muted">Hand-woven by Tripura artisans using 100% sustainable golden bamboo.</p>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            <Link href="/collections/lamp-lights" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+              Bamboo Lamp & Lights →
+            </Link>
+            <Link href="/collections/utility-basket" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+              Utility Storage Baskets →
+            </Link>
+            <Link href="/collections/decorative-furnishing" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+              Decorative Furnishings →
+            </Link>
+            <Link href="/collections/bags-accessories" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+              Bags & Accessories →
+            </Link>
+            <Link href="/artisan-stories" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+              🌿 Agartala Artisan Lineage →
+            </Link>
+            <Link href="/guides" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+              📖 Care & Maintenance Guides →
+            </Link>
+          </div>
+        </section>
       </div>
     </>
   );

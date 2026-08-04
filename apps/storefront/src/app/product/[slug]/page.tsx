@@ -177,20 +177,26 @@ export default async function ProductPage({ params }: Props) {
         </section>
       )}
 
-      {/* On-Page SEO: Product to Guides Internal Linking */}
-      <section className="mt-12 rounded-2xl border border-border bg-surface/80 p-6 sm:p-8 shadow-warm">
-        <h3 className="font-display text-lg font-semibold text-foreground">Bamboo Decor Styling & Maintenance Guides</h3>
-        <p className="mt-1 text-xs sm:text-sm text-muted">Explore expert tips on maintaining and styling handcrafted Indian bamboo pieces in your living space.</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link href="/journal/bamboo-care-maintenance-india-guide" className="rounded-lg border border-border bg-background px-3.5 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
-            📖 Bamboo Care & Cleaning Guide →
+      {/* On-Page SEO: Product to Guides & Heritage Internal Linking */}
+      <section className="mt-12 rounded-2xl border border-border/80 bg-surface/80 p-6 sm:p-8 shadow-warm">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b8863a]">Craft & Styling Insights</span>
+        <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground mt-1">Bamboo Decor Styling & Maintenance Guides</h3>
+        <p className="mt-1.5 text-xs sm:text-sm text-muted">Explore expert tips on maintaining, cleaning, and styling handcrafted Indian bamboo decor in your living space.</p>
+        <div className="mt-4 flex flex-wrap gap-2.5">
+          <Link href="/guides" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+            📖 Buying & Care Guides →
           </Link>
-          <Link href="/journal/how-to-decorate-indian-home-bamboo" className="rounded-lg border border-border bg-background px-3.5 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
-            💡 7 Styling Ideas for Indian Homes →
+          <Link href="/journal" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+            💡 Sustainable Styling Ideas →
           </Link>
-          <Link href="/journal/japandi-interior-design-india-bamboo" className="rounded-lg border border-border bg-background px-3.5 py-2 text-xs font-semibold text-foreground transition-all hover:bg-gold hover:text-white hover:border-gold">
-            🌿 Japandi Design Guide →
+          <Link href="/artisan-stories" className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+            🌿 Meet Tripura Artisan Weavers →
           </Link>
+          {category && (
+            <Link href={`/collections/${category.slug}`} className="rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-[#b8863a] hover:text-white hover:border-[#b8863a]">
+              ✨ More in {category.name} →
+            </Link>
+          )}
         </div>
       </section>
     </div>

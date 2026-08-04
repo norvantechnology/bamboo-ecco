@@ -6,6 +6,7 @@ type Props = {
   slug: string;
   description?: string;
   publishedAt?: string;
+  heroImage?: string;
   pathPrefix?: "journal" | "guides";
   publisherName?: string;
 };
