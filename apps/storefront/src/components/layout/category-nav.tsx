@@ -240,21 +240,21 @@ export function CategoryMobileSection({
           const isOpen = expanded === root._id;
 
           return (
-            <li key={root._id} className="overflow-hidden rounded-xl border border-border bg-background">
+            <li key={root._id} className="overflow-hidden rounded-xl border border-border/80 bg-surface/90 shadow-xs hover:border-[#b8863a]/40 transition-colors">
               <div className="flex items-stretch">
                 <Link
                   href={`/collections/${root.slug}`}
                   onClick={onClose}
-                  className="flex min-w-0 flex-1 items-center gap-2 px-3 py-3 font-display text-[15px] font-semibold leading-tight max-[480px]:px-2.5"
+                  className="flex min-w-0 flex-1 items-center gap-2.5 px-3.5 py-3 font-sans text-sm sm:text-base font-bold leading-snug text-foreground group"
                 >
-                  <span className="min-w-0 flex-1 truncate">{root.name}</span>
-                  {!hasChildren && <ChevronRight className="h-4 w-4 shrink-0 text-muted/50" />}
+                  <span className="min-w-0 flex-1 truncate group-hover:text-[#b8863a] transition-colors">{root.name}</span>
+                  {!hasChildren && <ChevronRight className="h-4 w-4 shrink-0 text-muted/60 transition-transform group-hover:translate-x-0.5" />}
                 </Link>
                 {hasChildren && (
                   <button
                     type="button"
                     onClick={() => setExpanded(isOpen ? null : root._id)}
-                    className="flex w-11 shrink-0 items-center justify-center border-l border-border text-muted transition-colors hover:text-foreground"
+                    className="flex w-11 shrink-0 items-center justify-center border-l border-border/70 text-muted transition-colors hover:text-foreground hover:bg-background/50"
                     aria-expanded={isOpen}
                     aria-label={`${isOpen ? "Collapse" : "Expand"} ${root.name}`}
                   >
