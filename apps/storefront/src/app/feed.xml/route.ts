@@ -304,7 +304,11 @@ function stripPromoText(text: string): string {
     .replace(/\bonline\s+in\s+India\b/gi, "in India")
     // Remove "100% handcrafted artisan bamboo decor with free delivery/shipping"
     .replace(/100%\s+handcrafted\s+artisan\s+bamboo\s+decor\s+with\s+free\s+\w+/gi, "")
-    // Clean up leftover pipes, double spaces, leading/trailing junk
+    // Clean up leftover pipes, dangling conjunctions, double spaces, and leading/trailing junk
+    .replace(/\s+with\s+&\s*/gi, " ")
+    .replace(/\s+and\s+&\s*/gi, " ")
+    .replace(/\s+&\s+\./gi, ".")
+    .replace(/\s+&\s*$/gi, "")
     .replace(/\s*\|\s*$/g, "")
     .replace(/^\s*\|\s*/g, "")
     .replace(/\s{2,}/g, " ")
