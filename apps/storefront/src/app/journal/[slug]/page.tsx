@@ -16,10 +16,13 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getJournalPost(slug).catch(() => null);
+  const heroImg = post?.heroImage;
   return buildPageMetadata({
     title: post?.meta?.title ?? post?.title ?? "Journal",
     description: post?.meta?.description,
-    image: post?.heroImage || undefined,
+    image: heroImg || undefined,
+    imageAlt: post?.title,
+    ogType: "article",
     path: `/journal/${slug}`,
   });
 }
