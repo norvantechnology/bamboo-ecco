@@ -479,5 +479,37 @@
     "mastodon": "https://mastodon.social/@bambooecohub/116970303471966027",
     "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-pendant-light-buying-guide.md",
     "telegram": "https://t.me/bambooecohub/17"
+  },
+  "https://bambooecohub.com/journal/sustainable-living-india-bamboo-decor-future": {
+    "devto": "https://dev.to/norvan_technology_d122131/sustainable-living-india-bamboo-decor-future-5c23",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824116871682015232",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/sustainable-living-india-bamboo-decor-future.md",
+    "telegram": "https://t.me/bambooecohub/189"
+  },
+  "https://bambooecohub.com/journal/10-sustainable-bamboo-decor-ideas-indian-homes": {
+    "devto": "https://bambooecohub.com/journal/10-sustainable-bamboo-decor-ideas-indian-homes",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824116891843002368",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/10-sustainable-bamboo-decor-ideas-indian-homes.md",
+    "telegram": "https://t.me/bambooecohub/190"
+  },
+  "https://bambooecohub.com/guides/bamboo-table-floor-lamp-sizing-placement-guide": {
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-table-floor-lamp-sizing-placement-guide-39k1",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824116910813741056",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-table-floor-lamp-sizing-placement-guide.md",
+    "telegram": "https://t.me/bambooecohub/191"
+  },
+  "https://bambooecohub.com/guides/how-to-clean-moisture-proof-bamboo-baskets-monsoon": {
+    "devto": "https://dev.to/norvan_technology_d122131/how-to-clean-moisture-proof-bamboo-baskets-monsoon-5d75",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/824116928842956800",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/how-to-clean-moisture-proof-bamboo-baskets-monsoon.md",
+    "telegram": "https://t.me/bambooecohub/192"
   }
 }
