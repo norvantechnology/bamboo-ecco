@@ -52,7 +52,7 @@ async function run() {
     type: "blog",
     heroImage: "https://res.cloudinary.com/ddkubtgk0/image/upload/v1783786822/Gemini_Generated_Image_gh71v7gh71v7gh71_ysoamv.png",
     imageCredit: "Bamboo Eco-Hub Artisan Showcase",
-    publishedAt: new Date(),
+    publishedAt: new Date(Date.now() - 3600000),
     last_updated: new Date(),
     meta: {
       title: "10 Sustainable Bamboo Decor Ideas for Modern Indian Homes (2026)",
