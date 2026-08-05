@@ -28,6 +28,7 @@ import { syndicateTumblr } from "./tumblr.mjs";
 import { syndicateMastodon } from "./mastodon.mjs";
 import { syndicateGhPages } from "./gh-pages.mjs";
 import { syndicateTelegram } from "./telegram.mjs";
+import { syndicateFacebook } from "./facebook.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -52,6 +53,7 @@ const FORCE_ALL = args["force-all"] || process.env.FORCE_ALL === "true";
 const DRY_RUN = args["dry-run"] || process.env.DRY_RUN === "true";
 
 const PLATFORMS = [
+  { key: "facebook", name: "Facebook Page", fn: syndicateFacebook },
   { key: "devto", name: "Dev.to", fn: syndicateDevTo },
   { key: "wordpress", name: "WordPress.com", fn: syndicateWordPress },
   { key: "blogger", name: "Blogger", fn: syndicateBlogger },
