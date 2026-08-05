@@ -55,6 +55,13 @@ const nextConfig: NextConfig = {
       permanent: true,
     });
 
+    // Handle malformed URL with trailing dollar sign (e.g. /$) from bad crawler pings
+    rules.push({
+      source: "/\\$",
+      destination: "/",
+      permanent: true,
+    });
+
     return rules;
   },
 };
