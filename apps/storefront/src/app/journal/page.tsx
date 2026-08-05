@@ -3,6 +3,9 @@ import { getJournalPosts } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/seo";
 import { JournalGrid } from "@/components/journal/journal-grid";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata({
     title: "Journal",
