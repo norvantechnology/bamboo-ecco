@@ -88,4 +88,5 @@ export const INDEXABLE_STATIC_ROUTES = [
   "/best-sellers",
   "/journal",
   "/guides",
+  "/artisan-stories",
 ] as const;

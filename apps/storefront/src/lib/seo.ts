@@ -567,24 +567,39 @@ export function articleJsonLd(post: {
   slug: string;
   description?: string;
   publishedAt?: string;
+  updatedAt?: string;
   heroImage?: string;
   pathPrefix?: "journal" | "guides";
   publisherName?: string;
 }) {
   const prefix = post.pathPrefix ?? "journal";
-  const org = post.publisherName
-    ? { "@type": "Organization" as const, name: post.publisherName }
-    : { "@type": "Organization" as const, name: "Bamboo Eco-Hub", logo: { "@type": "ImageObject", url: ensureAbsoluteUrl("/icon.svg") } };
+  const pageUrl = absoluteUrl(`/${prefix}/${post.slug}`);
+  const orgName = post.publisherName || "Bamboo Eco-Hub";
+  const org = {
+    "@type": "Organization" as const,
+    name: orgName,
+    logo: { "@type": "ImageObject" as const, url: ensureAbsoluteUrl("/icon.svg") },
+  };
   const imgUrl = ensureAbsoluteUrl(post.heroImage || "/brand/og-default.png");
+  const published = post.publishedAt || undefined;
+  const modified = post.updatedAt || post.publishedAt || undefined;
 
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": prefix === "guides" ? "Article" : "BlogPosting",
     headline: post.title,
     description: post.description,
-    image: [imgUrl],
-    datePublished: post.publishedAt,
-    url: absoluteUrl(`/${prefix}/${post.slug}`),
+    image: {
+      "@type": "ImageObject",
+      url: imgUrl,
+    },
+    datePublished: published,
+    dateModified: modified,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": pageUrl,
+    },
+    url: pageUrl,
     author: org,
     publisher: org,
   };
@@ -630,7 +645,7 @@ function productOfferJsonLd(opts: {
   brandName?: string;
 }) {
   const currency = opts.currency ?? "INR";
-  const validPrice = opts.price && opts.price > 0 ? opts.price : 1999;
+  const validPrice = opts.price;
   const onSale = opts.compareAtPrice != null && opts.compareAtPrice > validPrice;
   const oneYearLaterStr = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString().slice(0, 10);
 
@@ -638,7 +653,6 @@ function productOfferJsonLd(opts: {
     "@type": "Offer",
     price: validPrice,
     priceCurrency: currency,
-    validFrom: "2024-01-01",
     priceValidUntil: oneYearLaterStr,
     ...(onSale
       ? {
@@ -713,12 +727,10 @@ export function productSummaryJsonLd(
   const url = absoluteUrl(`/product/${product.slug}`);
   const inStock =
     product.status !== "out_of_stock" && (variant?.stockQty == null || variant.stockQty > 0);
-  const priceVal = variant?.price || 1999;
+  const priceVal = variant?.price;
   const skuVal = variant?.sku || product.slug;
 
   const hasRating = product.ratingSummary && product.ratingSummary.count > 0;
-  const ratingVal = hasRating ? Number(product.ratingSummary!.avg.toFixed(1)) : 5.0;
-  const ratingCount = hasRating ? product.ratingSummary!.count : 1;
 
   return {
     "@type": "Product",
@@ -734,38 +746,29 @@ export function productSummaryJsonLd(
       "@type": "Brand",
       name: brandName || "Bamboo Eco-Hub",
     },
-    offers: productOfferJsonLd({
-      price: priceVal,
-      compareAtPrice: variant?.compareAtPrice,
-      currency: variant?.currency,
-      url,
-      inStock,
-      brandName,
-    }),
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: ratingVal,
-      reviewCount: ratingCount,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: ratingVal,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: {
-          "@type": "Person",
-          name: "Verified Buyer",
-        },
-        reviewBody: "Handcrafted authentic bamboo artisan product. Excellent finish and quality.",
-        datePublished: "2024-01-01",
-      },
-    ],
+    ...(priceVal && priceVal > 0
+      ? {
+          offers: productOfferJsonLd({
+            price: priceVal,
+            compareAtPrice: variant?.compareAtPrice,
+            currency: variant?.currency,
+            url,
+            inStock,
+            brandName,
+          }),
+        }
+      : {}),
+    ...(hasRating
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(product.ratingSummary!.avg.toFixed(1)),
+            reviewCount: product.ratingSummary!.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   };
 }
 
@@ -836,42 +839,6 @@ export function productJsonLd(product: {
 
   const priceVal = product.price || 0;
   const skuVal = product.sku || "BEH-" + cleanName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const ratingVal = hasRealRating ? Number(product.rating!.avg.toFixed(1)) : 5.0;
-  const countVal = hasRealRating ? product.rating!.count : 1;
-
-  const reviewsList = hasRealReviews
-    ? product.reviews!.map((r) => ({
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: r.rating,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: {
-          "@type": "Person",
-          name: r.reviewerName || "Verified Buyer",
-        },
-        reviewBody: r.body || "Handcrafted authentic quality.",
-        ...(r.createdAt ? { datePublished: new Date(r.createdAt).toISOString().slice(0, 10) } : { datePublished: "2024-01-01" }),
-      }))
-    : [
-        {
-          "@type": "Review",
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: 5,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          author: {
-            "@type": "Person",
-            name: "Verified Buyer",
-          },
-          reviewBody: "Handcrafted authentic bamboo artisan product. Excellent finish and quality.",
-          datePublished: "2024-01-01",
-        },
-      ];
 
   return {
     "@context": "https://schema.org",
@@ -899,22 +866,50 @@ export function productJsonLd(product: {
           },
         }
       : {}),
-    offers: productOfferJsonLd({
-      price: priceVal,
-      compareAtPrice: product.compareAtPrice,
-      currency: product.currency,
-      url: product.url,
-      inStock: product.inStock,
-      brandName: product.brandName,
-    }),
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: ratingVal,
-      reviewCount: countVal,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: reviewsList,
+    ...(priceVal > 0
+      ? {
+          offers: productOfferJsonLd({
+            price: priceVal,
+            compareAtPrice: product.compareAtPrice,
+            currency: product.currency,
+            url: product.url,
+            inStock: product.inStock,
+            brandName: product.brandName,
+          }),
+        }
+      : {}),
+    ...(hasRealRating
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(product.rating!.avg.toFixed(1)),
+            reviewCount: product.rating!.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
+    ...(hasRealReviews
+      ? {
+          review: product.reviews!.map((r) => ({
+            "@type": "Review",
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: r.rating,
+              bestRating: 5,
+              worstRating: 1,
+            },
+            author: {
+              "@type": "Person",
+              name: r.reviewerName || "Verified Buyer",
+            },
+            reviewBody: r.body || undefined,
+            ...(r.createdAt
+              ? { datePublished: new Date(r.createdAt).toISOString().slice(0, 10) }
+              : {}),
+          })),
+        }
+      : {}),
   };
 }
 

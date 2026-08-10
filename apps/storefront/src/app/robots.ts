@@ -72,13 +72,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "ia_archiver",       ...publicRules },
       { userAgent: "CCBot",             ...publicRules },
     ],
-    sitemap: [
-      `${base}/sitemap.xml`,
-      `${base}/feed.xml`,
-      `${base}/feed/pinterest.xml`,
-      `${base}/llms.txt`,
-      `${base}/llms-full.txt`,
-    ] as unknown as string, // Next.js accepts array but type says string
+    sitemap: `${base}/sitemap.xml`,
     host: base.replace(/^https?:\/\//, ""),
   };
 }

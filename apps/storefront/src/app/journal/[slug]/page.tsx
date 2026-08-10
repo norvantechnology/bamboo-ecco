@@ -48,6 +48,7 @@ export default async function JournalArticlePage({ params }: Props) {
         description={post.meta?.description}
         heroImage={post.heroImage}
         publishedAt={post.publishedAt}
+        updatedAt={post.updatedAt}
         pathPrefix="journal"
         publisherName={seo.name || undefined}
       />

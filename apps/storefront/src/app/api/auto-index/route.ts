@@ -3,31 +3,37 @@ import { getSiteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
+/** Must match apps/storefront/public/indexnow-key.txt and /{key}.txt */
+const INDEXNOW_KEY = "4f6c719d593372c3b265d03b84b52f7b";
+
 /**
- * GET /api/auto-index
- * Automatically submits sitemap and indexable URLs to Google & Bing IndexNow
+ * GET /api/auto-index?secret=...
+ * Submits new/priority URLs to IndexNow (Bing, Yandex, etc.).
+ * Protect with AUTO_INDEX_SECRET (or INDEXNOW_KEY) query/header in production.
  */
-export async function GET() {
+export async function GET(request: Request) {
   const siteUrl = getSiteUrl();
-  const sitemapUrl = `${siteUrl}/sitemap.xml`;
+  const expected =
+    process.env.AUTO_INDEX_SECRET || process.env.INDEXNOW_KEY || INDEXNOW_KEY;
+  const url = new URL(request.url);
+  const provided =
+    url.searchParams.get("secret") ||
+    request.headers.get("x-auto-index-secret") ||
+    "";
 
-  const results: Record<string, unknown> = {};
-
-  // 1. Google Sitemap Ping
-  try {
-    const googleRes = await fetch(
-      `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
-      { method: "GET" }
-    );
-    results.googleSitemapPing = {
-      status: googleRes.status,
-      ok: googleRes.ok,
-    };
-  } catch (err) {
-    results.googleSitemapPing = { error: err instanceof Error ? err.message : String(err) };
+  // Allow unauthenticated only on localhost for manual testing
+  const isLocal = /localhost|127\.0\.0\.1/.test(siteUrl);
+  if (!isLocal && provided !== expected) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  // 2. IndexNow Ping for Bing, Yandex, Seznam, Naver
+  const results: Record<string, unknown> = {
+    note: "Google sitemap ping is deprecated; use Search Console + IndexNow.",
+  };
+
   try {
     const sitemapData = await getSitemapUrls().catch(() => null);
     const urls: string[] = [
@@ -35,40 +41,45 @@ export async function GET() {
       `${siteUrl}/shop`,
       `${siteUrl}/journal`,
       `${siteUrl}/guides`,
+      `${siteUrl}/new-arrivals`,
+      `${siteUrl}/best-sellers`,
     ];
 
     if (sitemapData) {
-      if (sitemapData.categories) {
-        for (const c of sitemapData.categories) urls.push(`${siteUrl}/collections/${c.slug}`);
+      for (const c of sitemapData.categories ?? []) {
+        urls.push(`${siteUrl}/collections/${c.slug}`);
       }
-      if (sitemapData.products) {
-        for (const p of sitemapData.products) urls.push(`${siteUrl}/product/${p.slug}`);
+      for (const p of sitemapData.products ?? []) {
+        urls.push(`${siteUrl}/product/${p.slug}`);
       }
-      if (sitemapData.posts) {
-        for (const post of sitemapData.posts) {
-          const prefix = post.type === "guide" ? "guides" : "journal";
-          urls.push(`${siteUrl}/${prefix}/${post.slug}`);
-        }
+      for (const post of sitemapData.posts ?? []) {
+        const prefix = post.type === "guide" ? "guides" : "journal";
+        urls.push(`${siteUrl}/${prefix}/${post.slug}`);
       }
     }
 
-    const uniqueUrls = [...new Set(urls)].slice(0, 100);
+    const uniqueUrls = [...new Set(urls)].slice(0, 10000);
+    const host = new URL(siteUrl).host;
+    const keyLocation = `${siteUrl}/indexnow-key.txt`;
 
     const indexNowRes = await fetch("https://api.indexnow.org/indexnow", {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({
-        host: new URL(siteUrl).host,
-        key: "41b770fb0f2ef7309c3a47fbc6a55920",
-        keyLocation: `${siteUrl}/41b770fb0f2ef7309c3a47fbc6a55920.txt`,
+        host,
+        key: INDEXNOW_KEY,
+        keyLocation,
         urlList: uniqueUrls,
       }),
     });
 
+    const bodyText = await indexNowRes.text().catch(() => "");
     results.indexNow = {
       status: indexNowRes.status,
       submittedUrlsCount: uniqueUrls.length,
       ok: indexNowRes.ok || indexNowRes.status === 202,
+      keyLocation,
+      body: bodyText.slice(0, 200),
     };
   } catch (err) {
     results.indexNow = { error: err instanceof Error ? err.message : String(err) };

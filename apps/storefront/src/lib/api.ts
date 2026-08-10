@@ -195,6 +195,7 @@ export interface BlogPost {
   imageCredit?: string;
   meta?: { title?: string; description?: string };
   publishedAt?: string;
+  updatedAt?: string;
 }
 
 export interface HomepageData {

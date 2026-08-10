@@ -48,6 +48,7 @@ export default async function GuideArticlePage({ params }: Props) {
         description={post.meta?.description}
         heroImage={post.heroImage}
         publishedAt={post.publishedAt}
+        updatedAt={post.updatedAt}
         pathPrefix="guides"
         publisherName={seo.name || undefined}
       />

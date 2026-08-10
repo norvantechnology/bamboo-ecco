@@ -9,7 +9,7 @@ import { InfiniteProductGrid } from "@/components/product/infinite-product-grid"
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getCategory, getProductsByCategorySlug } from "@/lib/api";
-import { absoluteUrl, buildPageMetadata, collectionPageJsonLd } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata, collectionPageJsonLd, noIndexMetadata } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getCategory(slug).catch(() => null),
     getProductsByCategorySlug(slug, 1, "newest").catch(() => null),
   ]);
-  if (!category) return { title: "Category Not Found" };
+  if (!category) return { ...noIndexMetadata, title: "Category Not Found" };
   const title = category.meta?.title || category.name;
   const description = category.meta?.description || undefined;
   const keywords = category.meta?.keywords || undefined;
