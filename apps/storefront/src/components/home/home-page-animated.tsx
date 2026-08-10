@@ -326,34 +326,52 @@ export function HomePageAnimated({ data }: { data: HomeData }) {
             staggerDelay={0.08}
             className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:mt-8 sm:gap-5 lg:grid-cols-4"
           >
-            {blogPosts.map((post) => (
+            {blogPosts.map((post) => {
+              const href =
+                post.type === "guide" ? `/guides/${post.slug}` : `/journal/${post.slug}`;
+              const badge = post.type === "guide" ? "Buying Guide" : "Journal";
+              return (
               <MotionStaggerChild key={post._id} variants={childFadeUpVariants}>
                 <Link
-                  href={`/journal/${post.slug}`}
-                  className="group flex h-full flex-col justify-between rounded-2xl border border-border/70 bg-surface p-5 shadow-warm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#C9A24B]/40 hover:shadow-warm-lg"
+                  href={href}
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface shadow-warm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#C9A24B]/40 hover:shadow-warm-lg"
                 >
-                  <div>
-                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#b8863a] bg-[#b8863a]/10 px-2.5 py-1 rounded-full mb-3">
-                      Sustainable Living
-                    </span>
-                    <h3 className="journal-card-title font-display text-base font-semibold text-foreground sm:text-lg leading-snug group-hover:text-[#b8863a] transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="mt-2 line-clamp-2 text-xs sm:text-sm text-muted leading-relaxed font-sans">
-                      {post.meta?.description}
-                    </p>
-                  </div>
-                  <div className="mt-5 pt-3 border-t border-border/40 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#b8863a] group-hover:underline">
-                      Read story
-                    </span>
-                    <span className="text-sm font-semibold text-[#b8863a] transition-transform duration-300 group-hover:translate-x-1">
-                      →
-                    </span>
+                  {post.heroImage ? (
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted/20">
+                      <Image
+                        src={post.heroImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
+                    </div>
+                  ) : null}
+                  <div className="flex flex-1 flex-col justify-between p-5">
+                    <div>
+                      <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#b8863a] bg-[#b8863a]/10 px-2.5 py-1 rounded-full mb-3">
+                        {badge}
+                      </span>
+                      <h3 className="journal-card-title font-display text-base font-semibold text-foreground sm:text-lg leading-snug group-hover:text-[#b8863a] transition-colors">
+                        {post.title}
+                      </h3>
+                      <p className="mt-2 line-clamp-2 text-xs sm:text-sm text-muted leading-relaxed font-sans">
+                        {post.meta?.description}
+                      </p>
+                    </div>
+                    <div className="mt-5 pt-3 border-t border-border/40 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#b8863a] group-hover:underline">
+                        {post.type === "guide" ? "Read guide" : "Read story"}
+                      </span>
+                      <span className="text-sm font-semibold text-[#b8863a] transition-transform duration-300 group-hover:translate-x-1">
+                        →
+                      </span>
+                    </div>
                   </div>
                 </Link>
               </MotionStaggerChild>
-            ))}
+              );
+            })}
           </MotionStaggerContainer>
         </section>
       )}

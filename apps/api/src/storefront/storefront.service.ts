@@ -165,7 +165,7 @@ export class StorefrontService {
             .find({ tenantId: tid, type: { $in: ['guide', 'blog'] }, publishedAt: { $lte: new Date() } })
             .sort({ publishedAt: -1 })
             .limit(sections.journal.limit ?? 4)
-            .select('slug title meta publishedAt')
+            .select('slug title type meta publishedAt heroImage')
             .lean()
             .exec()
         : Promise.resolve([]),

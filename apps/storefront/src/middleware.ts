@@ -6,6 +6,21 @@ import { getSiteHost, getSiteUrl } from "@/lib/site";
 
 type RedirectRule = { fromPath: string; toPath: string; statusCode: number };
 
+/** Always-on SEO redirects (works even if CMS redirects API is slow/empty). */
+const STATIC_REDIRECTS: RedirectRule[] = [
+  { fromPath: "/about", toPath: "/pages/about", statusCode: 301 },
+  { fromPath: "/contact", toPath: "/pages/contact", statusCode: 301 },
+  { fromPath: "/faq", toPath: "/pages/faq", statusCode: 301 },
+  { fromPath: "/blogs", toPath: "/journal", statusCode: 301 },
+  { fromPath: "/blog", toPath: "/journal", statusCode: 301 },
+  { fromPath: "/bamboo-lamp", toPath: "/collections/lamp-lights", statusCode: 301 },
+  { fromPath: "/bamboo-lamps", toPath: "/collections/lamp-lights", statusCode: 301 },
+  { fromPath: "/collections/bamboo-lamps", toPath: "/collections/lamp-lights", statusCode: 301 },
+  { fromPath: "/collections/bamboo-lamp", toPath: "/collections/lamp-lights", statusCode: 301 },
+  { fromPath: "/shop-all", toPath: "/shop", statusCode: 301 },
+  { fromPath: "/stores", toPath: "/pages/contact", statusCode: 301 },
+];
+
 let cached: RedirectRule[] = [];
 let cachedAt = 0;
 
@@ -79,6 +94,11 @@ export async function middleware(request: NextRequest) {
   if (canonical) return canonical;
 
   const pathname = request.nextUrl.pathname;
+  const staticRule = STATIC_REDIRECTS.find((r) => r.fromPath === pathname);
+  if (staticRule) {
+    return NextResponse.redirect(new URL(staticRule.toPath, request.url), staticRule.statusCode);
+  }
+
   const redirects = await loadRedirects();
   const rule = redirects.find((r) => r.fromPath === pathname);
   if (rule) {
