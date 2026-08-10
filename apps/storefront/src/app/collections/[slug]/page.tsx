@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ChevronRight } from "lucide-react";
+import { CollectionSeoContent } from "@/components/category/collection-seo-content";
 import { CategoryToolbar } from "@/components/category/category-toolbar";
 import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
@@ -152,7 +153,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
                 {category.name}
               </h1>
               {intro && (
-                <p className="mt-1.5 max-w-xl text-xs text-white/80 line-clamp-1 sm:line-clamp-2 sm:text-sm drop-shadow">
+                <p className="mt-1.5 max-w-2xl text-xs text-white/85 sm:line-clamp-3 sm:text-sm drop-shadow">
                   {intro}
                 </p>
               )}
@@ -218,6 +219,8 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           source={{ type: "category", slug, sort }}
           emptyMessage="No products in this category yet."
         />
+
+        <CollectionSeoContent slug={slug} />
 
         {/* On-Page SEO Internal Link Cluster Widget */}
         <section className="mt-12 rounded-2xl border border-border/80 bg-surface/80 p-6 sm:p-8 shadow-warm">

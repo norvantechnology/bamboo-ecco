@@ -12,10 +12,11 @@ const VALID_SORTS = ["newest", "price-asc", "price-desc", "rating"] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata({
-    title: "Shop Bamboo Furniture & Home Decor Online",
+    title: "Shop Bamboo Lamps & Home Decor Online India",
     description:
-      "Browse handcrafted bamboo furniture, eco-friendly home decor, and space-saving pieces for modern Indian homes.",
+      "Browse handcrafted bamboo lamps, pendant lights, floor lamps, and eco-friendly home decor. Free delivery across India · 30-day returns.",
     path: "/shop",
+    keywords: "buy bamboo lamps online, bamboo home decor India, handcrafted bamboo shop, bamboo pendant lights",
   });
 }
 

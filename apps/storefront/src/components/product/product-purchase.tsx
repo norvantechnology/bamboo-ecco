@@ -61,15 +61,41 @@ export function ProductPurchase({ product, defaultImage }: Props) {
       <div className="mt-5">
         <p className="font-numeric text-3xl font-semibold sm:text-4xl">
           {formatPrice(variant.price, variant.currency)}
+          {variant.compareAtPrice != null && variant.compareAtPrice > variant.price ? (
+            <span className="ml-2 text-lg font-medium text-muted line-through sm:text-xl">
+              {formatPrice(variant.compareAtPrice, variant.currency)}
+            </span>
+          ) : null}
         </p>
+        {variant.compareAtPrice != null && variant.compareAtPrice > variant.price ? (
+          <p className="mt-1 text-sm font-semibold text-secondary">
+            You save {formatPrice(variant.compareAtPrice - variant.price, variant.currency)}
+          </p>
+        ) : null}
         <p className="mt-1.5 text-sm font-medium sm:text-base">
           {inStock ? (
-            <span className="text-secondary">In stock — {variant.stockQty} available</span>
+            <span className="text-secondary">In stock — ready to ship</span>
           ) : (
             <span className="text-red-700">Out of stock</span>
           )}
         </p>
       </div>
+
+      {/* Trust signals above CTA — higher conversion */}
+      <ul className="mt-4 grid gap-2 text-xs text-muted sm:text-sm">
+        <li className="flex items-center gap-2">
+          <Truck className="h-4 w-4 shrink-0 text-secondary" />
+          Free delivery across India · 3–7 business days
+        </li>
+        <li className="flex items-center gap-2">
+          <RotateCcw className="h-4 w-4 shrink-0 text-secondary" />
+          30-day easy returns &amp; replacements
+        </li>
+        <li className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 shrink-0 text-secondary" />
+          100% handcrafted artisan bamboo
+        </li>
+      </ul>
 
       {inStock && (
         <div className="mt-5 flex items-center gap-3">
@@ -109,22 +135,6 @@ export function ProductPurchase({ product, defaultImage }: Props) {
           quantity={quantity}
           disabled={!inStock}
         />
-      </div>
-
-      {/* Conversion-Focused Trust Signals */}
-      <div className="mt-6 rounded-xl border border-border/80 bg-surface/60 p-4 text-xs sm:text-sm space-y-2.5">
-        <div className="flex items-center gap-2.5 text-muted">
-          <Truck className="h-4 w-4 shrink-0 text-secondary" />
-          <span><strong>Free Delivery:</strong> All India shipping within 3–7 business days</span>
-        </div>
-        <div className="flex items-center gap-2.5 text-muted">
-          <RotateCcw className="h-4 w-4 shrink-0 text-secondary" />
-          <span><strong>30 Days Return:</strong> Easy hassle-free returns & replacement</span>
-        </div>
-        <div className="flex items-center gap-2.5 text-muted">
-          <ShieldCheck className="h-4 w-4 shrink-0 text-secondary" />
-          <span><strong>100% Handcrafted:</strong> Authentic Indian artisan bamboo products</span>
-        </div>
       </div>
     </div>
   );

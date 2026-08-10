@@ -132,7 +132,27 @@ export default async function ProductPage({ params }: Props) {
             </div>
           )}
 
-          <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base">{product.description}</p>
+          {product.specs && (product.specs.material || product.specs.dimensions) ? (
+            <ul className="mt-4 space-y-1.5 text-sm text-muted">
+              {product.specs.material ? (
+                <li>
+                  <span className="font-medium text-foreground">Material:</span> {product.specs.material}
+                </li>
+              ) : null}
+              {product.specs.dimensions ? (
+                <li>
+                  <span className="font-medium text-foreground">Size:</span> {product.specs.dimensions}
+                </li>
+              ) : null}
+              {product.specs.careInstructions ? (
+                <li>
+                  <span className="font-medium text-foreground">Care:</span> {product.specs.careInstructions}
+                </li>
+              ) : null}
+            </ul>
+          ) : null}
+
+          <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base line-clamp-6 sm:line-clamp-none">{product.description}</p>
 
           <ProductPurchase product={product} defaultImage={image?.url ?? ""} />
 
