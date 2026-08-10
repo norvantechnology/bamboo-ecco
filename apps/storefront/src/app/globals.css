@@ -424,6 +424,23 @@
     @apply text-secondary underline-offset-2 transition-colors duration-300 ease-out hover:text-[var(--wood)] hover:underline;
   }
 
+  .cms-content figure {
+    @apply my-8;
+  }
+
+  .cms-content figure img {
+    @apply h-auto w-full rounded-xl object-cover;
+    box-shadow: var(--shadow-warm);
+  }
+
+  .cms-content figcaption {
+    @apply mt-2 text-center text-sm text-muted;
+  }
+
+  .cms-content .lead {
+    @apply mb-6 text-lg font-medium leading-relaxed text-foreground sm:text-xl;
+  }
+
   .cms-content table {
     @apply mb-6 block w-full overflow-x-auto border-collapse text-base;
   }

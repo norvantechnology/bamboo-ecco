@@ -934,13 +934,19 @@ export function faqJsonLd(items: { question: string; answer: string }[]) {
   };
 }
 
-/** Best-effort FAQ extraction from CMS HTML (h2/h3 + following paragraph or list). */
+/** Best-effort FAQ extraction from CMS HTML — prefers a FAQ section, else h3+p Q&A pairs. */
 export function extractFaqsFromHtml(html: string): { question: string; answer: string }[] {
   const faqs: { question: string; answer: string }[] = [];
+  const faqSectionMatch = html.match(
+    /<h2[^>]*>\s*Frequently Asked Questions\s*<\/h2>([\s\S]*?)(?=<h2\b|$)/i,
+  );
+  const scope = faqSectionMatch?.[1] ?? "";
+  if (!scope) return faqs;
+
   const re =
-    /<h[23][^>]*>([\s\S]*?)<\/h[23]>\s*(?:<p[^>]*>([\s\S]*?)<\/p>|<ul[^>]*>([\s\S]*?)<\/ul>)/gi;
+    /<h3[^>]*>([\s\S]*?)<\/h3>\s*(?:<p[^>]*>([\s\S]*?)<\/p>|<ul[^>]*>([\s\S]*?)<\/ul>)/gi;
   let match: RegExpExecArray | null;
-  while ((match = re.exec(html)) !== null) {
+  while ((match = re.exec(scope)) !== null) {
     const question = match[1].replace(/<[^>]+>/g, "").trim();
     const answer = (match[2] || match[3] || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
     if (question && answer && question.length < 200) {

@@ -6,7 +6,8 @@ import { getJournalPost, getProductsByCategorySlug, type Product } from "@/lib/a
 import { ProductCard } from "@/components/product/product-card";
 import { ArticleJsonLd } from "@/components/seo/article-json-ld";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
-import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { FAQJsonLd } from "@/components/seo/faq-json-ld";
+import { absoluteUrl, buildPageMetadata, extractFaqsFromHtml } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 
 interface Props {
@@ -37,6 +38,7 @@ export default async function JournalArticlePage({ params }: Props) {
   if (!post) notFound();
 
   const featuredProducts: Product[] = productsResult?.data ?? [];
+  const faqs = extractFaqsFromHtml(post.body || "");
 
   return (
     <article className="container-page max-w-4xl lg:max-w-5xl py-10 sm:py-14">
@@ -49,6 +51,7 @@ export default async function JournalArticlePage({ params }: Props) {
         pathPrefix="journal"
         publisherName={seo.name || undefined}
       />
+      {faqs.length > 0 && <FAQJsonLd items={faqs} />}
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: absoluteUrl("/") },

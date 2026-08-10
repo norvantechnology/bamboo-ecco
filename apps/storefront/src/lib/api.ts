@@ -4,22 +4,29 @@ import { fetchWithTimeout } from "./fetch-with-timeout";
 
 const IS_DEV = process.env.NODE_ENV === "development";
 
-async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
+async function fetchApi<T>(
+  path: string,
+  options?: RequestInit & { fresh?: boolean },
+): Promise<T> {
   const apiUrl = getApiUrl();
   if (!apiUrl) {
     throw new Error("API URL not configured");
   }
 
+  const { fresh, ...init } = options ?? {};
   const res = await fetchWithTimeout(`${apiUrl}${path}`, {
-    ...options,
+    ...init,
     headers: {
       "Content-Type": "application/json",
       "x-tenant-domain": getTenantDomain(),
-      ...options?.headers,
+      ...init?.headers,
     },
     // In dev, always fetch fresh data so admin edits show on normal refresh.
-    // In production, cache for 60s for performance.
-    ...(IS_DEV ? { cache: "no-store" as const } : { next: { revalidate: 60 } }),
+    // Journal/guides use fresh=true so new SEO posts appear immediately.
+    // Other production fetches cache for 60s.
+    ...(IS_DEV || fresh
+      ? { cache: "no-store" as const }
+      : { next: { revalidate: 60 } }),
   });
 
   if (!res.ok) {
@@ -324,11 +331,13 @@ export function getRelatedProducts(slug: string) {
 
 export function getJournalPosts(type?: "blog" | "guide") {
   const q = type ? `?type=${type}` : "";
-  return fetchApi<BlogPost[]>(`/storefront/journal${q}`);
+  return fetchApi<BlogPost[]>(`/storefront/journal${q}`, { fresh: true });
 }
 
 export function getJournalPost(slug: string) {
-  return fetchApi<BlogPost & { body: string }>(`/storefront/journal/${slug}`);
+  return fetchApi<BlogPost & { body: string }>(`/storefront/journal/${slug}`, {
+    fresh: true,
+  });
 }
 
 export function getStaticPage(slug: string) {
