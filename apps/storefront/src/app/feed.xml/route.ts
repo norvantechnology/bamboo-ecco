@@ -2,6 +2,7 @@ import { getSitemapUrls } from "@/lib/api";
 import { getSiteUrl, resolveSiteSeo } from "@/lib/site";
 import { getApiUrl, getTenantDomain } from "@/lib/api-config";
 import type { Product } from "@/lib/api";
+import { getDirectProducts } from "@/lib/db-direct";
 
 /**
  * GET /feed.xml
@@ -46,9 +47,7 @@ export async function GET() {
   // Deduplicate slugs (safety net — sitemap should not have duplicates)
   const uniqueSlugs = [...new Set(productSlugs)];
 
-  // ── 2. Fetch full product data in parallel batches of 10
-  //       Uses the same API + tenant-domain as the rest of the storefront
-  const products: Product[] = [];
+  let products: Product[] = [];
 
   if (apiUrl && uniqueSlugs.length > 0) {
     const BATCH_SIZE = 10;
@@ -61,7 +60,6 @@ export async function GET() {
               "Content-Type": "application/json",
               "x-tenant-domain": tenantDomain,
             },
-            // Revalidate every hour — Google only fetches once/day anyway
             next: { revalidate: 3600 },
           }).then((r) => (r.ok ? (r.json() as Promise<Product>) : null))
         )
@@ -72,6 +70,14 @@ export async function GET() {
           products.push(result.value);
         }
       }
+    }
+  }
+
+  // Fallback to direct MongoDB Atlas connection if API returned < 30 products
+  if (products.length < 30) {
+    const directProducts = (await getDirectProducts().catch(() => [])) as unknown as Product[];
+    if (directProducts.length > products.length) {
+      products = directProducts;
     }
   }
 
