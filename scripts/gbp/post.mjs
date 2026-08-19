@@ -24,7 +24,7 @@ import { readFileSync, existsSync } from "node:fs";
 const GBP_ACCESS_TOKEN = process.env.GBP_ACCESS_TOKEN;
 const GBP_LOCATION_ID  = process.env.GBP_LOCATION_ID;  // e.g. "locations/1234567890"
 const SITE_URL         = process.env.SITE_URL || "https://bambooecohub.com";
-const API_URL          = process.env.API_URL  || "https://bamboo-ecco-production.up.railway.app";
+const API_URL          = process.env.API_URL  || "https://api.bambooecohub.com";
 const POST_TYPE        = process.env.POST_TYPE || "PRODUCT"; // PRODUCT | OFFER | WHATS_NEW
 
 // ─── Validate secrets ────────────────────────────────────────────────────────

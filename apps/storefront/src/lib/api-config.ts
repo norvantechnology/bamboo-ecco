@@ -5,7 +5,7 @@
  * Dynamic SEO *content* (sitemap products, product metadata, JSON-LD data)
  * loads through `@/lib/api`, which calls `getApiUrl()` + `getTenantDomain()` here.
  *
- * Live (Vercel): set NEXT_PUBLIC_API_URL to the Railway HTTPS API.
+ * Live (Vercel): set NEXT_PUBLIC_API_URL to the Render HTTPS API.
  * Local: falls back to http://localhost:4000.
  */
 

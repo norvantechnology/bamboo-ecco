@@ -41,6 +41,21 @@ pnpm dev:admin
 
 > Run `pnpm migrate` to sync env and start databases. All store content is managed via the admin panel.
 
+## Production deploy
+
+| App | Host |
+|-----|------|
+| Storefront + Admin | Vercel |
+| API (`apps/api`) | Render |
+
+API deploys run from GitHub Actions (`.github/workflows/deploy-api.yml`) after a successful Nest build.
+
+1. Create a Render **Web Service** from this repo (or apply `render.yaml`).
+2. Set API env vars in the Render dashboard (`MONGODB_URI`, JWT, CORS, Razorpay, Cloudinary).
+3. Add GitHub Actions secrets: `RENDER_API_KEY` + `RENDER_SERVICE_ID` (or `RENDER_DEPLOY_HOOK`).
+4. Point Vercel `NEXT_PUBLIC_API_URL` and `VITE_API_URL` at the Render URL (for example `https://bamboo-ecco-api.onrender.com` or a custom `https://api.bambooecohub.com`).
+5. Include Vercel storefront/admin origins in Render `CORS_ORIGINS`.
+
 ## Docs
 
 See [docs/MASTER_SPEC.md](docs/MASTER_SPEC.md) for full architecture, DB schema, SEO plan, and build sequence.
