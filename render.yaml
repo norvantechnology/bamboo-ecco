@@ -1,9 +1,8 @@
-# Render Blueprint — NestJS API only.
-# Storefront + admin stay on Vercel.
+# Render Blueprint — NestJS API only (storefront + admin stay on Vercel).
 #
-# Create the service once: Render Dashboard → New Blueprint → this repo.
-# Set production secrets in the Render dashboard (do not commit them).
-# Deploys are triggered by .github/workflows/deploy-api.yml (autoDeploy: false).
+# Render Dashboard → New → Blueprint → connect this GitHub repo → branch main.
+# Or: New Web Service → same repo, then paste the build/start commands below.
+# Fill secret env vars in the Render dashboard (sync: false keys).
 
 services:
   - type: web
@@ -11,8 +10,9 @@ services:
     runtime: node
     plan: starter
     region: singapore
+    branch: main
     rootDir: .
-    autoDeploy: false
+    autoDeploy: true
     healthCheckPath: /health
     buildCommand: corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@ecoo/api
     startCommand: node apps/api/dist/main.js

@@ -48,13 +48,12 @@ pnpm dev:admin
 | Storefront + Admin | Vercel |
 | API (`apps/api`) | Render |
 
-API deploys run from GitHub Actions (`.github/workflows/deploy-api.yml`) after a successful Nest build.
+API deploys from Render after you connect this GitHub repo (`render.yaml`).
 
-1. Create a Render **Web Service** from this repo (or apply `render.yaml`).
-2. Set API env vars in the Render dashboard (`MONGODB_URI`, JWT, CORS, Razorpay, Cloudinary).
-3. Add GitHub Actions secrets: `RENDER_API_KEY` + `RENDER_SERVICE_ID` (or `RENDER_DEPLOY_HOOK`).
-4. Point Vercel `NEXT_PUBLIC_API_URL` and `VITE_API_URL` at the Render URL (for example `https://bamboo-ecco-api.onrender.com` or a custom `https://api.bambooecohub.com`).
-5. Include Vercel storefront/admin origins in Render `CORS_ORIGINS`.
+1. Render Dashboard → **New** → **Blueprint** (or Web Service) → this repo, branch `main`.
+2. Set API env vars in Render (`MONGODB_URI`, JWT, CORS, Razorpay, Cloudinary).
+3. Point Vercel `NEXT_PUBLIC_API_URL` and `VITE_API_URL` at the Render URL (or `https://api.bambooecohub.com`).
+4. Include Vercel storefront/admin origins in Render `CORS_ORIGINS`.
 
 ## Docs
 
