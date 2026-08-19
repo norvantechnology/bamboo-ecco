@@ -3,6 +3,11 @@
 # Render Dashboard → New → Blueprint → connect this GitHub repo → branch main.
 # Or: New Web Service → same repo, then paste the build/start commands below.
 # Fill secret env vars in the Render dashboard (sync: false keys).
+#
+# If you created a Web Service (not Blueprint), set Build Command in the dashboard to:
+#   corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm run build:api
+# --prod=false is required: Render sets NODE_ENV=production, which otherwise skips
+# turbo/typescript (devDependencies) and the build fails with "turbo: not found".
 
 services:
   - type: web
@@ -14,7 +19,7 @@ services:
     rootDir: .
     autoDeploy: true
     healthCheckPath: /health
-    buildCommand: corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@ecoo/api
+    buildCommand: corepack enable && corepack prepare pnpm@9.15.0 --activate && pnpm install --frozen-lockfile --prod=false && pnpm run build:api
     startCommand: node apps/api/dist/main.js
     envVars:
       - key: NODE_VERSION
