@@ -99,24 +99,108 @@
     "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/about.md",
     "telegram": "https://t.me/bambooecohub/187"
   },
-  "https://bambooecohub.com/collections/lamp-lights": {},
+  "https://bambooecohub.com/collections/lamp-lights": {
+    "devto": "https://dev.to/norvan_technology_d122131/lamp-lights-1057",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461651449987072",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/lamp-lights.md",
+    "telegram": "https://t.me/bambooecohub/212"
+  },
   "https://bambooecohub.com/collections/utility-basket": {},
   "https://bambooecohub.com/collections/bags-accessories": {},
   "https://bambooecohub.com/collections/decorative-furnishing": {},
-  "https://bambooecohub.com/collections/floor-lamp": {},
-  "https://bambooecohub.com/collections/pendant-light": {},
-  "https://bambooecohub.com/collections/string-light": {},
-  "https://bambooecohub.com/collections/table-lamp": {},
-  "https://bambooecohub.com/collections/wall-lamp": {},
-  "https://bambooecohub.com/brand/lamp-lights": {},
+  "https://bambooecohub.com/collections/floor-lamp": {
+    "devto": "https://dev.to/norvan_technology_d122131/floor-lamp-3gk4",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461671514554368",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/floor-lamp.md",
+    "telegram": "https://t.me/bambooecohub/213"
+  },
+  "https://bambooecohub.com/collections/pendant-light": {
+    "devto": "https://dev.to/norvan_technology_d122131/pendant-light-509",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461691473149952",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/pendant-light.md",
+    "telegram": "https://t.me/bambooecohub/214"
+  },
+  "https://bambooecohub.com/collections/string-light": {
+    "devto": "https://dev.to/norvan_technology_d122131/string-light-3k27",
+    "wordpress": "error: WordPress.com API returned 500: <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n\n<head profile=\"http://gmpg.org/xfn/11\">\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n<title>Check back in a few minutes</title>\n\n<meta name=\"generator\" content=\"WordPress MU\" /> <!-- leave this for stats -->\n\n<link rel=\"stylesheet\" href=\"http://wordpress.com/wp-content/themes/h4/global.css\" type=\"text/css\" media=\"screen\" />\n\n<link rel=\"EditURI\" type=\"application/rsd+xml\" title=\"RSD\" href=\"http://wordpress.com/xmlrpc.php?rsd\" />\n<script type=\"text/javascript\">\n\nfunction addLoadEvent(func) {\n  var oldonload = window.onload;\n  if (typeof window.onload != 'function') {\n    window.onload = func;\n  } else {\n    window.onload = function() {\n      oldonload();\n      func();\n    }\n  }\n}\n</script>\n\n</head>\n<body>\n\n<div id=\"page\">\n<div id=\"rapit\">\n\n\t<div id=\"content\" class=\"narrowcolumn\">\n\n    \t\t<div class=\"post\">\n\t\t<h2>Server Maintenance</h2>\n\t\t\t<div class=\"entrytext\">\n\n<p>Your server is going through a few minutes of routine maintenance. Please don't touch your browser for a few minutes.</p>\n<p>What do I do?</p>\n<ul><li> If you were posting a comment or making a post on your blog then <em>do not</em> press BACK on your browser. Wait 5 minutes and press the refresh icon on your browser. Your comment or post will be sent as normal.</li><li> If you are browsing a blog here just wait a few moments and hit refresh. The page you were expecting will appear.</li></ul>\n\n\n\t\t\t</div>\n\t\t</div>\n\t  \t\t</div>\n\n\n<div id=\"beforefooter\">\n</div>\n\n<div id=\"footer\"></div>\n\n</div></div>\n\n<script type=\"text/javascript\" src=\"//stats.wp.com/wpcom.js?22\"></script>\n<script type=\"text/javascript\">\n_error = '500-dbconnect';\nfzd();\n</script>\n\n</body>\n</html>\n",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461712408936448",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/string-light.md",
+    "telegram": "https://t.me/bambooecohub/215"
+  },
+  "https://bambooecohub.com/collections/table-lamp": {
+    "devto": "https://dev.to/norvan_technology_d122131/table-lamp-3p1b",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461732956913664",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/table-lamp.md",
+    "telegram": "https://t.me/bambooecohub/216"
+  },
+  "https://bambooecohub.com/collections/wall-lamp": {
+    "devto": "https://dev.to/norvan_technology_d122131/wall-lamp-1emb",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461753221660672",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/wall-lamp.md",
+    "telegram": "https://t.me/bambooecohub/217"
+  },
+  "https://bambooecohub.com/brand/lamp-lights": {
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Title has already been used in the last five minutes\",\"status\":422}",
+    "wordpress": "error: WordPress.com API returned 500: <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n\n<head profile=\"http://gmpg.org/xfn/11\">\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n<title>Check back in a few minutes</title>\n\n<meta name=\"generator\" content=\"WordPress MU\" /> <!-- leave this for stats -->\n\n<link rel=\"stylesheet\" href=\"http://wordpress.com/wp-content/themes/h4/global.css\" type=\"text/css\" media=\"screen\" />\n\n<link rel=\"EditURI\" type=\"application/rsd+xml\" title=\"RSD\" href=\"http://wordpress.com/xmlrpc.php?rsd\" />\n<script type=\"text/javascript\">\n\nfunction addLoadEvent(func) {\n  var oldonload = window.onload;\n  if (typeof window.onload != 'function') {\n    window.onload = func;\n  } else {\n    window.onload = function() {\n      oldonload();\n      func();\n    }\n  }\n}\n</script>\n\n</head>\n<body>\n\n<div id=\"page\">\n<div id=\"rapit\">\n\n\t<div id=\"content\" class=\"narrowcolumn\">\n\n    \t\t<div class=\"post\">\n\t\t<h2>Server Maintenance</h2>\n\t\t\t<div class=\"entrytext\">\n\n<p>Your server is going through a few minutes of routine maintenance. Please don't touch your browser for a few minutes.</p>\n<p>What do I do?</p>\n<ul><li> If you were posting a comment or making a post on your blog then <em>do not</em> press BACK on your browser. Wait 5 minutes and press the refresh icon on your browser. Your comment or post will be sent as normal.</li><li> If you are browsing a blog here just wait a few moments and hit refresh. The page you were expecting will appear.</li></ul>\n\n\n\t\t\t</div>\n\t\t</div>\n\t  \t\t</div>\n\n\n<div id=\"beforefooter\">\n</div>\n\n<div id=\"footer\"></div>\n\n</div></div>\n\n<script type=\"text/javascript\" src=\"//stats.wp.com/wpcom.js?22\"></script>\n<script type=\"text/javascript\">\n_error = '500-dbconnect';\nfzd();\n</script>\n\n</body>\n</html>\n",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461773093289984",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/lamp-lights.md",
+    "telegram": "https://t.me/bambooecohub/218"
+  },
   "https://bambooecohub.com/brand/utility-basket": {},
   "https://bambooecohub.com/brand/bags-accessories": {},
   "https://bambooecohub.com/brand/decorative-furnishing": {},
-  "https://bambooecohub.com/brand/floor-lamp": {},
-  "https://bambooecohub.com/brand/pendant-light": {},
-  "https://bambooecohub.com/brand/string-light": {},
-  "https://bambooecohub.com/brand/table-lamp": {},
-  "https://bambooecohub.com/brand/wall-lamp": {},
+  "https://bambooecohub.com/brand/floor-lamp": {
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Title has already been used in the last five minutes\",\"status\":422}",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461793019379712",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/floor-lamp.md",
+    "telegram": "https://t.me/bambooecohub/219"
+  },
+  "https://bambooecohub.com/brand/pendant-light": {
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Title has already been used in the last five minutes\",\"status\":422}",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461812599390208",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/pendant-light.md",
+    "telegram": "https://t.me/bambooecohub/220"
+  },
+  "https://bambooecohub.com/brand/string-light": {
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Title has already been used in the last five minutes\",\"status\":422}",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461832525414400",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/string-light.md",
+    "telegram": "https://t.me/bambooecohub/221"
+  },
+  "https://bambooecohub.com/brand/table-lamp": {
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Title has already been used in the last five minutes\",\"status\":422}",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461852105523200",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/table-lamp.md",
+    "telegram": "https://t.me/bambooecohub/222"
+  },
+  "https://bambooecohub.com/brand/wall-lamp": {
+    "devto": "error: Dev.to API returned 422: {\"error\":\"Title has already been used in the last five minutes\",\"status\":422}",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461872107094016",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/wall-lamp.md",
+    "telegram": "https://t.me/bambooecohub/223"
+  },
   "https://bambooecohub.com/product/artisan-bamboo-bedside-lamp-bh-01403": {
     "devto": "https://dev.to/norvan_technology_d122131/artisan-bamboo-bedside-lamp-bh-01403-1cjk",
     "wordpress": "https://bambooecohub.wordpress.com/2026/07/23/artisan-bamboo-bedside-lamp-bh-01403-5/",
@@ -529,7 +613,7 @@
     "telegram": "https://t.me/bambooecohub/194"
   },
   "https://bambooecohub.com/journal/bamboo-lighting-ideas-indian-apartments-2026": {
-    "devto": "error: Dev.to API returned 503: <!DOCTYPE html>\n<html>\n  <head>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <meta charset=\"utf-8\">\n    <title>Application Error</title>\n    <style media=\"screen\">\n      html,body,iframe {\n        margin: 0;\n        padding: 0;\n      }\n\n      html,body {\n        height: 100%;\n        overflow: hidden;\n      }\n\n      iframe {\n        width: 100%;\n        height: 100%;\n        border: 0;\n      }\n    </style>\n  </head>\n  <body>\n    <iframe src=\"https://thepracticaldev.s3.amazonaws.com/503.html\"></iframe>\n  </body>\n</html>",
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-lighting-ideas-indian-apartments-2026-4d1d",
     "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
     "tumblr": "https://bambooecohub.tumblr.com/post/824585570279948288",
     "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
@@ -567,5 +651,101 @@
     "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
     "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-floor-lamp-buying-guide-india.md",
     "telegram": "https://t.me/bambooecohub/199"
+  },
+  "https://bambooecohub.com/journal/warm-ambient-lighting-indian-apartments-bamboo": {
+    "devto": "https://dev.to/norvan_technology_d122131/warm-ambient-lighting-indian-apartments-bamboo-36j0",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461252034887681",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/warm-ambient-lighting-indian-apartments-bamboo.md",
+    "telegram": "https://t.me/bambooecohub/200"
+  },
+  "https://bambooecohub.com/journal/tripura-bamboo-handicrafts-online-shopping-guide": {
+    "devto": "https://dev.to/norvan_technology_d122131/tripura-bamboo-handicrafts-online-shopping-guide-18f0",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461272815468544",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/tripura-bamboo-handicrafts-online-shopping-guide.md",
+    "telegram": "https://t.me/bambooecohub/201"
+  },
+  "https://bambooecohub.com/journal/vastu-tips-bamboo-lighting-indian-homes": {
+    "devto": "https://dev.to/norvan_technology_d122131/vastu-tips-bamboo-lighting-indian-homes-nmo",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461292466896896",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/vastu-tips-bamboo-lighting-indian-homes.md",
+    "telegram": "https://t.me/bambooecohub/202"
+  },
+  "https://bambooecohub.com/journal/bamboo-vs-rattan-furniture-lighting-india": {
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-vs-rattan-furniture-lighting-india-3f80",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461312198983681",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-vs-rattan-furniture-lighting-india.md",
+    "telegram": "https://t.me/bambooecohub/203"
+  },
+  "https://bambooecohub.com/journal/bamboo-balcony-outdoor-lighting-ideas-india": {
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-balcony-outdoor-lighting-ideas-india-4f66",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461332326400000",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-balcony-outdoor-lighting-ideas-india.md",
+    "telegram": "https://t.me/bambooecohub/204"
+  },
+  "https://bambooecohub.com/journal/diwali-bamboo-decor-lighting-ideas-india": {
+    "devto": "https://dev.to/norvan_technology_d122131/diwali-bamboo-decor-lighting-ideas-india-2ko3",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461352297594880",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/diwali-bamboo-decor-lighting-ideas-india.md",
+    "telegram": "https://t.me/bambooecohub/205"
+  },
+  "https://bambooecohub.com/journal/bamboo-dining-room-pendant-lights-india": {
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-dining-room-pendant-lights-india-g5i",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461373332029440",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-dining-room-pendant-lights-india.md",
+    "telegram": "https://t.me/bambooecohub/206"
+  },
+  "https://bambooecohub.com/journal/best-bamboo-living-room-lamps-india-2026": {
+    "devto": "https://dev.to/norvan_technology_d122131/best-bamboo-living-room-lamps-india-2026-278o",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461393055694848",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/best-bamboo-living-room-lamps-india-2026.md",
+    "telegram": "https://t.me/bambooecohub/207"
+  },
+  "https://bambooecohub.com/guides/bamboo-lamps-under-5000-india": {
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-lamps-under-5000-india-281c",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461484692914176",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-lamps-under-5000-india.md",
+    "telegram": "https://t.me/bambooecohub/208"
+  },
+  "https://bambooecohub.com/guides/led-bulbs-for-bamboo-lamps-wattage-colour-guide": {
+    "devto": "https://dev.to/norvan_technology_d122131/led-bulbs-for-bamboo-lamps-wattage-colour-guide-1fop",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461504225755136",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/led-bulbs-for-bamboo-lamps-wattage-colour-guide.md",
+    "telegram": "https://t.me/bambooecohub/209"
+  },
+  "https://bambooecohub.com/guides/bamboo-desk-lamp-home-office-guide-india": {
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-desk-lamp-home-office-guide-india-44b",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461524186497024",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-desk-lamp-home-office-guide-india.md",
+    "telegram": "https://t.me/bambooecohub/210"
+  },
+  "https://bambooecohub.com/guides/bamboo-hanging-lights-buying-guide-india": {
+    "devto": "https://dev.to/norvan_technology_d122131/bamboo-hanging-lights-buying-guide-india-fep",
+    "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
+    "tumblr": "https://bambooecohub.tumblr.com/post/825461544344256514",
+    "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
+    "gh-pages": "https://github.com/norvantechnology/bambooecohub-mirror/blob/main/posts/bamboo-hanging-lights-buying-guide-india.md",
+    "telegram": "https://t.me/bambooecohub/211"
   }
 }
