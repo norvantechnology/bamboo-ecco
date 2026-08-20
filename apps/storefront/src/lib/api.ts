@@ -4,6 +4,21 @@ import { fetchWithTimeout } from "./fetch-with-timeout";
 
 const IS_DEV = process.env.NODE_ENV === "development";
 
+/** Thrown by fetchApi when the API returns a non-2xx status. */
+export class ApiHttpError extends Error {
+  readonly status: number;
+  constructor(status: number, path: string) {
+    super(`API error: ${status} ${path}`);
+    this.name = "ApiHttpError";
+    this.status = status;
+  }
+}
+
+/** True only for confirmed missing resources — not timeouts / 5xx / misconfig. */
+export function isNotFoundError(err: unknown): boolean {
+  return err instanceof ApiHttpError && err.status === 404;
+}
+
 async function fetchApi<T>(
   path: string,
   options?: RequestInit & { fresh?: boolean },
@@ -30,7 +45,7 @@ async function fetchApi<T>(
   });
 
   if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+    throw new ApiHttpError(res.status, path);
   }
 
   return res.json();

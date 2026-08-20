@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getJournalPost, getProductsByCategorySlug, type Product } from "@/lib/api";
+import { getJournalPost, getProductsByCategorySlug, isNotFoundError, type Product } from "@/lib/api";
 import { ProductCard } from "@/components/product/product-card";
 import { ArticleJsonLd } from "@/components/seo/article-json-ld";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { FAQJsonLd } from "@/components/seo/faq-json-ld";
-import { absoluteUrl, buildPageMetadata, extractFaqsFromHtml } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata, extractFaqsFromHtml, noIndexMetadata } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 
 interface Props {
@@ -16,16 +16,26 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getJournalPost(slug).catch(() => null);
-  const heroImg = post?.heroImage;
-  return buildPageMetadata({
-    title: post?.meta?.title ?? post?.title ?? "Journal",
-    description: post?.meta?.description,
-    image: heroImg || undefined,
-    imageAlt: post?.title,
-    ogType: "article",
-    path: `/journal/${slug}`,
-  });
+  try {
+    const post = await getJournalPost(slug);
+    return buildPageMetadata({
+      title: post.meta?.title ?? post.title,
+      description: post.meta?.description,
+      image: post.heroImage || undefined,
+      imageAlt: post.title,
+      ogType: "article",
+      path: `/journal/${slug}`,
+    });
+  } catch (err) {
+    if (isNotFoundError(err)) {
+      return { ...noIndexMetadata, title: "Journal article not found" };
+    }
+    return buildPageMetadata({
+      title: "Journal",
+      ogType: "article",
+      path: `/journal/${slug}`,
+    });
+  }
 }
 
 export default async function JournalArticlePage({ params }: Props) {

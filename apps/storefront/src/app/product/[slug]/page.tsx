@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { StarRating } from "@/components/ui/star-rating";
-import { getProduct, getProductCategory, getRelatedProducts, getProductReviews } from "@/lib/api";
+import { getProduct, getProductCategory, getRelatedProducts, getProductReviews, isNotFoundError } from "@/lib/api";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductPurchase } from "@/components/product/product-purchase";
 import { ProductCard } from "@/components/product/product-card";
@@ -11,7 +11,7 @@ import { ProductFaqs } from "@/components/product/product-faqs";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
 import { FAQJsonLd } from "@/components/seo/faq-json-ld";
-import { absoluteUrl, buildProductMetadata, noIndexMetadata } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata, buildProductMetadata, noIndexMetadata } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -19,21 +19,29 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug).catch(() => null);
-  if (!product) {
-    return { ...noIndexMetadata, title: "Product not found" };
+  try {
+    const product = await getProduct(slug);
+    const category = getProductCategory(product);
+    return buildProductMetadata({
+      title: product.title,
+      slug: product.slug,
+      description: product.description,
+      meta: product.meta,
+      images: product.images,
+      variants: product.variants,
+      status: product.status,
+      categoryName: category?.name,
+    });
+  } catch (err) {
+    // Only noindex confirmed 404s. API downtime must not tell Google to drop the URL.
+    if (isNotFoundError(err)) {
+      return { ...noIndexMetadata, title: "Product not found" };
+    }
+    return buildPageMetadata({
+      title: "Product",
+      path: `/product/${slug}`,
+    });
   }
-  const category = getProductCategory(product);
-  return buildProductMetadata({
-    title: product.title,
-    slug: product.slug,
-    description: product.description,
-    meta: product.meta,
-    images: product.images,
-    variants: product.variants,
-    status: product.status,
-    categoryName: category?.name,
-  });
 }
 
 export default async function ProductPage({ params }: Props) {

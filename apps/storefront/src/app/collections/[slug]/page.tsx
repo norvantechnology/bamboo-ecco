@@ -9,7 +9,7 @@ import { CategoryToolbar } from "@/components/category/category-toolbar";
 import { InfiniteProductGrid } from "@/components/product/infinite-product-grid";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
-import { getCategory, getProductsByCategorySlug } from "@/lib/api";
+import { getCategory, getProductsByCategorySlug, isNotFoundError } from "@/lib/api";
 import { absoluteUrl, buildPageMetadata, collectionPageJsonLd, noIndexMetadata } from "@/lib/seo";
 import { resolveSiteSeo } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -23,29 +23,38 @@ const VALID_SORTS = ["newest", "price-asc", "price-desc", "rating"] as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const [category, productsResult] = await Promise.all([
-    getCategory(slug).catch(() => null),
-    getProductsByCategorySlug(slug, 1, "newest").catch(() => null),
-  ]);
-  if (!category) return { ...noIndexMetadata, title: "Category Not Found" };
-  const title = category.meta?.title || category.name;
-  const description = category.meta?.description || undefined;
-  const keywords = category.meta?.keywords || undefined;
+  try {
+    const [category, productsResult] = await Promise.all([
+      getCategory(slug),
+      getProductsByCategorySlug(slug, 1, "newest").catch(() => null),
+    ]);
+    const title = category.meta?.title || category.name;
+    const description = category.meta?.description || undefined;
+    const keywords = category.meta?.keywords || undefined;
 
-  const productImages = (productsResult?.data ?? []).flatMap((p) => (p.images ?? []).map((i) => i.url)).filter(Boolean);
-  const categoryImages = Array.from(
-    new Set([category.imageUrl, ...productImages].filter((u): u is string => Boolean(u && u.trim())))
-  ).slice(0, 16);
+    const productImages = (productsResult?.data ?? []).flatMap((p) => (p.images ?? []).map((i) => i.url)).filter(Boolean);
+    const categoryImages = Array.from(
+      new Set([category.imageUrl, ...productImages].filter((u): u is string => Boolean(u && u.trim())))
+    ).slice(0, 16);
 
-  return buildPageMetadata({
-    title,
-    description,
-    keywords,
-    path: `/collections/${slug}`,
-    image: category.imageUrl || productImages[0],
-    images: categoryImages.length ? categoryImages : undefined,
-    imageAlt: category.name,
-  });
+    return buildPageMetadata({
+      title,
+      description,
+      keywords,
+      path: `/collections/${slug}`,
+      image: category.imageUrl || productImages[0],
+      images: categoryImages.length ? categoryImages : undefined,
+      imageAlt: category.name,
+    });
+  } catch (err) {
+    if (isNotFoundError(err)) {
+      return { ...noIndexMetadata, title: "Category Not Found" };
+    }
+    return buildPageMetadata({
+      title: "Collection",
+      path: `/collections/${slug}`,
+    });
+  }
 }
 
 export default async function CollectionPage({ params, searchParams }: Props) {
