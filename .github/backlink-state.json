@@ -170,7 +170,7 @@
     "telegram": "https://t.me/bambooecohub/219"
   },
   "https://bambooecohub.com/brand/pendant-light": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 30 seconds\",\"status\":429}",
+    "devto": "https://dev.to/norvan_technology_d122131/pendant-light-8n7",
     "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
     "tumblr": "https://bambooecohub.tumblr.com/post/825461812599390208",
     "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
@@ -194,7 +194,7 @@
     "telegram": "https://t.me/bambooecohub/222"
   },
   "https://bambooecohub.com/brand/wall-lamp": {
-    "devto": "error: Dev.to API returned 429: {\"error\":\"Rate limit reached, try again in 30 seconds\",\"status\":429}",
+    "devto": "https://dev.to/norvan_technology_d122131/wall-lamp-13j2",
     "wordpress": "error: WordPress.com API returned 400: {\"error\":\"invalid_token\",\"message\":\"The OAuth2 token is invalid.\"}",
     "tumblr": "https://bambooecohub.tumblr.com/post/825461872107094016",
     "mastodon": "error: Mastodon API returned 403: {\"error\":\"Your login is currently disabled\"}",
