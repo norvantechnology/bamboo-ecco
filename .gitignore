@@ -2,8 +2,6 @@ node_modules
 dist
 .next
 .turbo
-.env
-.env.local
 .env.live
 *.log
 .DS_Store
@@ -11,3 +9,4 @@ coverage
 .vercel
 scripts/gsc/diff-result.json
 scripts/gsc/current-sitemap-snapshot.xml
+config.bat
